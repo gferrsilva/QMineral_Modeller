@@ -1,3 +1,8 @@
+#####
+# Data wrangling and primary classifier of amphiboles
+# Guilherme Ferreira, (guilherme.ferreira@cprm.gov.br)
+# April, 2020
+#####
 # Setting up the enviroment
 #####
 setwd("C:/Users/GUILHERMEFERREIRA-PC/Desktop/Banco de Dados/GEOROC/Minerals")
@@ -78,32 +83,32 @@ amph_elems <- amph[24:ncol(amph)]
 amph_elems <- amph_elems %>%
   select_if(~sum(!is.na(.x)) >= (.5 * nrow(amph_elems)))
 
-###Renaming the columns and fixing class
+###Renaming the columns and fixing class -----
 names(amph_elems) <- c('SiO2','TiO2','Al2O3','Cr2O3','FeOT','CaO','MgO','MnO','K2O','Na2O') 
 
 amph_elems$K2O <- as.double(amph_elems$K2O)
 
-###Dataframe amphiboles
+###Dataframe amphiboles -----
 amphiboles <- bind_cols(amph_labels, amph_elems)
 
-## Principal componente Analysis
+## Principal componente Analysis -----
 
 pca <- prcomp(na.omit(amph_elems),center = T,scale. = T,)
 
 summary(pca)
 
-### Appending PCA results to amphiboles df
+### Appending PCA results to amphiboles df -----
 amphiboles <- bind_cols(na.omit(amphiboles), as_tibble(pca$x))
 
-# Count the number of samples by rock name
+# Count the number of samples by rock name -----
 amphiboles %>%
   group_by(`ROCK NAME`) %>%
   count(sort = T)
 
-# Fixing the class of a column
+# Fixing the class of a column -----
 amphiboles$MINERAL <- as.factor(amphiboles$MINERAL)
 
-# Wrting file of selected samples
+# Wrting file of selected samples -----
 write_csv(amphiboles, path = 'selected_amphiboles.csv')
 
 #####
@@ -112,16 +117,16 @@ write_csv(amphiboles, path = 'selected_amphiboles.csv')
 
 # Train-Test-Blind split
 
-  ## Blind
+  ## Blind -----
 amph_blind <- amphiboles %>%
   filter(MINERAL == 'AMPHIBOLE')
 
-  ## Input
+  ## Input -----
 
 amph_input <- amphiboles %>%
   filter(MINERAL != 'AMPHIBOLE')
 
-# Fixing class
+# Fixing class -----
 amph_input$MINERAL <- factor(amph_input$MINERAL)
 
 ## Train-test split
@@ -144,7 +149,7 @@ model_rf_over <- caret::train(MINERAL ~ .,
                               data = train_data,
                               method = "rf",
                               preProcess = c("scale", "center"),
-                              trControl = ctrl, ntree = 150)#, importance = T) # importance = T gera um gráfico de varImp para cada classe
+                              trControl = ctrl, ntree = 150)#, importance = T) # importance = T gera um grÃ¡fico de varImp para cada classe
 plot(varImp(model_rf_over))
 
 importance(model_rf_over)
