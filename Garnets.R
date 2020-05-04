@@ -1,3 +1,8 @@
+#####
+# Data wrangling and primary classifier of amphiboles
+# Guilherme Ferreira, (guilherme.ferreira@cprm.gov.br)
+# April, 2020
+#####
 # Setting up the enviroment
 #####
 setwd("C:/Users/GUILHERMEFERREIRA-PC/Desktop/Banco de Dados/GEOROC/Minerals")
@@ -94,7 +99,7 @@ fviz_eig(pca, addlabels = T) +
   ylim(0,60)
 
 
-# Gráfico de indivíduos: aqueles de perfil similar serão agrupados conjuntamente
+# GrÃ¡fico de indivÃ­duos: aqueles de perfil similar serÃ£o agrupados conjuntamente
 
 fviz_pca_ind(pca,
              col.ind = "cos2", # Color by the quality of representation
@@ -104,7 +109,7 @@ fviz_pca_ind(pca,
              geom = c("point")
 )
 
-# Gráfico de variáveis: variáveis correlacionáveis apontam para a mesma direção
+# GrÃ¡fico de variÃ¡veis: variÃ¡veis correlacionÃ¡veis apontam para a mesma direÃ§Ã£o
 
 fviz_pca_var(pca,
              col.var = "contrib", # Color by contributions to the PC
@@ -112,7 +117,7 @@ fviz_pca_var(pca,
              repel = TRUE     # Avoid text overlapping
 )
 
-# Gráfico de indivíduos e variáveis
+# GrÃ¡fico de indivÃ­duos e variÃ¡veis
 
 fviz_pca_biplot(pca, 
                 palette = "jco", 
@@ -151,24 +156,7 @@ names(garnet) <- c('SAMPLE NAME', 'ROCK NAME', 'MINERAL', 'ROCK', 'COMPOSITION',
 #####
 # Machine Learning
 #####
-# 
-# # Silhouette
-# fviz_nbclust(garnet[,16:24], kmeans, method = "silhouette", k.max = 20)
-# 
-# # Model-Based Clustering
-# mclus <- Mclust(garnet[,16:24])
-# 
-# summary(mclus)
-# 
-# plot(mclus, what = 'BIC')
-# 
-# fviz_cluster(mclus,
-#              data = garnet[,16:24],
-#              axes = c(1,2), stand = F, ellipse = F, 
-#              ellipse.type = 'convex', 
-#              choose.vars = c(1,2), geom = c('point'),
-#              main = 'MB Cluster (Filtered Data)')
-# 
+
 #####
 # Data Vis
 #####
