@@ -1,6 +1,13 @@
 # MinChem_Modeller
 Mineral Chemistry Data Modeller. Mineral Classification, Value Imputation and Mineral Formula Definition.<p>
-Amphiboles, Garnet, Carbonates, Pyroxenes, Feldspars, Mica, Olivines and Spinels
+- Amphiboles
+- Garnets
+- Carbonates
+- Pyroxenes
+- Feldspars
+- Micas
+- Olivines
+- Spinels
   
 ## Contact
 * Guilherme Ferreira da Silva (guilherme.ferreira@cprm.gov.br) <p>
