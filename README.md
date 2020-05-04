@@ -16,5 +16,6 @@ Mineral Chemistry Data Modeller. Mineral Classification, Value Imputation and Mi
   
 ## More Info:
 Project Developed on R and Python3 languages.<p>
-Geological Survey of Brazil,<p>
-Directory of Geology and Mineral Resources.<p>
+
+http://www.cprm.gov.br/ <p>
+Geological Survey of Brazil,Directory of Geology and Mineral Resources.
