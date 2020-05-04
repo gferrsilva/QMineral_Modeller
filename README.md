@@ -3,9 +3,9 @@ Mineral Chemistry Data Modeller. Mineral Classification, Value Imputation and Mi
 Amphiboles, Garnet, Carbonates, Pyroxenes, Feldspars, Mica, Olivines and Spinels
   
 ## Contact
-Guilherme Ferreira da Silva (guilherme.ferreira@cprm.gov.br) <p>
-Marcos Vinícius Ferreira (marcos.ferreira@cprm.gov.br)<p>
-Iago Sousa Lima Costa (iago.costa@cprm.gov.br)<p>
+* Guilherme Ferreira da Silva (guilherme.ferreira@cprm.gov.br) <p>
+* Marcos Vinícius Ferreira (marcos.ferreira@cprm.gov.br)<p>
+* Iago Sousa Lima Costa (iago.costa@cprm.gov.br)<p>
   
 ## More Info:
 Project Developed on R and Python3 languages.<p>
