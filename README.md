@@ -1,4 +1,4 @@
-# MinChem_Modeller
+# QMineral_Modeller
 Mineral Chemistry Data Modeller. Mineral Classification, Value Imputation and Mineral Formula Definition.<p>
 - Amphiboles
 - Garnets
