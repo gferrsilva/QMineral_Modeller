@@ -13,11 +13,11 @@ set.seed(123)
 #####
 library(Cairo)
 library(tidyverse)
-library(corrplot)
+# library(corrplot)
 library(reshape2)
 library(ggthemes)
-library(randomForest)
-library(caret)
+library(missRanger)
+# library(caret)
 # library(ggtern)
 
 #####
@@ -57,18 +57,18 @@ df1 <- df1[1:174107,]
 
 col.fillrate(df1, sort = T)
 
-rows <- NULL
-
-for (r in 1:nrow(df1)) {
-  rows[r] <- (100 - 100*(sum(is.na(df1[r,])))/ncol(df1))
-}
-
+# rows <- NULL
+# 
+# for (r in 1:nrow(df1)) {
+#   rows[r] <- (100 - 100*(sum(is.na(df1[r,])))/ncol(df1))
+# }
+# 
 ## Subsect dataframe
 felds <- df1 %>%
   select(1:89) %>%
-  filter(!is.na(`SIO2(WT%)`))# %>%
-  #filter(!is.na(`NA2O(WT%)`)) %>%
-  #filter(!is.na(`K2O(WT%)`)) 
+  filter(!is.na(`SIO2(WT%)`)) %>%
+  filter(!is.na(`NA2O(WT%)`)) %>%
+  filter(!is.na(`K2O(WT%)`)) 
 
 # Split label and variables
 labels <- felds[1:23]
@@ -77,11 +77,19 @@ felds_labels <- labels %>%
 
 felds_elems <- felds[24:ncol(felds)]
 
-felds_elems <- felds_elems %>%
-  select_if(~sum(!is.na(.x)) >= (.5 * nrow(felds_elems)))
+felds_elems <- as_tibble(felds_elems) %>%
+  select_if(~sum(!is.na(.x)) >= (.5 * nrow(felds_elems))) %>%
+  sapply(as.numeric)
+
+felds_elems <- as_tibble(felds_elems)
 
 ###Renaming the columns and fixing class -----
 names(felds_elems) <- c('SiO2','TiO2','Al2O3','FeOT','CaO','MgO','K2O','Na2O')
+
+felds_elems1 <- missRanger(felds_elems, pmm.k = 3, num.trees = 100)
+
+
+
 
 felds_elems$K2O <- as.double(felds_elems$K2O)
 
@@ -214,89 +222,11 @@ ggplot(feldspar,
           ))
 
 
-# (p.trainset <- ggplot(feldspar %>% filter(MINERAL != 'FELDSPAR'),
-#                       aes(x = PC1, y = PC2, col = MINERAL)) +
-#    geom_point(alpha = .4) + coord_equal() + 
-#    theme(legend.text = element_text(size = 7)) +
-#    guides(col = guide_legend(ncol = 1)) +
-#    #legend.position = 'omit') +
-#    scale_color_manual(values = c(
-#      "dodgerblue2", "#E31A1C", # red
-#      "green4",
-#      "#6A3D9A", # purple
-#      "#FF7F00", # orange
-#      "black", "gold1",
-#      "skyblue2", "#FB9A99", # lt pink
-#      "palegreen2",
-#      "#CAB2D6", # lt purple
-#      "#FDBF6F", # lt orange
-#      "gray70", "khaki2",
-#      "maroon", "orchid1", "deeppink1", "blue1", "steelblue4",
-#      "darkturquoise", "green1", "yellow4", "yellow3",
-#      "darkorange4", "brown"
-#    ))
-# )
-# 
-# 
-# CairoPDF(file = 'p.trainset.PDF', width = 9, height = 8)
-# print(p.trainset)
-# dev.off()
-
-
-# (p.confmatrx <- ggplot(data = plotTable, 
-#                        aes(
-#                          x = Reference,
-#                          y = Prediction,
-#                          fill = goodbad
-#                        )
-# ) +
-#     geom_tile(aes(alpha = prop)) +
-#     geom_text(aes(label = round(prop, 1)), size = 4) +
-#     scale_fill_manual(values =
-#                         c(good = "green",
-#                           bad = "red")
-#     ) +
-#     theme_bw() + coord_equal() + guides(fill = F) +
-#     labs(title = 'FELDSPAR classification - Random Forest', subtitle = paste0('N.Trees = 150, 70-30% split, 10-fold, Accuracy: ', 100*round(accuracy_m1,digits = 2),'%')) +
-#     theme(axis.text.x = element_text(
-#       angle = 90, vjust = .5, hjust = 1, size = 7),
-#       axis.text.y = element_text(size = 7),
-#       legend.position = 'none')
-# )
-# 
-# CairoPDF(file = 'p.confmatrix.PDF', width = 9, height = 8)
-# print(p.confmatrx)
-# dev.off()
-
-# (p.blind <- ggplot(pred_felds,
-#                    aes(x = PC1, y = PC2, col = value)) +
-#     geom_point(size = 4, alpha = .4) + #theme(legend.position = 'omit') +
-#     scale_color_manual(values = c(
-#       "dodgerblue2", "#E31A1C", # red
-#       "green4",
-#       "#6A3D9A", # purple
-#       "#FF7F00", # orange
-#       "black", "gold1",
-#       "skyblue2", "#FB9A99", # lt pink
-#       "palegreen2",
-#       "#CAB2D6", # lt purple
-#       "#FDBF6F", # lt orange
-#       "gray70", "khaki2",
-#       "maroon", "orchid1", "deeppink1", "blue1", "steelblue4",
-#       "darkturquoise", "green1", "yellow4", "yellow3",
-#       "darkorange4", "brown"
-#     ))
-# )
-# 
-# CairoPDF(file = 'p.blind.PDF', width = 9, height = 8)
-# print(p.blind)
-# dev.off()
 
 #####
 # References
 #####
 
-## Variance importance/Mean Decrease Gini
-# https://stats.stackexchange.com/questions/197827/how-to-interpret-mean-decrease-in-accuracy-and-mean-decrease-gini-in-random-fore
-# https://topepo.github.io/caret/variable-importance.html
-# https://www.r-bloggers.com/variable-importance-plot-and-variable-selection/
+# missRanger Package. Replace NA values based on Random Forest Regression
+#https://cran.r-project.org/web/packages/missRanger/vignettes/vignette_missRanger.html
+
