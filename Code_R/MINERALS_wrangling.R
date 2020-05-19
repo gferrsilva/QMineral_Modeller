@@ -25,14 +25,16 @@ set.seed(123) # Ajustando o 'Random State' da máquina para reproduzir os códigos
 
 # Lista de elementos a ser selecionados do banco de dados original
 selection <- c('SIO2(WT%)', 'TIO2(WT%)', 'AL2O3(WT%)', 'CR2O3(WT%)', 
-                    'FEOT(WT%)','CAO(WT%)','MGO(WT%)','MNO(WT%)','K2O(WT%)',
-                    'NA2O(WT%)','P2O5(WT%)','H2O(WT%)','F(WT%)','CL(WT%)',
-                    'FE(WT%)','NI(WT%)','CU(WT%)','CO(WT%)','ZN(WT%)','AS(WT%)',
-                    'PB(WT%)','S(WT%)')
+               'FEOT(WT%)','CAO(WT%)','MGO(WT%)','MNO(WT%)','K2O(WT%)',
+               'NA2O(WT%)','P2O5(WT%)','H2O(WT%)','F(WT%)','CL(WT%)',
+               'NIO(WT%)','CUO(WT%)','COO(WT%)','ZNO(WT%)','AS(PPM)',
+               'PBO(WT%)','S(WT%)','ZRO2(WT%)')
+selsulf <- c('FE(WT%)','NI(WT%)','CU(WT%)','CO(WT%)','ZN(WT%)','AS(WT%)','PB(WT%)')
+
 # Simplifcação dos elementos electionados acima
 elems_names <- c('SIO2','TIO2','AL2O3','CR2O3','FEOT','CAO',
-                      'MGO','MNO','K2O','NA2O','P2O5','H20','F','CL',
-                      'FE','NI','CU','CO','ZN','AS','PB','S')
+                 'MGO','MNO','K2O','NA2O','P2O5','H20','F','CL',
+                 'NIO','CUO','COO','ZNO','AS_ppm','PBO','S','ZRO2')
 
 
 #####
@@ -78,13 +80,9 @@ amph <- df1 %>%
 amph_labels <- amph[1:23] # seleciona os metadados
 
 amph_elems <- amph %>% # seleciona as colunas de elementos
-  mutate(`NI(WT%)` = NA, # cria a coluna vazia para Ni
-         `CU(WT%)` = NA, # cria a coluna vazia para Cu
-         `CO(WT%)` = NA, # cria a coluna vazia para Co
-         `ZN(WT%)` = NA, # cria a coluna vazia para Az
-         `AS(WT%)` = NA, # cria a coluna vazia para As
-         `PB(WT%)` = NA) %>%  # cria a coluna vazia para Pb
-  select(all_of(selection))
+  select(all_of(selection)) %>%
+  mutate(`CUO(WT%)` = 0,
+         `S(WT%)` = 0)
 
 names(amph_elems) <- elems_names # renomeia as colunas de elementos
 
@@ -104,12 +102,13 @@ apat <- df1 %>%
 apat_labels <- apat[1:23]
 
 apat_elems <- apat %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`COO(WT%)` = 0,
+         `AS(PPM)` = 0,
+         `CUO(WT%)` = 0) %>%
+  #        `CO(WT%)` = 0,
+  #        `ZN(WT%)` = 0,
+  #        `AS(WT%)` = 0,
+  #        `PB(WT%)` = 0) %>%
   select(all_of(selection))
 
 names(apat_elems) <- elems_names
@@ -130,12 +129,15 @@ carb <- df1 %>%
 carb_labels <- carb[1:23]
 
 carb_elems <- carb %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`COO(WT%)` = 0,
+         `H2O(WT%)` = 0,
+         `CUO(WT%)` = 0,
+         `AS(PPM)` = 0) %>%
+  # `CU(WT%)` = NA,
+  # `CO(WT%)` = NA,
+  # `ZN(WT%)` = NA,
+  #        `AS(WT%)` = NA,
+  #        `PB(WT%)` = NA) %>%
   select(all_of(selection))
 
 names(carb_elems) <- elems_names
@@ -156,13 +158,14 @@ clay <- df1 %>%
 clay_labels <- clay[1:23]
 
 clay_elems <- clay %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `FE(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `ZNO(WT%)` = 0,
+         `AS(PPM)` = 0,
+         `PBO(WT%)` = 0,
+         `ZRO2(WT%)` = 0,
+         `S(WT%)` = 0,
+         `F(WT%)` = 0) %>%
   select(all_of(selection))
 
 names(clay_elems) <- elems_names
@@ -183,12 +186,11 @@ felds <- df1 %>%
 felds_labels <- felds[1:23]
 
 felds_elems <- felds %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `H2O(WT%)` = 0,
+         `S(WT%)` = 0,
+         `PBO(WT%)` = 0) %>%
   select(all_of(selection))
 
 names(felds_elems) <- elems_names
@@ -211,12 +213,10 @@ foid <- df1 %>%
 foid_labels <- foid[1:23]
 
 foid_elems <- foid %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`CUO(WT%)` = 0,
+         `AS(PPM)` = 0,
+         `ZRO2(WT%)` = 0,
+         `PBO(WT%)` = 0) %>%
   select(all_of(selection))
 
 names(foid_elems) <- elems_names
@@ -228,7 +228,7 @@ remove(df1,foid)
 
 # Garnets -----
 
-df1 <- read_csv2('data_raw/GARNETS.csv',n_max = 42340)
+df1 <- read_csv('data_raw/GARNETS.csv',n_max = 42340)
 
 grt <- df1 %>%
   # select(1:89) %>%
@@ -237,12 +237,13 @@ grt <- df1 %>%
 grt_labels <- grt[1:23]
 
 grt_elems <- grt %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `PBO(WT%)` = 0,
+         `AS(PPM)` = 0) %>%
+  #        `ZN(WT%)` = NA,
+  #        `AS(WT%)` = NA,
+  #        `PB(WT%)` = NA) %>%
   select(all_of(selection))
 
 names(grt_elems) <- elems_names
@@ -263,13 +264,11 @@ ilm <- df1 %>%
 ilm_labels <- ilm[1:23]
 
 ilm_elems <- ilm %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
-  select(all_of(selection))
+  select(all_of(selection)) %>%
+  mutate(`AS(PPM)` = 0,
+         `S(WT%)` = 0,
+         `PBO(WT%)` = 0,
+         `CUO(WT%)` = 0)
 
 names(ilm_elems) <- elems_names
 
@@ -289,12 +288,13 @@ mica <- df1 %>%
 mica_labels <- mica[1:23]
 
 mica_elems <- mica %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `ZNO(WT%)` = 0,
+         `AS(PPM)` = 0,
+         `PBO(WT%)` = 0,
+         `S(WT%)` = 0,
+         `ZRO2(WT%)` = 0,) %>%
   select(all_of(selection))
 
 names(mica_elems) <- elems_names
@@ -315,12 +315,7 @@ oliv <- df1 %>%
 oliv_labels <- oliv[1:23]
 
 oliv_elems <- oliv %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`PBO(WT%)` = 0) %>%
   select(all_of(selection))
 
 names(oliv_elems) <- elems_names
@@ -341,12 +336,10 @@ perov <- df1 %>%
 perov_labels <- perov[1:23]
 
 perov_elems <- perov %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`AS(PPM)` = 0,
+         `CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `S(WT%)` = 0,) %>%
   select(all_of(selection))
 
 names(perov_elems) <- elems_names
@@ -367,12 +360,13 @@ px <- df1 %>%
 px_labels <- px[1:23]
 
 px_elems <- px %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`PBO(WT%)` = 0,
+         `CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `AS(PPM)` = 0) %>%
+  #        `ZN(WT%)` = NA,
+  #        `AS(WT%)` = NA,
+  #        `PB(WT%)` = NA) %>%
   select(all_of(selection))
 
 names(px_elems) <- elems_names
@@ -384,7 +378,7 @@ remove(df1,px)
 
 # Quartz -----
 
-df1 <- read_csv('data_raw/PYROXENES.csv',n_max = 5304)
+df1 <- read_csv('data_raw/QUARTZ.csv',n_max = 5304)
 
 qtz <- df1 %>%
   # select(1:89) %>%
@@ -393,12 +387,13 @@ qtz <- df1 %>%
 qtz_labels <- qtz[1:23]
 
 qtz_elems <- qtz %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`S(WT%)` = 0,
+         `CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `AS(PPM)` = 0,
+         `ZRO2(WT%)` = 0,
+         `H2O(WT%)` = 0,
+         `PBO(WT%)` = 0) %>%
   select(all_of(selection))
 
 names(qtz_elems) <- elems_names
@@ -419,12 +414,8 @@ spin <- df1 %>%
 spin_labels <- spin[1:23]
 
 spin_elems <- spin %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`S(WT%)` = 0,
+         `AS(PPM)` = 0) %>%
   select(all_of(selection))
 
 names(spin_elems) <- elems_names
@@ -442,11 +433,34 @@ sulf <- df1 %>%
   # select(1:89) #%>%
   filter(!is.na(`S(WT%)`))
 
+# sulf <- sulf %>%
+#   mutate(`AS(PPM)` =  10000*coalesce(`AS(WT%)`))
+
+
 sulf_labels <- sulf[1:23]
 sulf$`H2O(WT%)` <- 0
 
 sulf_elems <- sulf %>%
-  select(all_of(selection))
+  mutate(`H2O(WT%)` = 0,
+         `ZRO2(WT%)` = 0,
+         `CL(WT%)` = 0,
+         `SIO2(WT%)` = 0,
+         `AL2O3(WT%)` = 0,
+         `TIO2(WT%)` = 0,
+         `MGO(WT%)` = 0,
+         `MNO(WT%)` = 0) %>%
+  mutate(`AS(PPM)` =  10000*coalesce(`AS(WT%)`)) %>%
+  select(all_of(c(selection,selsulf))) %>%
+  mutate(`NIO(WT%)` =  (1.272588*`NI(WT%)`)) %>%
+  mutate(`CUO(WT%)` =  (1.251878*`CU(WT%)`)) %>%
+  mutate(`COO(WT%)` =  (1.271455*`CO(WT%)`)) %>%
+  mutate(`FEOT(WT%)` = (1.381978*`FE(WT%)`)) %>%
+  mutate(`ZNO(WT%)` =  (1.244709*`ZN(WT%)`)) %>%
+  mutate(`PBO(WT%)` =  (1.077237*`PB(WT%)`)) %>%
+  mutate(`F(WT%)` =  0,
+         `P2O5(WT%)` =  0,
+         `CR2O3(WT%)` =  0) %>%
+  select(-selsulf)
 
 names(sulf_elems) <- elems_names
 
@@ -466,13 +480,14 @@ titan <- df1 %>%
 titan_labels <- titan[1:23]
 
 titan_elems <- titan %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `S(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`S(WT%)` = 0,
+         `CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `AS(PPM)` = 0) %>%
+  #        `ZN(WT%)` = NA,
+  #        `AS(WT%)` = NA,
+  #        `S(WT%)` = NA,
+  #        `PB(WT%)` = NA) %>%
   select(all_of(selection))
 
 names(titan_elems) <- elems_names
@@ -493,14 +508,12 @@ zirc <- df1 %>%
 zirc_labels <- zirc[1:23]
 
 zirc_elems <- zirc %>%
-  mutate(`NI(WT%)` = NA,
-         `CU(WT%)` = NA,
-         `CO(WT%)` = NA,
-         `ZN(WT%)` = NA,
-         `AS(WT%)` = NA,
-         `FE(WT%)` = NA,
-         `S(WT%)` = NA,
-         `PB(WT%)` = NA) %>%
+  mutate(`S(WT%)` = 0,
+         `CUO(WT%)` = 0,
+         `COO(WT%)` = 0,
+         `ZNO(WT%)` = 0,
+         `AS(PPM)` = 0,
+         `H2O(WT%)` = 0) %>%
   select(all_of(selection))
 
 names(zirc_elems) <- elems_names
@@ -512,6 +525,7 @@ remove(df1,zirc)
 
 
 
+
 #####
 # DATA IMPUTATION 
 #####
@@ -520,97 +534,114 @@ remove(df1,zirc)
 # num.tress = 100, verbose = 2 (output os OOB de cada regressão)
 # Repetido uma vez para cada elemento (poderia ter feito um for, mas fiquei com preguiça. Conserto isso depois)
 
-amph_elems <- missRanger(amph_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-apat_elems <- missRanger(apat_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-carb_elems <- missRanger(carb_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-clay_elems <- missRanger(clay_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-felds_elems <- missRanger(felds_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-foid_elems <- missRanger(foid_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-grt_elems <- missRanger(grt_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-ilm_elems <- missRanger(ilm_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-mica_elems <- missRanger(mica_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-oliv_elems <- missRanger(oliv_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-px_elems <- missRanger(px_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-perov_elems <- missRanger(perov_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-qtz_elems <- missRanger(qtz_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-spin_elems <- missRanger(spin_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-sulf_elems <- missRanger(sulf_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-titan_elems <- missRanger(titan_elems, pmm.k = 3, num.trees = 100, verbose = 2)
-zirc_elems <- missRanger(zirc_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+amph_elems1 <- missRanger(amph_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+apat_elems1 <- missRanger(apat_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+carb_elems1 <- missRanger(carb_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+clay_elems1 <- missRanger(clay_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+felds_elems1 <- missRanger(felds_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+foid_elems1 <- missRanger(foid_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+grt_elems1 <- missRanger(grt_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+ilm_elems1 <- missRanger(ilm_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+mica_elems1 <- missRanger(mica_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+oliv_elems1 <- missRanger(oliv_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+perov_elems1 <- missRanger(perov_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+px_elems1 <- missRanger(px_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+qtz_elems1 <- missRanger(qtz_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+spin_elems1 <- missRanger(spin_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+sulf_elems1 <- missRanger(sulf_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+titan_elems1 <- missRanger(titan_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+zirc_elems1 <- missRanger(zirc_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+
 
 #####
 # WRITING INDIVIDUAL FILES 
 #####
 
 # Amphiboles ----
-amphiboles <- as_tibble(cbind(amph_labels,amph_elems)) %>%
-  mutate(GROUP = 'AMPHIBOLES')
+amphiboles <- as_tibble(cbind(amph_labels,amph_elems1)) %>%
+  mutate(GROUP = 'AMPHIBOLES') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(amphiboles, 'data_input/amphiboles_rf.csv')
 # Apatite ----
-apat <- as_tibble(cbind(apat_labels,apat_elems)) %>%
-  mutate(GROUP = 'APATITE')
+apat <- as_tibble(cbind(apat_labels,apat_elems1)) %>%
+  mutate(GROUP = 'APATITE') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(apat, 'data_input/apatite_rf.csv')
 # Carbonate ----
-carb <- as_tibble(cbind(carb_labels,carb_elems)) %>%
-  mutate(GROUP = 'CARBONATE')
+carb <- as_tibble(cbind(carb_labels,carb_elems1)) %>%
+  mutate(GROUP = 'CARBONATE') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(carb, 'data_input/carbonate_rf.csv')
 # Clay Minerals ----
-clay <- as_tibble(cbind(clay_labels,clay_elems)) %>%
-  mutate(GROUP = 'CLAY')
+clay <- as_tibble(cbind(clay_labels,clay_elems1)) %>%
+  mutate(GROUP = 'CLAY') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(clay, 'data_input/clayminerals_rf.csv')
 # Feldspar ----
-felds <- as_tibble(cbind(felds_labels,felds_elems)) %>%
-  mutate(GROUP = 'FELDSPAR')
+felds <- as_tibble(cbind(felds_labels,felds_elems1)) %>%
+  mutate(GROUP = 'FELDSPAR') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(felds, 'data_input/feldspar_rf.csv')
 # Feldspathoid ----
-foid <- as_tibble(cbind(foid_labels,foid_elems)) %>%
-  mutate(GROUP = 'FELDSPATHOID')
+foid <- as_tibble(cbind(foid_labels,foid_elems1)) %>%
+  mutate(GROUP = 'FELDSPATHOID') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(foid, 'data_input/feldspathoid_rf.csv')
 # Garnet ----
-garnet <- as_tibble(cbind(grt_labels,grt_elems)) %>%
-  mutate(GROUP = 'GARNET')
+garnet <- as_tibble(cbind(grt_labels,grt_elems1)) %>%
+  mutate(GROUP = 'GARNET') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(garnet, 'data_input/garnet_rf.csv')
 # Ilmenites ----
-ilmenite <- as_tibble(cbind(ilm_labels,ilm_elems)) %>%
-  mutate(GROUP = 'ILMENITE')
+ilmenite <- as_tibble(cbind(ilm_labels,ilm_elems1)) %>%
+  mutate(GROUP = 'ILMENITE') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(ilmenite, 'data_input/ilmenite_rf.csv')
 # Mica ----
-mica <- as_tibble(cbind(mica_labels,mica_elems)) %>%
-  mutate(GROUP = 'MICA')
+mica <- as_tibble(cbind(mica_labels,mica_elems1)) %>%
+  mutate(GROUP = 'MICA') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(mica, 'data_input/mica_rf.csv')
 # Olivine ----
-oliv <- as_tibble(cbind(oliv_labels,oliv_elems)) %>%
-  mutate(GROUP = 'OLIVINE')
+oliv <- as_tibble(cbind(oliv_labels,oliv_elems1)) %>%
+  mutate(GROUP = 'OLIVINE') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(oliv, 'data_input/olivine_rf.csv')
 # Perovskite ----
-perov <- as_tibble(cbind(perov_labels,perov_elems)) %>%
+perov <- as_tibble(cbind(perov_labels,perov_elems1)) %>%
   mutate(GROUP = 'PEROVSKITE') %>%
   mutate(SPOT = as.character(SPOT))
 write.csv(perov, 'data_input/perovskite_rf.csv')
 # Pyroxene ----
-px <- as_tibble(cbind(px_labels,px_elems)) %>%
-  mutate(GROUP = 'PYROXENE')
+px <- as_tibble(cbind(px_labels,px_elems1)) %>%
+  mutate(GROUP = 'PYROXENE') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(px, 'data_input/pyroxene_rf.csv')
 # Quartz ----
-qtz <- as_tibble(cbind(qtz_labels,qtz_elems)) %>%
-  mutate(GROUP = 'QUARTZ')
+qtz <- as_tibble(cbind(qtz_labels,qtz_elems1)) %>%
+  mutate(GROUP = 'QUARTZ') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(qtz, 'data_input/quartz_rf.csv')
 # Spinel ----
-spin <- as_tibble(cbind(spin_labels,spin_elems)) %>%
-  mutate(GROUP = 'SPINEL')
+spin <- as_tibble(cbind(spin_labels,spin_elems1)) %>%
+  mutate(GROUP = 'SPINEL') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(spin, 'data_input/spinel_rf.csv')
 # Sulfide ----
-sulf <- as_tibble(cbind(sulf_labels,sulf_elems)) %>%
+sulf <- as_tibble(cbind(sulf_labels,sulf_elems1)) %>%
   mutate(GROUP = 'SULFIDE')
 write.csv(sulf, 'data_input/sulfide_rf.csv')
 # Titanite ----
-titan <- as_tibble(cbind(titan_labels,titan_elems)) %>%
-  mutate(GROUP = 'TITANITE')
+titan <- as_tibble(cbind(titan_labels,titan_elems1)) %>%
+  mutate(GROUP = 'TITANITE') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(titan, 'data_input/titanite_rf.csv')
 # Zircon ----
-zirc <- as_tibble(cbind(zirc_labels,zirc_elems)) %>%
-  mutate(GROUP = 'ZIRCON')
+zirc <- as_tibble(cbind(zirc_labels,zirc_elems1)) %>%
+  mutate(GROUP = 'ZIRCON') %>%
+  mutate(SPOT = as.character(SPOT))
 write.csv(zirc, 'data_input/zirc_rf.csv')
+
 
 
 
