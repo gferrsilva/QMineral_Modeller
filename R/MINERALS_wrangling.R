@@ -1,7 +1,8 @@
 #####
 # Data wrangling and primary classifier of selected minerals
 # 
-# version: 2.1
+# version: 2.1 (2020/05/19)
+#
 # Last modifications: * Addition of Clay Minerals, Perovskite, Quartz, Sulfides and Zircon;
 #                     * Addition of 'FE(WT%)','NI(WT%)','CU(WT%)','CO(WT%)','ZN(WT%)','AS(WT%)',
 #                     'PB(WT%)','S(WT%)' to the selected elements;
