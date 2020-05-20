@@ -161,14 +161,14 @@ min <- as_tibble(cbind(y_test, test_data, pred_1)) # creates a database with tru
                           bad = "red")
     ) +
     theme_bw() + coord_equal() + guides(fill = F) +
-    labs(title = 'Mineral classification - Random Forest (Test Set)', subtitle = paste0('N.Samples = 100 for each group, N.Trees = 150, 70-30% split, 5-fold, Accuracy: ', 100*round(accuracy_m1,digits = 2),'%')) +
+    labs(title = 'Mineral classification - Random Forest (Test Set)', subtitle = paste0('N.Samples = 300 for each group, N.Trees = 150, 70-30% split, 5-fold, Accuracy: ', 100*round(accuracy_m1,digits = 2),'%')) +
     theme(axis.text.x = element_text(
       angle = 90, vjust = .5, hjust = 1, size = 7),
       axis.text.y = element_text(size = 7),
       legend.position = 'none')
 )
 
-CairoPDF(file = 'figure/RF_ClassificationByGroup', width = 9, height = 8) # Creates a PDF file and addresses a name/path
+CairoPDF(file = 'figures/R_RF_ClassificationByGroup', width = 9, height = 8) # Creates a PDF file and addresses a name/path
 print(p.testset) # First Page, Test Set Spatialization
 print(p.confmatrx) # Second Page, Confusion Matrix
 dev.off() # Figure device Off
