@@ -129,6 +129,12 @@ blind <- blind %>%
 feldspar <- felds %>%
   bind_rows(blind)
 
+export <- feldspar %>%
+  group_by(MINERAL) %>%
+  sample_n(30, replace = T)
+
+write.csv(export, 'data_input/feldspar_model.csv')
+
 pca <- prcomp(feldspar[6:27], center = T)
 
 fviz_pca_var(pca,

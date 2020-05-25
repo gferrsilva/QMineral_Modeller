@@ -122,6 +122,12 @@ blind <- blind %>%
 olivine <- oliv %>%
   bind_rows(blind)
 
+export <- olivine %>%
+  group_by(MINERAL) %>%
+  sample_n(30, replace = T)
+
+write.csv(export, 'data_input/olivine_model.csv')
+
 pca <- prcomp(olivine[6:27], center = T)
 
 fviz_pca_var(pca,

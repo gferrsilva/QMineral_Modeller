@@ -358,6 +358,12 @@ pyroxene_rf <- pyroxene %>%
 
 # Saving the final model ----
 
+export <- pyroxene %>%
+  group_by(MINERAL) %>%
+  sample_n(30, replace = T)
+
+write.csv(export, 'data_input/pyroxene_model.csv')
+
 saveRDS(pyroxene_rf_over, 'model_r/pyroxene.RDS')
 
 #### Merging Datasets

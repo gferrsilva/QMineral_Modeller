@@ -139,6 +139,13 @@ blind <- blind %>%
 sulfide <- sulf %>%
   bind_rows(blind)
 
+export <- sulfide %>%
+  group_by(MINERAL) %>%
+  sample_n(30, replace = T)
+
+write.csv(export, 'data_input/sulfide_model.csv')
+
+
 pca <- prcomp(sulfide[6:27], center = T)
 
 fviz_pca_var(pca,
