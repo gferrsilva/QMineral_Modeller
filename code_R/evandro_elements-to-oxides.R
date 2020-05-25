@@ -34,14 +34,14 @@ library(missRanger)
 files <- list.files(path = 'data_raw/OtherSources/evandro',pattern = 'sulfides')
 
 # Reading giles
-tbl <- sapply(paste0('data_raw/OtherSources/evandro/',files), read_tsv) %>%
+evandro <- sapply(paste0('data_raw/OtherSources/evandro/',files), read_tsv) %>%
   bind_rows()
 
 # Missing Value Imputation
-tbl <- missRanger(tbl, pmm.k = 3, num.trees = 100)
+evandro <- missRanger(evandro, pmm.k = 3, num.trees = 100)
 
 # Converting Element to Oxides
-tbl <- tbl %>%
+evandro <- evandro %>%
   mutate(WO3 = 1.261034048*W, W = NULL,
          FEO = 1.381978994*Fe, Fe = NULL,
          COO = 1.362026696*Co, Co = NULL,
@@ -58,9 +58,35 @@ tbl <- tbl %>%
          HGO = 1.079796998*Hg, Hg = NULL) %>%
   select(1:3, 12:25, 4:11)
 
+# Preparing data to match the model's variables
+evandro <- evandro %>%
+  mutate(V2O3 = NULL,
+         WO3 = NULL,
+         BI2O3 = NULL,
+         MOO = NULL,
+         CDO = NULL,
+         HGO = NULL,
+         Te = NULL,
+         AS = As, As = NULL,
+         Sb = NULL,
+         Se = NULL,
+         NA2O = 0,
+         MGO = 0,
+         AL2O3 = 0,
+         SIO2 = 0,
+         CAO = 0,
+         CL = 0,
+         TIO2 = 0,
+         FEOT = FEO, FEO = NULL,
+         X1 = NULL,
+         P2O5 = 0,
+         H20 = 0,
+         ZRO2 = 0,
+         K2O = 0,
+         `F` = 0) 
 #####
 # SAVING DATA 
 #####
 
 # Folder 'data_test'
-write.csv(tbl, file = 'data_test/evandro.csv')
+write.csv(evandro, file = 'data_test/evandro.csv')

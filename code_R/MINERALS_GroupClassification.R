@@ -73,15 +73,15 @@ input <- minerals %>% # manipulating the minerals database and associate the ans
 
 ## Train-test split
 index <- createDataPartition(input$GROUP, p = 0.7, list = FALSE) # Train-test split using an index
-train_data <- input[as.vector(index), c(3,28:43)] # Selecting the train_data (GROUP + PCA)
-test_data  <- input[-index, 28:43]  # Selecting the test_data (PCA)
+train_data <- input[as.vector(index), c(3,6:27)] # Selecting the train_data (GROUP + PCA)
+test_data  <- input[-index, 6:27]  # Selecting the test_data (PCA)
 y_test <- as_tibble(input[-index,3])  # Selecting the test_classes (GROUP)
 
 ## Random Forest Setting up
 
-ctrl <- trainControl(method = "repeatedcv", # Setting up the RF hyperparameters
-                     number = 5,   # Number of folds on cross validation
-                     repeats = 3, # Number of repeats on every fold
+ctrl <- trainControl(method = "repeatedcv",classProbs = T, # Setting up the RF hyperparameters
+                     number = 2,   # Number of folds on cross validation
+                     repeats = 2, # Number of repeats on every fold
                      verboseIter = T, # Output the result of every iteration on the console
                      sampling = "up") # upsampling instances with unbalanced classes
 
@@ -91,7 +91,7 @@ model_rf_over <- caret::train(GROUP ~ ., # training the model
                               data = train_data, # data for training
                               method = "rf", # method choosen for traininf
                               preProcess = c("scale", "center"), # Pre-process
-                              trControl = ctrl, ntree = 150) # Defines the hyperparameters
+                              trControl = ctrl, ntree = 150, type = 'prob') # Defines the hyperparameters
 
 print(model_rf_over) # Print on the console the summary of the model
 
