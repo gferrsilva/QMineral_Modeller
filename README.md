@@ -6,31 +6,76 @@ regression and mineral formula prediction by several Random Forest classificatio
 and regression nested  models.
 
 The models have been developed by researchers of the Diretory of Geology and Mineral
-Resources, of the Geological Survey of Brazil (DGM/CPRM), with assistance of the techical 
-manager of the EPMA laboratory of the Institute of Geosciences/University of Brasília (IG/UnB).
+Resources, of the [Geological Survey of Brazil](https://www.cprm.gov.br/en/) (DGM/CPRM), with assistance of the techical 
+manager of the EPMA laboratory of the [Institute of Geosciences/University of Brasília](http://www.igd.unb.br/) (IG/UnB).
 
 ## Important Notes
 
 :warning: At the current state, Qmin is able to predict among 17 groups and 188 different minerals.
 Any other mineral/grup not listed bellow will not perform as desired:
 
-* Amphibole (29 minerals)
-* Apatite
-* Carbonate (31 minerals)
-* Clay Mineral (9 minerals)
-* Feldspar (10 minerals)
-* Feldspathoid (11 minerals)
-* Garnet (8 minerals
-* Ilmenite
-* Mica (17 minerals)
-* Olivine (5 minerals)
-* Perovskite
-* Pyroxene (20 minerals)
-* Quartz
-* Spinel (11 minerals)
-* Sulfide (31 minerals)
-* Titanite
-* Zircon
+* AMPHIBOLES (29 minerals): Actinolite, Antophyllite, Arfvedsonite,
+Barroisite, Cummingtonie, Eckermannite, Edenite, Fe-Ti-Tschermakite,
+Fe-Tschermakite, Fe-Trschermakitic Hornblende, Ferrincnybite, Gedrite,
+Glaucophane, Hastingsite, Kataphorite, Magnesio-Hastingsite, 
+Magnesio-Hornblende, Magnesio-Arfvedsonite, Magnesio-Kataphorite,
+Oxykaersutite, Pargasite, Richterite, Riebeckite, Ti-Mg-Hastingsite,
+Tremolite, Tschermakite, Winchite.
+
+* APATITE
+
+* CARBONATES (31 minerals): Alstonite, Ancylite, Ankerite, Barytocalcite,
+Breunnerite, Burbankite, Calcite, Carbocernaite, Cebaite, Cordylite,
+Dolomite, Fluoro-Carbonate, Gregoryite, Huanghoite, Khanneshite,
+Kukharenkoite, Kutnahorite, Magnesiosiderite, Magnesite, Mckelveyite,
+Norsethite, Nyerereite, Olekminskite, Pirssonite, Qaqarssukite,
+Rhodochrosite, Shortite, Siderite, Spurrite, Strontianite, Witherite
+
+* CLAY-MINERALS (9 minerals): Beidellite, Corrensite, Illite, Kaolinite,
+Montmorillonite, Nontronite, Palagonite, Saponite, Smectite
+
+* FELDSPARS (10 minerals): Albite, Andesine, Anorthite, Anorthoclase, 
+Bytownite, Labradorite, Microcline, Oligoclase, Orthoclase, Sanidine
+
+* FELDSPATHOIDES (11 minerals): Analcime, Cancrinite, Hauyne, Kaliophilite,
+Kalsilite, Leucite, Nepheline, Nosean, Pseudoleucite, Sodalite, Vishnevite
+
+* GARNETS (8 minerals):Almandine, Andradite, Grossular, Hibschite,
+Hydrogarnet, Melanite, Pyrope, Schorlomite
+
+* ILMENITES:
+
+* MICAS (17 minerals): Annite, Biotite, Celadonite, Glauconite,
+Hydromica, Hydromuscovite, Lepidolite, Margarite, Muscovite,
+Paragonite, Phengite, Phengite-muscovite, Phlogopite, Sericite,
+Siderophyllite, Yangzhumingite, Zinnwaldite
+
+* OLIVINES (5 minerals): Fayalite, Forsterite, Iddingsite, Monticellite,
+Ringwoodite
+
+* PEROVSKITE
+
+* PYROXENES (20 minerals): Acmite, Aegirine, Augite, Clinoenstatite
+Cr-diopside, Diopside, Enstatite, Fassaite, Fe-diopside, Ferroaugite
+Ferrohedenbergite, Ferropigeonite, Ferrosilite, Hedenbergite, Hypersthene
+Jadeite, Omphacite, Pigeonite, Salite, Titan-augite
+
+* QUARTZ
+* SPINEL (11 minerals): Al-spinel, Chrome-spinel, Chromite, Fe-chromite,
+Gahnite, Hercynite, Magnesioferrite, Magnetite, Pleonaste, Titano-magnetite,
+Ulvospinel
+
+* SULFIDE (31 minerals): Alabandite, Arsenopyrite, Bornite, Chalcocite, Chalcopyrite
+Chlorbartonite, Cobaltite, Cubanite, Galena, Gersdorffite, Godlevskite,
+Guanglinite, Heazlewoodite, Hexatestibiopanickelite, Hollingworthite,
+Irarsite, Isocubanite, Linnaeite, Mackinawite, Maucherite, Merenskyite,
+Molybdenite, Nickeline, Parkerite, Pentlandite, Polydymite, Pyrite, Pyrrhotite,
+Rasvumite, Sphalerite, Stromeyerite.
+
+* TITANITE
+
+* ZIRCON
+
 <p>
 :warning: This model is in active development and so parameter name and
 behaviours, and output file formats will change without notice.
@@ -47,17 +92,17 @@ data with the sum of elements concentration between 98-102%.
 This model is in active development and subject to significant code changes
 to:
 
-- Increase the number of groups and minerals covered
-
-- Improve performance
+* Increase the number of groups and minerals covered
+* Improve performance
+* Increase the size of samples used for training
 
 ## Training Data
 
 The directory [data_raw](./data_raw) contains all raw data considered for the models' building.
-<p>
-The main source of the data used for training is the GEOROC database <http://georoc.mpch-mainz.gwdg.de/georoc/>.
+
+The main source of the data used for training is the [GEOROC](http://georoc.mpch-mainz.gwdg.de/georoc/) database.
 The repository GEOROC is maintained by the Max Planck Institute for Chemistry in Mainz.
-<p>
+
 Some other data used in this work are a concession of researchers of the Geological Survey of Brazil,
 and was used for model's test callibration. Those are disposed in the folder [OtherSources](./data_raw/OtherSources).
 
@@ -72,11 +117,11 @@ The final models used in this work were developed on Python3 language, and are a
 
 ## Contributors
 
-* [Guilherme Ferreira da Silva](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4452179T4&idiomaExibicao=2), guilherme.ferreira@cprm.gov.br
-* [Marcos Vinícius Ferreira](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4331039T8&idiomaExibicao=2), marcos.ferreira@cprm.gov.br
-* [Iago Sousa Lima Costa](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4360736A0&idiomaExibicao=2), iago.costa@cprm.gov.br.
-* [Renato Bernardes Borges](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4272197D7&idiomaExibicao=2), renato.bernardes@unb.br.
+* [Guilherme Ferreira da Silva](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4452179T4&idiomaExibicao=2), (E-mail: guilherme.ferreira@cprm.gov.br)
+* [Marcos Vinícius Ferreira](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4331039T8&idiomaExibicao=2), (E-mail: marcos.ferreira@cprm.gov.br)
+* [Iago Sousa Lima Costa](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4360736A0&idiomaExibicao=2), (E-mail: iago.costa@cprm.gov.br)
+* [Renato Bernardes Borges](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4272197D7&idiomaExibicao=2), (E-mail: renato.bernardes@unb.br)
 
 ## Copyright and License
 
-The source code for Qmin is licensed under the MIT License, see [LICENSE](LICENSE).
+The source code for Qmin is licensed under the MTI License, see [LICENSE](LICENSE).
