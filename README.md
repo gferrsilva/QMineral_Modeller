@@ -79,4 +79,4 @@ The final models used in this work were developed on Python3 language, and are a
 
 ## Copyright and License
 
-The source code for Qmin is licensed under the MTI License, see [LICENSE](LICENSE).
+The source code for Qmin is licensed under the MIT License, see [LICENSE](LICENSE).
