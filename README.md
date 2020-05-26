@@ -1,4 +1,6 @@
-# Qmin - MINERAL CHEMISTRY VIRTUAL ASSISTANT
+![jpeg](figures/Qmin_logo.jpg)
+
+## Introduction
 
 This is the Qmin - Mineral Chemistry Virtual Assistant. The models herein
 presented performes mineral classification, missing value imputation by multivariate
