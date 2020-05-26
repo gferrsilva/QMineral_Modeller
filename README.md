@@ -11,7 +11,7 @@ manager of the EPMA laboratory of the Institute of Geosciences/University of Bra
 
 ## Important Notes
 
-* At the current state, Qmin is able to predict among 17 groups and 188 different minerals.
+:warning: At the current state, Qmin is able to predict among 17 groups and 188 different minerals.
 Any other mineral/grup not listed bellow will not perform as desired:
 
 * Amphibole (29 minerals)
