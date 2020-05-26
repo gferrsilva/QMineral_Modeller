@@ -33,9 +33,12 @@ library(missRanger)
 # Listing files
 files <- list.files(path = 'data_raw/OtherSources/evandro',pattern = 'sulfides')
 
-# Reading giles
+# Reading files
 evandro <- sapply(paste0('data_raw/OtherSources/evandro/',files), read_tsv) %>%
   bind_rows()
+
+# Storing the rowSums of elements
+total <- as_tibble(rowSums(evandro[4:25], na.rm = T))
 
 # Missing Value Imputation
 evandro <- missRanger(evandro, pmm.k = 3, num.trees = 100)
@@ -90,3 +93,20 @@ evandro <- evandro %>%
 
 # Folder 'data_test'
 write.csv(evandro, file = 'data_test/evandro.csv')
+
+#####
+# PREDICT 
+#####
+
+sulfides_rf <- readRDS('model_r/sulfide.RDS')
+
+pred <- predict(sulfides_rf, evandro[4:28])
+
+tbl <- evandro %>%
+  bind_cols(as_tibble(pred), total) %>%
+  mutate(Total = value1, value1 = NULL) %>%
+  select(1:2,29,3, 30,4:28)
+
+(mean(tbl$MINERAL == tbl$value))
+
+write.csv(tbl, file = 'data_test/evandro_output.csv')
