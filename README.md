@@ -51,15 +51,15 @@ to:
 
 - Improve performance
 
-## Sample Data
+## Training Data
 
 The directory [data_raw](./data_raw) contains all raw data considered for the models' building.
 <p>
-The main source of the data used for training is the [GEOROC database](http://georoc.mpch-mainz.gwdg.de/georoc/).
-The repository [GEOROC](http://georoc.mpch-mainz.gwdg.de/georoc/) is maintained by the Max Planck Institute for Chemistry in Mainz.
+The main source of the data used for training is the GEOROC database <http://georoc.mpch-mainz.gwdg.de/georoc/>.
+The repository GEOROC is maintained by the Max Planck Institute for Chemistry in Mainz.
 <p>
 Some other data used in this work are a concession of researchers of the Geological Survey of Brazil,
-and was used for model's test callibration. Those are disposed in the folder [other_sources](./data_raw/other_sources).
+and was used for model's test callibration. Those are disposed in the folder [OtherSources](./data_raw/OtherSources).
 
 ## Building:
 
@@ -79,4 +79,4 @@ The final models used in this work were developed on Python3 language, and are a
 
 ## Copyright and License
 
-The source code for Qmin is licensed under the MTI, see [LICENSE](LICENSE).
+The source code for Qmin is licensed under the MTI License, see [LICENSE](LICENSE).
