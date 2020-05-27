@@ -24,7 +24,7 @@ dependent on the quality of the entry data. Consider the best practice to input
 data with the sum of elements concentration between 98-102%
 
 :warning: At the current state, Qmin is able to predict among 17 groups and 188 different minerals.
-Any other mineral/grup not listed bellow will not perform as desired:
+Any other mineral not listed bellow will not perform as desired:
 
 * AMPHIBOLES (29 minerals): Actinolite, Antophyllite, Arfvedsonite,
 Barroisite, Cummingtonie, Eckermannite, Edenite, Fe-Ti-Tschermakite,
