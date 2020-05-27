@@ -3,15 +3,25 @@
 ## Introduction
 
 This is the Qmin - Mineral Chemistry Virtual Assistant. The models herein
-presented performes mineral classification, missing value imputation by multivariate
-regression and mineral formula prediction by several Random Forest classification
-and regression nested  models.
+presented perform mineral classification, missing value imputation by multivariate
+regression and mineral formula prediction by several Random Forest classification 
+and regression nested models.
 
-The models have been developed by researchers of the Diretory of Geology and Mineral
-Resources, of the [Geological Survey of Brazil](https://www.cprm.gov.br/en/) (DGM/CPRM), with assistance of the techical 
-manager of the EPMA laboratory of the [Institute of Geosciences/University of Brasília](http://www.igd.unb.br/) (IG/UnB).
+The models have been developed by researchers of the Directory of Geology and Mineral
+Resources, of the [Geological Survey of Brazil](https://www.cprm.gov.br/en/) (DGM/CPRM), with the assistance of
+the technical manager of the EPMA laboratory of the [Institute of Geosciences/University of Brasília](http://www.igd.unb.br/) (IG/UnB).
 
 ## Important Notes
+
+:warning: This model is in active development and so parameter names and
+behaviors, and output file formats will change without notice.
+
+:warning: The model is stochastic. Multiple runs with different seeds ([or random state]https://stackoverflow.com/questions/42191717/python-random-state-in-splitting-dataset) 
+should be undertaken to see average behavior.
+
+:warning: The quality of the prediction is directly 
+dependent on the quality of the entry data. Consider the best practice to input
+data with the sum of elements concentration between 98-102%
 
 :warning: At the current state, Qmin is able to predict among 17 groups and 188 different minerals.
 Any other mineral/grup not listed bellow will not perform as desired:
@@ -42,7 +52,7 @@ Bytownite, Labradorite, Microcline, Oligoclase, Orthoclase, Sanidine
 * FELDSPATHOIDES (11 minerals): Analcime, Cancrinite, Hauyne, Kaliophilite,
 Kalsilite, Leucite, Nepheline, Nosean, Pseudoleucite, Sodalite, Vishnevite
 
-* GARNETS (8 minerals):Almandine, Andradite, Grossular, Hibschite,
+* GARNETS (8 minerals): Almandine, Andradite, Grossular, Hibschite,
 Hydrogarnet, Melanite, Pyrope, Schorlomite
 
 * ILMENITES:
@@ -79,15 +89,7 @@ Rasvumite, Sphalerite, Stromeyerite.
 * ZIRCON
 
 <p>
-:warning: This model is in active development and so parameter name and
-behaviours, and output file formats will change without notice.
 
-:warning: The model is stochastic. Multiple runs with different seeds should be
-undertaken to see average behaviour.
-
-:warning: The quality of the prediction is directly
-dependent on the quality of the entry data. Consider as the best practice to input
-data with the sum of elements concentration between 98-102%.
 
 ## Status
 
