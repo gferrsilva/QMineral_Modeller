@@ -49,13 +49,13 @@ Montmorillonite, Nontronite, Palagonite, Saponite, Smectite
 * FELDSPARS (10 minerals): Albite, Andesine, Anorthite, Anorthoclase, 
 Bytownite, Labradorite, Microcline, Oligoclase, Orthoclase, Sanidine
 
-* FELDSPATHOIDES (11 minerals): Analcime, Cancrinite, Hauyne, Kaliophilite,
+* FELDSPATHOIDS (11 minerals): Analcime, Cancrinite, Hauyne, Kaliophilite,
 Kalsilite, Leucite, Nepheline, Nosean, Pseudoleucite, Sodalite, Vishnevite
 
 * GARNETS (8 minerals): Almandine, Andradite, Grossular, Hibschite,
 Hydrogarnet, Melanite, Pyrope, Schorlomite
 
-* ILMENITES:
+* ILMENITE
 
 * MICAS (17 minerals): Annite, Biotite, Celadonite, Glauconite,
 Hydromica, Hydromuscovite, Lepidolite, Margarite, Muscovite,
@@ -73,11 +73,12 @@ Ferrohedenbergite, Ferropigeonite, Ferrosilite, Hedenbergite, Hypersthene
 Jadeite, Omphacite, Pigeonite, Salite, Titan-augite
 
 * QUARTZ
-* SPINEL (11 minerals): Al-spinel, Chrome-spinel, Chromite, Fe-chromite,
+
+* SPINELS (11 minerals): Al-spinel, Chrome-spinel, Chromite, Fe-chromite,
 Gahnite, Hercynite, Magnesioferrite, Magnetite, Pleonaste, Titano-magnetite,
 Ulvospinel
 
-* SULFIDE (31 minerals): Alabandite, Arsenopyrite, Bornite, Chalcocite, Chalcopyrite
+* SULFIDES (31 minerals): Alabandite, Arsenopyrite, Bornite, Chalcocite, Chalcopyrite
 Chlorbartonite, Cobaltite, Cubanite, Galena, Gersdorffite, Godlevskite,
 Guanglinite, Heazlewoodite, Hexatestibiopanickelite, Hollingworthite,
 Irarsite, Isocubanite, Linnaeite, Mackinawite, Maucherite, Merenskyite,
@@ -102,22 +103,23 @@ to:
 
 ## Training Data
 
-The directory [data_raw](./data_raw) contains all raw data considered for the models' building.
-
+The directory [data_raw](./data_raw) contains all raw data considered for the models' building. 
 The main source of the data used for training is the [GEOROC](http://georoc.mpch-mainz.gwdg.de/georoc/) database.
 The repository GEOROC is maintained by the Max Planck Institute for Chemistry in Mainz.
 
-Some other data used in this work are a concession of researchers of the Geological Survey of Brazil,
-and was used for model's test callibration. Those are disposed in the folder [OtherSources](./data_raw/OtherSources).
+Some other data used in this work are a concession of researchers of the Geological Survey of Brazil 
+and was used for the model's test and calibration. Those are available in the folder [OtherSources](./data_raw/OtherSources).
 
 ## Building:
 
 Project Developed on R and Python3 languages.<p>
 
-The data wrangling, first missing value imputaion, convertion elements to oxides, and balancing of mineral instances was done in R.
-The code is available in the [Code_R](./Code_R) folder. Some Random Forest classification models are also available in the [model_r](./model_r) folder.
+The data wrangling, first missing value imputaion, convertion elements to oxides, and balancing
+of mineral instances was done in R. The code is available in the [Code_R](./Code_R) folder. Some
+Random Forest classification models are also available in the [model_r](./model_r) folder.
 
 The final models used in this work were developed on Python3 language, and are available in the [model_py](./model_py) folder.
+All python codes are available in the [Code_Python](./Code_Python) folder.
 
 ## Contributors
 
