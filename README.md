@@ -16,7 +16,7 @@ the technical manager of the EPMA laboratory of the [Institute of Geosciences/Un
 :warning: This model is in active development and so parameter names and
 behaviors, and output file formats will change without notice.
 
-:warning: The model is stochastic. Multiple runs with different seeds ([or random state]https://stackoverflow.com/questions/42191717/python-random-state-in-splitting-dataset) 
+:warning: The model is stochastic. Multiple runs with different seeds ([or random state](https://stackoverflow.com/questions/42191717/python-random-state-in-splitting-dataset))
 should be undertaken to see average behavior.
 
 :warning: The quality of the prediction is directly 
