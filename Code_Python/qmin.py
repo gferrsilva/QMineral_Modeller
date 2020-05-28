@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
@@ -9,6 +9,20 @@ import glob
 import pickle
 import matplotlib.pyplot as plt
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+class InputError(Error):
+    """Exception raised for errors in the input.
+
+    Attributes:
+        expression -- input expression in which the error occurred
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -92,13 +106,13 @@ def load_model():
 
     return model
 
-def test_cprm_datasets(filename, models):
+def test_cprm_datasets(filename):
     # Features used in training!
-    #model = load_model()
-  #  print(model)
+    models = load_model()
+    #print(models)
     Qmin_RF_features = models['Train Features']
     #Qmin_RF_features = trainFeatures.values.tolist()
-    print(Qmin_RF_features)
+    #print(Qmin_RF_features)
     df = pd.read_csv(filename, encoding="ISO-8859-1")
     df_w = df
 
@@ -125,6 +139,78 @@ def test_cprm_datasets(filename, models):
     df_w['GROUP_ClASS'] = group_class
     df_w['MINERAL_CLASS'] = mineral_class
     df_w.to_csv(filename[:-4] + '_rf_python.csv')
+    print(df_w)
     print(classification_report(df_w['MINERAL'], mineral_class))
     print(accuracy_score(df_w['MINERAL'], mineral_class))
 
+def organize(df):
+    model = load_model()
+    dic = {}
+    for i in range(len(df.columns)):
+       # dic[df.columns[i]] = df.columns[i].strip().upper()
+        dic[df.columns[i]] = str(df.columns[i]).strip().upper()
+    df = df.rename(columns=dic)
+
+    #Remove Columns not in Qmin_Group_RF (Oxides used in trainnig RF model)
+    for i in df.columns:
+        if i == 'FEO':
+            df = df.rename(columns={'FEO':'FEOT'})
+            continue
+        if i not in model['Train Features']:
+            df = df.drop(columns=i)
+
+    # Add missing columns
+    for i in model['Train Features']:
+        if i not in df.columns:
+            df[i] = 0
+
+    df = df.reindex(columns=model['Train Features'])
+
+    return df
+
+
+def load_data_ms(filename, separator_diferent=False):
+    model = load_model()
+
+    if filename[-3:] == 'csv':
+        df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
+    elif filename[-3:] == 'xls' or filename[-4:] == 'xlsx':
+        df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
+    else:
+        raise InputError("Input file not suported!!!")
+    df_w = df
+
+    # Check if values is separated with , instead of .
+    if separator_diferent:
+        df = df.stack().str.replace(',', '.').unstack()
+    df = organize(df)
+
+    # Predict Group
+    df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
+
+    groups = df_w['GROUP PREDICTED'].unique()
+
+    # Predict Mineral
+    df_partial = []
+
+    for group in groups:
+        df = df_w[df_w['GROUP PREDICTED'] == group]
+        # Check if values is separated with , instead of .
+        if separator_diferent:
+            df = df.stack().str.replace(',', '.').unstack()
+        df = organize(df)
+        predictions = model[group].predict(df)
+
+        # predictions = model[group].predict(df)
+        df = df_w[df_w['GROUP PREDICTED'] == group]
+        #df['GROUP PREDICTED'] = group
+        df['MINERAL PREDICTED'] = predictions
+
+        df_partial.append(df)
+
+    df_all = pd.concat(df_partial, axis=0, ignore_index=True)
+    print(df_all)
+
+    outfilename = filename[:-4] + '_classify.csv'
+    print(outfilename)
+    df_all.to_csv(outfilename)
