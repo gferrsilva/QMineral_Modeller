@@ -20,7 +20,7 @@ def plot_confusion_matrix(cm, classes,
     Normalization can be applied by setting `normalize=True`.
     Source: http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
     """
-    
+
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         print("Normalized confusion matrix")

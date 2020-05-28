@@ -95,7 +95,7 @@ def load_model():
 def test_cprm_datasets(filename, models):
     # Features used in training!
     #model = load_model()
-  #  print(model)
+    print(models)
     Qmin_RF_features = models['Train Features']
     #Qmin_RF_features = trainFeatures.values.tolist()
     print(Qmin_RF_features)
