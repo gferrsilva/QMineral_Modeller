@@ -1,11 +1,9 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 import itertools
-import glob
 import pickle
 import matplotlib.pyplot as plt
 
@@ -135,10 +133,18 @@ def test_cprm_datasets(filename):
     df = df.reindex(columns=Qmin_RF_features)
 
     group_class = models['GROUP'].predict(df)
-    mineral_class = models['SULFIDE'].predict(df)
+    df_c = df.copy()
+    df_qc = quality_entropy(models['GROUP'],df,'group')
+    mineral_class = models['SULFIDE'].predict(df_c)
+    df_qc2 = quality_entropy(models["SULFIDE"],df_c,'mineral')
     df_w['GROUP_ClASS'] = group_class
+    df_w['QC GROUP'] = df_qc['QC GROUP']
+    df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['MINERAL_CLASS'] = mineral_class
-    df_w.to_csv(filename[:-4] + '_rf_python.csv')
+    df_w['CERTAINTY MINERAL'] = df_qc2['CERTAINTY MINERAL']
+    df_w['QC MINERAL'] = df_qc2['QC MINERAL']
+
+    df_w.to_csv(filename[:-4] + '_classify.csv')
     print(df_w)
     print(classification_report(df_w['MINERAL'], mineral_class))
     print(accuracy_score(df_w['MINERAL'], mineral_class))
@@ -168,6 +174,42 @@ def organize(df):
 
     return df
 
+def quality_entropy(model, df, gtype):
+    #Determine Quality of esimativy based on entropy of probs
+    from scipy.stats import entropy
+
+    probs = model.predict_proba(df)
+
+    if gtype == 'group':
+        df['CERTAINTY GROUP'] = 0
+        df['QC GROUP'] = 'qc'
+    elif gtype == 'mineral':
+        df['CERTAINTY MINERAL'] = 0
+        df['QC MINERAL'] = 'qc'
+
+    j = 0
+    for i in probs:
+        ent = entropy(i, base=len(i))
+
+        if gtype == 'group':
+            df.iloc[j, df.columns.get_loc('CERTAINTY GROUP')] = 1 - ent
+            if 1 - ent > 0.8:
+                df.iloc[j, df.columns.get_loc('QC GROUP')] = 'HIGH QUALITY'
+            elif 1 - ent > 0.5:
+                df.iloc[j, df.columns.get_loc('QC GROUP')] = 'MEDIUM QUALITY'
+            else:
+                df.iloc[j, df.columns.get_loc('QC GROUP')] = "LOW QUALITY"
+        elif gtype == 'mineral':
+            df.iloc[j, df.columns.get_loc('CERTAINTY MINERAL')] = 1 - ent
+            if 1 - ent > 0.6:
+                df.iloc[j, df.columns.get_loc('QC MINERAL')] = 'HIGH QUALITY'
+            if 1 - ent > 0.4:
+                df.iloc[j, df.columns.get_loc('QC MINERAL')] = 'MEDIUM QUALITY'
+            else:
+                df.iloc[j, df.columns.get_loc('QC MINERAL')] = "LOW QUALITY"
+        j += 1
+
+    return df
 
 def load_data_ms(filename, separator_diferent=False):
     model = load_model()
@@ -187,6 +229,9 @@ def load_data_ms(filename, separator_diferent=False):
 
     # Predict Group
     df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
+    df_qc = quality_entropy(model['GROUP'],df,'group')
+    df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+    df_w['QC GROUP'] = df_qc['QC GROUP']
 
     groups = df_w['GROUP PREDICTED'].unique()
 
@@ -200,6 +245,66 @@ def load_data_ms(filename, separator_diferent=False):
             df = df.stack().str.replace(',', '.').unstack()
         df = organize(df)
         predictions = model[group].predict(df)
+       # print(group+'\n\n')
+        df_qc = quality_entropy(model[group], df, 'mineral')
+
+        # predictions = model[group].predict(df)
+        df = df_w[df_w['GROUP PREDICTED'] == group]
+        #df['GROUP PREDICTED'] = group
+        df['MINERAL PREDICTED'] = predictions
+        df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+        df['QC MINERAL'] = df_qc['QC MINERAL']
+
+        df_partial.append(df)
+
+    df_all = pd.concat(df_partial, axis=0, ignore_index=True)
+    #print(df_all)
+
+    outfilename = filename[:-4] + '_classify.csv'
+    print(outfilename)
+    df_all.to_csv(outfilename)
+
+    return df_all
+
+def _odf2df(odf):
+    #convert Orange Data table to Pandas DataFrame
+
+    #TODO Deal with Categorical Variable where Orange convert to ints with indices of text
+    col = []
+    for i in odf.domain:
+        col.append(i.name)
+
+    df = pd.DataFrame(odf, columns=col)
+
+    return df
+
+
+def predict_mineral_orange(odf):
+    # Input Orange Data Table
+
+    model = load_model()
+
+    #Convert from Orange Data table to Pandas
+    df = _odf2df(odf)
+
+    #Making a copy of df
+    df_w = df
+    # Adjust Dataframe for predict, removing columns, sorting, etc
+    df = organize(df)
+
+    # Predict Group
+    df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
+
+    groups = df_w['GROUP PREDICTED'].unique()
+
+    # Predict Mineral
+    df_partial = []
+
+    for group in groups:
+        df = df_w[df_w['GROUP PREDICTED'] == group]
+
+        df = organize(df)
+        predictions = model[group].predict(df)
 
         # predictions = model[group].predict(df)
         df = df_w[df_w['GROUP PREDICTED'] == group]
@@ -209,8 +314,6 @@ def load_data_ms(filename, separator_diferent=False):
         df_partial.append(df)
 
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
-    print(df_all)
+   # print(df_all)
+    return df_all
 
-    outfilename = filename[:-4] + '_classify.csv'
-    print(outfilename)
-    df_all.to_csv(outfilename)
