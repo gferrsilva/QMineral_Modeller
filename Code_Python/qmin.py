@@ -143,17 +143,62 @@ def test_cprm_datasets(filename):
     df_w['MINERAL_CLASS'] = mineral_class
     df_w['CERTAINTY MINERAL'] = df_qc2['CERTAINTY MINERAL']
     df_w['QC MINERAL'] = df_qc2['QC MINERAL']
+    df_w['2nd PREDICT MINERAL'] = df_qc2['2nd PREDICT MINERAL']
 
-    df_w.to_csv(filename[:-4] + '_classify.csv')
+    df_w.to_excel(filename[:-4] + '_classify.xls')
     print(df_w)
     print(classification_report(df_w['MINERAL'], mineral_class))
     print(accuracy_score(df_w['MINERAL'], mineral_class))
+
+def test_cprm_datasets_web(filename):
+    # Features used in training!
+    models = load_model()
+    #print(models)
+    Qmin_RF_features = models['Train Features']
+    #Qmin_RF_features = trainFeatures.values.tolist()
+    #print(Qmin_RF_features)
+    df = pd.read_csv(filename, encoding="ISO-8859-1")
+    df_w = df
+
+    # Remove Columns not in Qmin_Group_RF (Oxides used in trainnig RF model)
+    for i in df.columns:
+        if i == 'FEO':
+            df = df.rename(columns={'FEO': 'FEOT'})
+            continue
+        if i not in Qmin_RF_features:
+            print('Data not in trained RF Model: ', i)
+            df = df.drop(columns=i)
+
+            # Add missing columns
+    for i in Qmin_RF_features:
+        if i not in df.columns:
+            print('Missing... ', i)
+            df[i] = 0.0
+
+    df = df.astype('float64')
+    df = df.reindex(columns=Qmin_RF_features)
+
+    group_class = models['GROUP'].predict(df)
+    df_c = df.copy()
+    df_qc = quality_entropy(models['GROUP'],df,'group')
+    mineral_class = models['SULFIDE'].predict(df_c)
+    df_qc2 = quality_entropy(models["SULFIDE"],df_c,'mineral')
+    df_w['GROUP_ClASS'] = group_class
+    df_w['QC GROUP'] = df_qc['QC GROUP']
+    df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+    df_w['MINERAL_CLASS'] = mineral_class
+    df_w['CERTAINTY MINERAL'] = df_qc2['CERTAINTY MINERAL']
+    df_w['QC MINERAL'] = df_qc2['QC MINERAL']
+    df_w['2nd PREDICT MINERAL'] = df_qc2['2nd PREDICT MINERAL']
+
+    #df_w.to_excel(filename[:-4] + '_classify.xls')
+    return df_w.round(4)
+
 
 def organize(df):
     model = load_model()
     dic = {}
     for i in range(len(df.columns)):
-       # dic[df.columns[i]] = df.columns[i].strip().upper()
         dic[df.columns[i]] = str(df.columns[i]).strip().upper()
     df = df.rename(columns=dic)
 
@@ -180,28 +225,32 @@ def quality_entropy(model, df, gtype):
 
     probs = model.predict_proba(df)
 
+
     if gtype == 'group':
-        df['CERTAINTY GROUP'] = 0
+        df['CERTAINTY GROUP'] = 0.0
         df['QC GROUP'] = 'qc'
     elif gtype == 'mineral':
-        df['CERTAINTY MINERAL'] = 0
+        df['CERTAINTY MINERAL'] = 0.0
         df['QC MINERAL'] = 'qc'
+        df['2nd PREDICT MINERAL'] = 'mineral'
 
     j = 0
     for i in probs:
         ent = entropy(i, base=len(i))
 
         if gtype == 'group':
-            df.iloc[j, df.columns.get_loc('CERTAINTY GROUP')] = 1 - ent
-            if 1 - ent > 0.8:
+            df.iloc[j, df.columns.get_loc('CERTAINTY GROUP')] =1 - ent
+            if 1 - ent > 0.7:
                 df.iloc[j, df.columns.get_loc('QC GROUP')] = 'HIGH QUALITY'
             elif 1 - ent > 0.5:
                 df.iloc[j, df.columns.get_loc('QC GROUP')] = 'MEDIUM QUALITY'
             else:
                 df.iloc[j, df.columns.get_loc('QC GROUP')] = "LOW QUALITY"
         elif gtype == 'mineral':
+            index_2nd = np.argsort(i)[-2]
+            df.iloc[j, df.columns.get_loc('2nd PREDICT MINERAL')] = model.classes_[index_2nd]
             df.iloc[j, df.columns.get_loc('CERTAINTY MINERAL')] = 1 - ent
-            if 1 - ent > 0.6:
+            if 1 - ent > 0.5:
                 df.iloc[j, df.columns.get_loc('QC MINERAL')] = 'HIGH QUALITY'
             if 1 - ent > 0.4:
                 df.iloc[j, df.columns.get_loc('QC MINERAL')] = 'MEDIUM QUALITY'
@@ -210,6 +259,68 @@ def quality_entropy(model, df, gtype):
         j += 1
 
     return df
+
+def load_data_ms_web(filename, separator_diferent=False,ftype ='csv'):
+    model = load_model()
+
+    if ftype == 'csv':
+        #df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
+        df = pd.read_csv(filename)
+    elif ftype == 'xls' or ftype == 'xlsx':
+        df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
+    #     df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
+    else:
+         raise InputError("Input file not suported!!!")
+
+    #df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
+    df_w = df
+
+    # Check if values is separated with , instead of .
+    if separator_diferent:
+        df = df.stack().str.replace(',', '.').unstack()
+    df = organize(df)
+
+    # Predict Group
+    df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
+    df_qc = quality_entropy(model['GROUP'],df,'group')
+    #df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+    df_w['QC GROUP'] = df_qc['QC GROUP']
+
+    groups = df_w['GROUP PREDICTED'].unique()
+
+    # Predict Mineral
+    df_partial = []
+
+    for group in groups:
+        df = df_w[df_w['GROUP PREDICTED'] == group]
+        # Check if values is separated with , instead of .
+        if separator_diferent:
+            df = df.stack().str.replace(',', '.').unstack()
+        df = organize(df)
+        predictions = model[group].predict(df)
+       # print(group+'\n\n')
+        df_qc = quality_entropy(model[group], df, 'mineral')
+
+        # predictions = model[group].predict(df)
+        df = df_w[df_w['GROUP PREDICTED'] == group]
+        #df['GROUP PREDICTED'] = group
+        df['MINERAL PREDICTED'] = predictions
+       # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+        df['QC MINERAL'] = df_qc['QC MINERAL']
+        df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
+
+        df_partial.append(df)
+
+    df_all = pd.concat(df_partial, axis=0, ignore_index=True)
+    cols = df_all.columns.tolist()
+    cols = cols[-5:] +cols[:-5]
+    df_all = df_all[cols]
+    #print(df_all)
+
+    #outfilename = filename[:-4] + '_classify.xls'
+    #print(outfilename)
+    #df_all.to_excel(outfilename)
+    return df_all.round(4)
 
 def load_data_ms(filename, separator_diferent=False):
     model = load_model()
@@ -254,15 +365,16 @@ def load_data_ms(filename, separator_diferent=False):
         df['MINERAL PREDICTED'] = predictions
         df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
         df['QC MINERAL'] = df_qc['QC MINERAL']
+        df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
 
         df_partial.append(df)
 
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
     #print(df_all)
 
-    outfilename = filename[:-4] + '_classify.csv'
+    outfilename = filename[:-4] + '_classify.xls'
     print(outfilename)
-    df_all.to_csv(outfilename)
+    df_all.to_excel(outfilename)
 
     return df_all
 
@@ -294,6 +406,10 @@ def predict_mineral_orange(odf):
 
     # Predict Group
     df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
+    df_qc = quality_entropy(model['GROUP'],df,'group')
+    df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+    df_w['QC GROUP'] = df_qc['QC GROUP']
+
 
     groups = df_w['GROUP PREDICTED'].unique()
 
@@ -302,14 +418,16 @@ def predict_mineral_orange(odf):
 
     for group in groups:
         df = df_w[df_w['GROUP PREDICTED'] == group]
-
         df = organize(df)
         predictions = model[group].predict(df)
+        df_qc = quality_entropy(model[group], df, 'mineral')
 
         # predictions = model[group].predict(df)
         df = df_w[df_w['GROUP PREDICTED'] == group]
-        #df['GROUP PREDICTED'] = group
         df['MINERAL PREDICTED'] = predictions
+        df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+        df['QC MINERAL'] = df_qc['QC MINERAL']
+        df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
 
         df_partial.append(df)
 
