@@ -137,18 +137,22 @@ def test_cprm_datasets(filename):
     df_qc = quality_entropy(models['GROUP'],df,'group')
     mineral_class = models['SULFIDE'].predict(df_c)
     df_qc2 = quality_entropy(models["SULFIDE"],df_c,'mineral')
-    df_w['GROUP_ClASS'] = group_class
+    df_w['GROUP_CLASS'] = group_class
     df_w['QC GROUP'] = df_qc['QC GROUP']
-    df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+   # df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['MINERAL_CLASS'] = mineral_class
-    df_w['CERTAINTY MINERAL'] = df_qc2['CERTAINTY MINERAL']
+    #df_w['CERTAINTY MINERAL'] = df_qc2['CERTAINTY MINERAL']
     df_w['QC MINERAL'] = df_qc2['QC MINERAL']
     df_w['2nd PREDICT MINERAL'] = df_qc2['2nd PREDICT MINERAL']
 
     df_w.to_excel(filename[:-4] + '_classify.xls')
-    print(df_w)
+    cols = df_w.columns.tolist()
+    cols = cols[-5:] +cols[:-5]
+    df_w = df_w[cols]
+   # print(df_w)
     print(classification_report(df_w['MINERAL'], mineral_class))
     print(accuracy_score(df_w['MINERAL'], mineral_class))
+    return df_w.round(4)
 
 def test_cprm_datasets_web(filename):
     # Features used in training!
@@ -315,11 +319,7 @@ def load_data_ms_web(filename, separator_diferent=False,ftype ='csv'):
     cols = df_all.columns.tolist()
     cols = cols[-5:] +cols[:-5]
     df_all = df_all[cols]
-    #print(df_all)
 
-    #outfilename = filename[:-4] + '_classify.xls'
-    #print(outfilename)
-    #df_all.to_excel(outfilename)
     return df_all.round(4)
 
 def load_data_ms(filename, separator_diferent=False):
@@ -341,7 +341,7 @@ def load_data_ms(filename, separator_diferent=False):
     # Predict Group
     df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
     df_qc = quality_entropy(model['GROUP'],df,'group')
-    df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+    #df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['QC GROUP'] = df_qc['QC GROUP']
 
     groups = df_w['GROUP PREDICTED'].unique()
@@ -363,7 +363,7 @@ def load_data_ms(filename, separator_diferent=False):
         df = df_w[df_w['GROUP PREDICTED'] == group]
         #df['GROUP PREDICTED'] = group
         df['MINERAL PREDICTED'] = predictions
-        df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+        #df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
         df['QC MINERAL'] = df_qc['QC MINERAL']
         df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
 
@@ -371,6 +371,9 @@ def load_data_ms(filename, separator_diferent=False):
 
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
     #print(df_all)
+    cols = df_all.columns.tolist()
+    cols = cols[-5:] +cols[:-5]
+    df_all = df_all[cols]
 
     outfilename = filename[:-4] + '_classify.xls'
     print(outfilename)
@@ -432,6 +435,5 @@ def predict_mineral_orange(odf):
         df_partial.append(df)
 
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
-   # print(df_all)
     return df_all
 

@@ -177,33 +177,33 @@ def write_excel(df):
     df.to_excel(writer, 'QMIN')
     writer.save()
 
-@app.callback(Output('store-1', 'children'),
-              [Input('upload-data', 'contents')],
-              [State('upload-data', 'filename'),
-               State('upload-data', 'last_modified')])
-def process_qmin(contents, filename, date):
-    import qmin
-    print('\n\n\n\n\n nbhjabjhbahb\n\n\n\n')
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        if 'csv' in filename:
-            # Assume that the user uploaded a CSV file is CPRM style (evandro)
-
-            #df = qmin.test_cprm_datasets_web(io.StringIO(decoded.decode('ISO-8859-1')))
-            df = qmin.load_data_ms_web(io.StringIO(decoded.decode('ISO-8859-1')),ftype='csv')
-
-        elif 'xls' in filename or 'xlsx' in filename:
-            # Assume that the user uploaded an excel file
-            #This excel is format of Microssonda!!!!
-            df = qmin.load_data_ms_web(io.BytesIO(decoded),ftype='xls')
-            #update_download_link(df)
-    except Exception as e:
-        print(e)
-        return html.Div([
-            'There was an error processing this file.'
-        ])
-    return df
+# @app.callback(Output('store-1', 'children'),
+#               [Input('upload-data', 'contents')],
+#               [State('upload-data', 'filename'),
+#                State('upload-data', 'last_modified')])
+# def process_qmin(contents, filename, date):
+#     import qmin
+#     print('\n\n\n\n\n nbhjabjhbahb\n\n\n\n')
+#     content_type, content_string = contents.split(',')
+#     decoded = base64.b64decode(content_string)
+#     try:
+#         if 'csv' in filename:
+#             # Assume that the user uploaded a CSV file is CPRM style (evandro)
+#
+#             #df = qmin.test_cprm_datasets_web(io.StringIO(decoded.decode('ISO-8859-1')))
+#             df = qmin.load_data_ms_web(io.StringIO(decoded.decode('ISO-8859-1')),ftype='csv')
+#
+#         elif 'xls' in filename or 'xlsx' in filename:
+#             # Assume that the user uploaded an excel file
+#             #This excel is format of Microssonda!!!!
+#             df = qmin.load_data_ms_web(io.BytesIO(decoded),ftype='xls')
+#             #update_download_link(df)
+#     except Exception as e:
+#         print(e)
+#         return html.Div([
+#             'There was an error processing this file.'
+#         ])
+#     return df
 
 def parse_contents(contents, filename, date):
     import qmin
@@ -257,12 +257,13 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
         return children
 
 @app.callback(Output('download-link', 'href'),
-              [Input('download-link', 'value')])
+              [Input('upload-data', 'filename')])
 def update_href(dropdown_value):
     relative_filename = os.path.join(
         'downloads',
         'Qmin_classify.xlsx'
     )
+    print(dropdown_value,relative_filename)
     return '/{}'.format(relative_filename)
 
 
