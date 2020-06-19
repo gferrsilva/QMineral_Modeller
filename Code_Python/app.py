@@ -19,6 +19,8 @@ def encode_image(image_file):
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
+app.title = 'Qmin'
 
 app.layout = html.Div([
     dcc.Store(id='store_1', storage_type='session'),
@@ -26,7 +28,52 @@ app.layout = html.Div([
         html.Img(id='Qmin-logo', src=encode_image('../figures/Qmin_logo.jpg'), height=250, width=1450)
     ], style={'paddingTop': 10}),
     dcc.Tabs(id="tabs", value='tab-1', children=[
-        dcc.Tab(label='Qmin', value='tab-1'),
+        dcc.Tab(label='Qmin', value='tab-1',
+                children=[
+                    html.H4("Upload Files"),
+                    html.Div([html.P("Decimal Separator:"),
+                    dcc.Input(id='nsep', size='1', placeholder='.'),
+                             html.P("  Column Separator:"),
+                             dcc.Input(id='columns-separator', size='1', placeholder=','),
+                             html.P("  Header Skip:"),
+                             dcc.Input(id='header-skip', size='1', placeholder=0),
+                             html.P("  Footer Skip:"),
+                             dcc.Input(id='footer-skip', size='1', placeholder=0)
+                              ], style={'width': '60%',
+                                        'display': 'flex',
+                                        'flex-flow': 'row wrap',
+                                        'align-items': 'center',
+                                        'padding': '5px'}),
+                    dcc.Upload(
+                        id='upload-data',
+                        children=html.Div([
+                            'Drag and Drop or ',
+                            html.A('Select Files')
+                        ]),
+                        style={
+                            'width': '50%',
+                            'height': '60px',
+                            'lineHeight': '60px',
+                            'borderWidth': '1px',
+                            'borderStyle': 'dashed',
+                            'borderRadius': '5px',
+                            'textAlign': 'center',
+                            'margin': '10px'
+                        },
+                        # Allow multiple files to be uploaded
+                        multiple=True
+                    ),
+
+                    html.Div(
+                        id="download-area",
+                        className="block",
+                        children=[]
+                    ),
+                    html.Div(id='download-name'),
+
+
+                    html.Div(id='output-data-upload')
+                ]),
         dcc.Tab(label='About', value='tab-2'),
         dcc.Tab(id='tb3',label='Plot', value='tab-3',
                 children=[
@@ -48,32 +95,7 @@ app.layout = html.Div([
                 ])]),
     html.Div(id='tabs-content2'),
     html.Div(id='tabs-content'),
-    html.H4("Upload Files"),
-    dcc.Upload(
-        id='upload-data',
-        children=html.Div([
-            'Drag and Drop or ',
-            html.A('Select Files')
-        ]),
-        style={
-            'width': '50%',
-            'height': '60px',
-            'lineHeight': '60px',
-            'borderWidth': '1px',
-            'borderStyle': 'dashed',
-            'borderRadius': '5px',
-            'textAlign': 'center',
-            'margin': '10px'
-        },
-        # Allow multiple files to be uploaded
-        multiple=True
-    ),
-    html.Div([
-        html.A(id='download-link', children='Download File'),
 
-    ]),
-
-    html.Div(id='output-data-upload')
 ])
 
 
@@ -85,14 +107,18 @@ def render_content(tab):
         return about.layout
 
 
-@app.callback(Output('tb3','children'),
-            [Input('tabs','value')])
-def update_dropdown(tab):
+@app.callback(Output('tb3', 'children'),
+            [Input('tabs', 'value')],
+            [State('form-download', 'action'),
+            State('upload-data', 'contents')])
+def update_dropdown(tab, nameform, content):
     import numpy as np
-    relative_filename = os.path.join(
-        'downloads',
-        'Qmin_classify.xlsx'
-    )
+
+    if content == None:
+        return
+
+    relative_filename = nameform
+
     df = pd.read_excel(relative_filename)
 
     features = df.columns.to_list()
@@ -136,15 +162,19 @@ def update_dropdown(tab):
                 Input('dropdown1','value'),
                 Input('dropdown2', 'value'),
                 Input('dropdown3', 'value'),
-                Input('dropdown4','value')])
-def update_graph(tabs,dp1,dp2,dp3,dp4):
+                Input('dropdown4','value')],
+              [State('form-download', 'action'),
+               State('upload-data', 'contents')])
+def update_graph(tabs, dp1, dp2, dp3, dp4, nameform, contents):
     import plotly.express as px
 
     if tabs == 'tab-3':
-        relative_filename = os.path.join(
-            'downloads',
-            'Qmin_classify.xlsx'
-        )
+
+        if contents == None:
+            return
+
+        relative_filename = nameform
+
         df = pd.read_excel(relative_filename)
 
         if 'Total' in df.columns:
@@ -162,11 +192,15 @@ def update_graph(tabs,dp1,dp2,dp3,dp4):
 
 
 def write_excel(df):
+    import uuid
     import pandas as pd
+
+    filename = f"{uuid.uuid1()}.xlsx"
+
 
     relative_filename = os.path.join(
         'downloads',
-        'Qmin_classify.xlsx'
+        filename
     )
     if os.path.exists(relative_filename):
         os.remove(relative_filename)
@@ -176,55 +210,29 @@ def write_excel(df):
     writer = pd.ExcelWriter(absolute_filename)
     df.to_excel(writer, 'QMIN')
     writer.save()
+    return relative_filename
 
-# @app.callback(Output('store-1', 'children'),
-#               [Input('upload-data', 'contents')],
-#               [State('upload-data', 'filename'),
-#                State('upload-data', 'last_modified')])
-# def process_qmin(contents, filename, date):
-#     import qmin
-#     print('\n\n\n\n\n nbhjabjhbahb\n\n\n\n')
-#     content_type, content_string = contents.split(',')
-#     decoded = base64.b64decode(content_string)
-#     try:
-#         if 'csv' in filename:
-#             # Assume that the user uploaded a CSV file is CPRM style (evandro)
-#
-#             #df = qmin.test_cprm_datasets_web(io.StringIO(decoded.decode('ISO-8859-1')))
-#             df = qmin.load_data_ms_web(io.StringIO(decoded.decode('ISO-8859-1')),ftype='csv')
-#
-#         elif 'xls' in filename or 'xlsx' in filename:
-#             # Assume that the user uploaded an excel file
-#             #This excel is format of Microssonda!!!!
-#             df = qmin.load_data_ms_web(io.BytesIO(decoded),ftype='xls')
-#             #update_download_link(df)
-#     except Exception as e:
-#         print(e)
-#         return html.Div([
-#             'There was an error processing this file.'
-#         ])
-#     return df
 
-def parse_contents(contents, filename, date):
+def parse_contents(contents, filename, date, write=False):
     import qmin
+
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file is CPRM style (evandro)
 
-            #df = qmin.test_cprm_datasets_web(io.StringIO(decoded.decode('ISO-8859-1')))
-            df = qmin.load_data_ms_web(io.StringIO(decoded.decode('ISO-8859-1')),ftype='csv')
-            write_excel(df)
+            df = qmin.load_data_ms_web(io.StringIO(decoded.decode('ISO-8859-1')), ftype='csv')
+            filename_output = write_excel(df)
 
         elif 'xls' in filename or 'xlsx' in filename:
             # Assume that the user uploaded an excel file
             #This excel is format of Microssonda!!!!
-            df = qmin.load_data_ms_web(io.BytesIO(decoded),ftype='xls')
-            write_excel(df)
-           # csv_string = df.to_csv(index=False, encoding='utf-8')
-            #csv_string = "data:text/csv;charset=utf-8," + urllib.quote(csv_string)
-            #update_download_link(df)
+            df = qmin.load_data_ms_web(io.BytesIO(decoded), ftype='xls')
+            filename_output = write_excel(df)
+
+        if write:
+            filename_output = write_excel(df)
     except Exception as e:
         print(e)
         return html.Div([
@@ -236,35 +244,91 @@ def parse_contents(contents, filename, date):
         html.H6(datetime.datetime.fromtimestamp(date)),
 
         dash_table.DataTable(
+            id='table',
+            style_table={
+                'maxHeight': '700px',
+                'overflowY': 'scroll',
+                'overflowX': 'scroll'
+            },
+
             data=df.to_dict('records'),
-            columns=[{'name': i, 'id': i} for i in df.columns]
+            columns=[{'name': i, 'id': i} for i in df.columns],
+
+            fixed_rows={'headers': True, 'data': 0},
+        style_data_conditional=[
+        {
+            'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(248, 248, 248)'
+        }],
+
+        style_header=
+        {
+        'backgroundColor': 'rgb(230, 230, 230)',
+        'fontWeight': 'bold'
+        },
+        style_cell=
+        {
+            'overflow': 'hidden',
+            'textOverflow': 'ellipsis',
+            'width': 'auto'
+        }
         ),
 
         html.Hr(),  # horizontal line
 
-    ])
+    ]), filename_output
 
 # Plot table!
 @app.callback(Output('output-data-upload', 'children'),
               [Input('upload-data', 'contents')],
               [State('upload-data', 'filename'),
-               State('upload-data', 'last_modified')])
-def update_output(list_of_contents, list_of_names, list_of_dates):
-    if list_of_contents is not None:
-        children = [
-            parse_contents(c, n, d) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
-        return children
+               State('upload-data', 'last_modified'),
+               State('columns-separator', 'placeholder')]
+               )
+def update_output(list_of_contents, list_of_names, list_of_dates, csep=None):
+    print('columns-separator', csep)
 
-@app.callback(Output('download-link', 'href'),
-              [Input('upload-data', 'filename')])
-def update_href(dropdown_value):
-    relative_filename = os.path.join(
-        'downloads',
-        'Qmin_classify.xlsx'
+    if list_of_contents is not None:
+         results = [
+             parse_contents(c, n, d) for c, n, d in
+             zip(list_of_contents, list_of_names, list_of_dates)]
+         children = [results[0][0]]
+
+         return children
+
+
+def build_download_button(uri):
+    """Generates a download button for the resource"""
+    button = html.Form(
+        action=uri,
+        method="get",
+        id='form-download',
+        children=[
+            html.Button(
+                className="button",
+                type="submit",
+                children=[
+                    "download"
+                ]
+            )
+        ]
     )
-    print(dropdown_value,relative_filename)
-    return '/{}'.format(relative_filename)
+    return button
+
+@app.callback(
+    Output("download-area", "children"),
+    [Input('upload-data', 'contents')],
+    [State('upload-data', 'filename'),
+     State('upload-data', 'last_modified')])
+def show_download_button(list_of_contents, list_of_names, list_of_dates):
+
+    if list_of_contents is not None:
+         results = [
+             parse_contents(c, n, d) for c, n, d in
+             zip(list_of_contents, list_of_names, list_of_dates)]
+         filename = results[0][1]
+
+         return [build_download_button(filename)]
 
 
 @app.server.route('/downloads/<path:path>')
@@ -276,4 +340,4 @@ def serve_static(path):
     )
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)
