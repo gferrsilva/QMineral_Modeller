@@ -248,13 +248,13 @@ def parse_contents(contents, filename, date, write=False):
             style_table={
                 'maxHeight': '700px',
                 'overflowY': 'scroll',
-                'overflowX': 'scroll'
+
             },
 
             data=df.to_dict('records'),
             columns=[{'name': i, 'id': i} for i in df.columns],
 
-            fixed_rows={'headers': True, 'data': 0},
+
         style_data_conditional=[
         {
             'if': {'row_index': 'odd'},

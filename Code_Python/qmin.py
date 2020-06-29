@@ -201,10 +201,50 @@ def test_cprm_datasets_web(filename):
 
 def organize(df):
     model = load_model()
+    table_reference = '../references/OXIDE_TO_ELEMENT.csv'
+    df_references = pd.read_csv(table_reference, sep=';')
+        
     dic = {}
     for i in range(len(df.columns)):
         dic[df.columns[i]] = str(df.columns[i]).strip().upper()
     df = df.rename(columns=dic)
+
+
+     
+    # Loop to convert Element to oxide if needed 
+    #TODO: Check for + in ion exp Ca2+
+    for i in df.columns:
+        c = i.strip().upper()
+        a = df_references[df_references['Element'] == i.strip()]
+
+        if len(a) != 0:
+            if c == 'S' or c == 'AG' or c == 'AS' or i == 'F' or c == 'CL':
+                #print(c, len(a),'Element in Table Do nothing')
+                continue
+            else:
+                if len(a[a['Valency']==1]['Factor']) == 1:
+                    factor = float(a[a['Valency']==1]['Factor'])
+                    df[c+'O'] = df[i]*factor
+
+                elif len(a[a['Valency']==2]['Factor']) == 1:
+                    factor = float(a[a['Valency']==2]['Factor'])
+                    if c == 'FE':
+                        df['FEOT'] = df[i]*factor
+                    else:
+                        df[c+'O'] = df[i]*factor
+
+                elif len(a[a['Valency']==3]['Factor']) == 1:
+                    factor = float(a[a['Valency']==3]['Factor'])
+
+                    if c == 'CO':
+                        df[c+'O'] = df[i]*factor
+                    else:
+                        df[c+'2O3'] = df[i]*factor
+
+                elif len(a[a['Valency']==5]['Factor']) == 1:
+                    factor = float(a[a['Valency']==5]['Factor'])
+                    df[c+'2O5'] = df[i]*factor
+
 
     #Remove Columns not in Qmin_Group_RF (Oxides used in trainnig RF model)
     for i in df.columns:
