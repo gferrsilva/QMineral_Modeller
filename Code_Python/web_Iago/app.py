@@ -413,8 +413,8 @@ def update_graphic(tab,  nameform, contents):
 
             #fig = px.sunburst(df, path=['day', 'time', 'sex'], values='total_bill')
             
-            #fig = go.Figure(go.Sunburst(df_new, path=['GROUP', 'MINERAL']))
-            fig = px.histogram(df, x='GROUP PREDICTED')
+            fig = px.sunburst(df, path=['GROUP PREDICTED','MINERAL PREDICTED'])
+            
             
             return html.Div([
                         dcc.Graph(figure=fig)
