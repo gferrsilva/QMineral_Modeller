@@ -11,6 +11,8 @@ import dash_html_components as html
 import dash_table
 from web_app import about, table, plot, informations
 
+#test marcolino
+# :-)
 
 def encode_image(image_file):
     encoded = base64.b64encode(open(image_file, 'rb').read())
