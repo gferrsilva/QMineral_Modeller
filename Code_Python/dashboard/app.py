@@ -380,7 +380,7 @@ def update_graphic(tab,  nameform, contents):
             relative_filename = nameform
         
             df = pd.read_excel(relative_filename)
-            labels = df['GROUP PREDICTED'].unique()
+            
             fig = px.sunburst(df, path=['GROUP PREDICTED', 'MINERAL PREDICTED'])
 
             return html.Div([
