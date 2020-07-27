@@ -9,7 +9,7 @@ from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
-from web_app import about,table, plot,informations
+from web_app import about, table, plot, informations
 
 
 def encode_image(image_file):
@@ -23,35 +23,51 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 app.title = 'Qmin'
 
-
-
 def upload_card():
     """
     :return: A Div for upload data.
     """
-    return    html.Div([
+    return html.Div([
                 html.Div([
-                    html.H4("Upload Files",style={'text-align': 'center'}),
-                    html.Div(className='row',children=[
-                              html.P("Decimal Separator:",className='four columns'),
-                              dcc.Input(id='nsep', size='1', placeholder='.',className='two columns')]),
+                    html.H4("Upload Files",
+                            style={'text-align': 'center'}),
+                    html.Div(className='row',
+                             children=[
+                              html.P("Decimal Separator:",
+                                     className='four columns'),
+                              dcc.Input(id='nsep',
+                                        size='1',
+                                        placeholder='.',
+                                        className='two columns')]),
                     html.B(),
-                    html.Div(className='row',children=[html.P("  Column Separator:",className='four columns'),
-                             dcc.Input(id='columns-separator', size='1', placeholder=',',className='two columns')]),
-                    
-                    html.Div(className='row',children=[html.P("  Header Skip:",className='four columns'),
-                             dcc.Input(id='header-skip', size='1', placeholder=0,className='two columns')]),
-                    
-                    html.Div(className='row',children=[html.P("  Footer Skip:",className='four columns'),
-                             dcc.Input(id='footer-skip', size='1', placeholder=0,className='two columns')])
-
+                    html.Div(className='row',
+                             children=[html.P("  Column Separator:",
+                                              className='four columns'),
+                             dcc.Input(id='columns-separator',
+                                       size='1', placeholder=',',
+                                       className='two columns')]),
+                    html.Div(className='row',
+                             children=[html.P("  Header Skip:",
+                                              className='four columns'),
+                             dcc.Input(id='header-skip',
+                                       size='1',
+                                       placeholder=0,
+                                       className='two columns')]),
+                    html.Div(className='row',
+                             children=[html.P("  Footer Skip:",
+                                              className='four columns'),
+                             dcc.Input(id='footer-skip',
+                                       size='1',
+                                       placeholder=0,
+                                       className='two columns')])
                             ]),
                     dcc.Upload(
                         id='upload-data',
                         children=html.Div([
                             'Drag and Drop or ',
                             html.A('Select Files')
-                        ],style={'text-align': 'center', 'right': '30%'}),
+                        ], style={'text-align': 'center',
+                                  'right': '30%'}),
                         style={
                             'width': '50%',
                             'height': '60px',
@@ -68,61 +84,64 @@ def upload_card():
                          # Allow multiple files to be uploaded
                         multiple=True
                     ),
-                    
                     dcc.Checklist(
                             options=[
                                 {'label': 'I accept to agreggate my data in the training database of Qmin', 'value': 'true'},
                             ],
                             value=['true'],
                             labelStyle={'display': 'inline-block'},
-                            style={'textAlign': 'center','display': 'block','margin-left': 'auto','margin-right': 'auto'}
-                        ), 
-                    
-
+                            style={'textAlign': 'center',
+                                   'display': 'block',
+                                   'margin-left': 'auto',
+                                   'margin-right': 'auto'}
+                        ),
                     html.Div(
                         id="remove_2",
                         className="block",
                         children=[]
                     ),
                     html.Div(id='download-name'),
-
-
                     html.Div(id='remove')
-                ],className = 'item-a')
-
-
+                ], className='item-a')
 
 app.layout = html.Div(
     html.Div([
-        html.Div(id='banner',style={'width': '100%', 'background': "#262B3D", 'color': "#E2EFFA"},
+        html.Div(id='banner',
+                 style={'width': '100%',
+                        'background': "#262B3D",
+                        'color': "#E2EFFA"},
                      children=[
-                     
-                           html.A(id="dashbio-logo", className='one columns',
-                                  children = [html.Img(src='assets/Qmin_logo.png', height = '60', width = '70',
-                                              style={'top': '10', 'margin': '10px'})]),
-                           html.H2('Mineral Chemistry Virtual Assistant',className='five columns',style={'font-size': '45px','float':'left'}),
+                           html.A(id="dashbio-logo",
+                                  className='one columns',
+                                  children=[html.Img(src='assets/Qmin_logo.png',
+                                                     height='60',
+                                                     width='70',
+                                              style={'top': '10',
+                                                     'margin': '10px'})]),
+                           html.H2('Mineral Chemistry Virtual Assistant',
+                                   className='five columns',
+                                   style={'font-size': '45px',
+                                          'float': 'left'}),
                            html.A([
-                               html.Img(src="assets/GitHub-Mark-Light-64px.png",style={'float':'right'})
-                               ],href='https://github.com/gferrsilva/QMineral_Modeller')
+                               html.Img(src="assets/GitHub-Mark-Light-64px.png",
+                                        style={'float': 'right'})
+                               ],
+                               href='https://github.com/gferrsilva/QMineral_Modeller')
                           
                            ],
-                className='row'),
-      
-        
-        
-            
+                 className='row'),
+
          html.Div(children=[
                       html.Div(className='row',  # Define the row element
                                children=[
-                                   
-                                           # Define the right element
+                        # Define the right element
                           html.Div(className='four columns div-user-controls',
-                              children = [upload_card(),informations.about_card()]),
-
-
-                                           # Define the left element
-                          html.Div(id='right_container',className='eight columns div-for-charts bg-grey',
-                              children = [html.Div([
+                              children=[upload_card(),
+                                          informations.about_card()]),
+                                          # Define the left element
+                          html.Div(id='right_container',
+                                   className='eight columns div-for-charts bg-grey',
+                              children=[html.Div([
 
                 dcc.Tabs(
                 id="tabs-with-classes",
@@ -137,31 +156,24 @@ app.layout = html.Div(
                         children=[
                          html.Div(id='output-data-upload',
                                   children=[
-
-                                      html.H2('Upload dataset',style={'text-align': 'center'})
-
+                                      html.H2('Upload dataset',
+                                              style={'text-align': 'center'})
                                       ]),
                          html.Div(
                          id="download-area",
                          className="block",
                          children=[html.Form(
-        action='',
-        method="get",
-        id='form-download',
-        children=[
-            html.Button(
-                className="button",
-                type="submit",
-                children=[
-                    "download"
-                ]
-            )
-        ]
-    )
-
-                         ]
-                          )
-
+                             action='',
+                             method="get",
+                             id='form-download',
+                             children=[
+                                 html.Button(
+                                     className="button",
+                                     type="submit",
+                                     children=["download"]
+                                 )
+                             ])
+                         ])
                            ]),
 
                      dcc.Tab(id='graphic_tab',
@@ -169,42 +181,29 @@ app.layout = html.Div(
                         value='graphic-table',
                         className='custom-tab',
                         children=[
-                          html.H2('About',style={'text-align': 'center'}),
+                          html.H2('About', style={'text-align': 'center'}),
                           html.P('''Graphic Area.'''),
                           html.Div(id='General_graphic')
                            ]),
-
-
-                             ])
-
-
-
-              ],className = 'item-a'),
+                             ])],
+                                  className='item-a'),
                                           informations.status_area()
                                           ])
-                                                   
                                            ])  # Define the right element
-                                  ])
-                  
-                ])
-     )
-                                      
-
+              ])
+                ]))
 
 def write_excel(df):
     import uuid
     import pandas as pd
 
     filename = f"{uuid.uuid1()}.xlsx"
-
-
     relative_filename = os.path.join(
         'downloads',
         filename
     )
     if os.path.exists(relative_filename):
         os.remove(relative_filename)
-
 
     absolute_filename = os.path.join(os.getcwd(), relative_filename)
     writer = pd.ExcelWriter(absolute_filename)
@@ -240,19 +239,6 @@ def parse_contents(contents, filename, date, write=False):
             'There was an error processing this file.'
         ])
     
-        
-#    fig = go.Figure(data=[go.Table(
-#    columnwidth = [600]*len(df.columns),
-#    header=dict(values=list(df.columns),
-#                line_color='darkslategray',
-#                fill_color='lightskyblue',
-#                align='left'),
-#    cells=dict(values=[df[i] for i in df.columns], # 2nd column
-#               line_color='darkslategray',
-#               fill_color='lightcyan',
-#               align='left'))
-#])
-    
     return html.Div([
         html.H5('File loaded: '+filename),
         #html.H4('Last modification in file: '+str(datetime.datetime.fromtimestamp(date))),
@@ -269,40 +255,25 @@ def parse_contents(contents, filename, date, write=False):
             data=df.to_dict('records'),
             columns=[{'name': i, 'id': i} for i in df.columns],
             fixed_columns={'headers': True, 'data': 2},
-            #fixed_rows={'headers': True},
-            #row_selectable=True,
-            #filterable=True,
-            #sortable=True,
-            #page_size=30,
             filter_action="native",
             sort_action="native",
             sort_mode='multi',
-            
-            
-            
             style_data_conditional=[
             {
                 'if': {'row_index': 'odd'},
                 'backgroundColor': 'rgb(248, 248, 248)'
             },
-            
             {
-            'if': {'column_id': 'GROUP PREDICTED'},
+                'if': {'column_id': 'GROUP PREDICTED'},
                 'backgroundColor': '#4C5EA1',
-                'color':'white'
-                
+                'color': 'white'
             },
-            
             {
-            'if': {'column_id': 'QC GROUP'},
+                'if': {'column_id': 'QC GROUP'},
                 'backgroundColor': '#4C5EA1',
-                'color':'white'
-                
+                'color': 'white'
             }
-            
-            
-            
-            
+
             
             ],
     
@@ -385,7 +356,7 @@ def show_download_button(list_of_contents, list_of_names, list_of_dates):
              zip(list_of_contents, list_of_names, list_of_dates)]
          filename = results[0][1]
 
-         # return [build_download_button(filename)]
+         #return [build_download_button(filename)]
          # print("Show Button ", filename)
          return filename
 
@@ -414,14 +385,24 @@ def update_graphic(tab,  nameform, contents):
             #fig = px.sunburst(df, path=['day', 'time', 'sex'], values='total_bill')
             
             #fig = go.Figure(go.Sunburst(df_new, path=['GROUP', 'MINERAL']))
-            fig = px.histogram(df, x='GROUP PREDICTED')
-            
+            #fig = px.sunburst(df, path=['day', 'time', 'sex'], values='total_bill')
+
+            fig = px.sunburst(df, path=['GROUP PREDICTED', 'MINERAL PREDICTED'])
+
             return html.Div([
                         dcc.Graph(figure=fig)
                        # html.P('testando')
                             ])
         else:
             return html.P('teste2')
+
+@app.server.route('/downloads/<path:path>')
+def serve_static(path):
+    import flask
+    root_dir = os.getcwd()
+    return flask.send_from_directory(
+        os.path.join(root_dir, 'downloads'), path
+    )
 
 
 
