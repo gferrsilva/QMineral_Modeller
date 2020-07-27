@@ -381,20 +381,8 @@ def update_graphic(tab,  nameform, contents):
         
             df = pd.read_excel(relative_filename)
             labels = df['GROUP PREDICTED'].unique()
-
-            #fig = px.sunburst(df, path=['day', 'time', 'sex'], values='total_bill')
-            
-<<<<<<< HEAD
-            #fig = go.Figure(go.Sunburst(df_new, path=['GROUP', 'MINERAL']))
-            #fig = px.sunburst(df, path=['day', 'time', 'sex'], values='total_bill')
-
             fig = px.sunburst(df, path=['GROUP PREDICTED', 'MINERAL PREDICTED'])
 
-=======
-            fig = px.sunburst(df, path=['GROUP PREDICTED','MINERAL PREDICTED'])
-            
-            
->>>>>>> 1b9239ba291d1b09c26612566e3eea97c91dccb6
             return html.Div([
                         dcc.Graph(figure=fig)
                        # html.P('testando')
