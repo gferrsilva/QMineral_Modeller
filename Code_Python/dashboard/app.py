@@ -11,8 +11,7 @@ import dash_html_components as html
 import dash_table
 from web_app import about, table, plot, informations
 
-#test marcolino
-# :-)
+
 
 def encode_image(image_file):
     encoded = base64.b64encode(open(image_file, 'rb').read())
@@ -183,10 +182,18 @@ app.layout = html.Div(
                         value='graphic-table',
                         className='custom-tab',
                         children=[
-                          html.H2('About', style={'text-align': 'center'}),
-                          html.P('''Graphic Area.'''),
-                          html.Div(id='General_graphic')
+                          html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'}),
+                          html.Div(id='General_graphic'),
+                          html.Div(id='biplot_graphic'),
+                          html.Div(id='triplot_graphic')
                            ]),
+                     
+                     
+                     
+                     
+                     
+                     
+                     
                              ])],
                                   className='item-a'),
                                           informations.status_area()
@@ -338,13 +345,10 @@ def update_output(list_of_contents, list_of_names, list_of_dates, csep=None):
 
     else:
         return html.Div([html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'})])
-#    return html.P('teste')
 
-# @app.callback(
-#     Output("download-area", "children"),
-#     [Input('upload-data', 'contents')],
-#     [State('upload-data', 'filename'),
-#      State('upload-data', 'last_modified')])
+
+
+
 @app.callback(
     Output("form-download", "action"),
     [Input('upload-data', 'contents')],
@@ -370,27 +374,86 @@ def show_download_button(list_of_contents, list_of_names, list_of_dates):
                 [State('upload-data', 'contents')])
 
 def update_graphic(tab,  nameform, contents):
-    
+    #### Callback for the first donut graphic in the graphic table
 
     if tab == 'graphic-table':
         
         if contents is not None:
-        
-        
+  
             import plotly.express as px
-        
+            
             relative_filename = nameform
-        
             df = pd.read_excel(relative_filename)
-            #test
             fig = px.sunburst(df, path=['GROUP PREDICTED', 'MINERAL PREDICTED'])
 
             return html.Div([
                         dcc.Graph(figure=fig)
-                       # html.P('testando')
                             ])
-        else:
-            return html.P('teste2')
+        
+        
+        
+ ####################################       
+        
+@app.callback(Output('biplot_graphic', 'children'),
+               [Input('graphic_tab', 'value'),
+                Input('form-download', 'action')],
+                [State('upload-data', 'contents')])
+
+def update_biplot(tab,  nameform, contents):
+    #### Callback for the biplot graphic in the graphic table
+
+    if tab == 'graphic-table':
+        
+        if contents is not None:
+  
+            import plotly.express as px
+            
+            import numpy as np
+        
+            if content == None:
+                return
+        
+            relative_filename = nameform
+        
+            df = pd.read_excel(relative_filename)
+        
+            features = df.columns.to_list()
+            clean_features = []
+        
+            for name in features:
+                if df[name].dtypes == np.float or df[name].dtypes == np.int64:
+                    clean_features.append(name)
+
+
+            # Create figure
+            fig = go.Figure()
+            
+            # Add traces
+            fig.add_trace(
+                go.Scatter(
+                    x=df_new[clean_features[0]],
+                    y=df_new[clean_features[1]],
+                    mode="markers",
+                    marker=dict(color="DarkOrange")
+                )
+            )
+
+
+
+
+
+
+            return html.Div(className='row',children=[
+                        html.Div([            
+                                dcc.Graph(figure=fig),
+                                className='four columns']),
+                        html.Div([            
+                                dcc.Graph(figure=fig),
+                                className='four columns']),
+                        
+                            ])
+
+#####################################
 
 @app.server.route('/downloads/<path:path>')
 def serve_static(path):
