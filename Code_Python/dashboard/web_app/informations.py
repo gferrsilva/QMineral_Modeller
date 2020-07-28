@@ -247,7 +247,7 @@ def status_area():
                                dcc.Markdown('''Geologist''',style={'text-align': 'center'}),
                                dcc.Markdown('''*University of Brasilia*''',style={'text-align': 'center'}),
                                dcc.Markdown('''
-                                            * Chemical Analysis expert
+                                            * Data curation
                                             * QA/QC control
                                             ''',style={'text-align': 'center'})
                                
