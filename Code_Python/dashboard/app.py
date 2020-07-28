@@ -10,6 +10,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 from web_app import about, table, plot, informations
+import plotly.express as px
+import numpy as np
 
 
 
@@ -182,8 +184,9 @@ app.layout = html.Div(
                         value='graphic-table',
                         className='custom-tab',
                         children=[
-                          html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'}),
-                          html.Div(id='General_graphic'),
+                          html.Div(id='General_graphic',children=[
+                              html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'}),   
+                              ]),
                           html.Div(id='biplot_graphic'),
                           html.Div(id='triplot_graphic')
                            ]),
@@ -227,6 +230,7 @@ def parse_contents(contents, filename, date, write=False):
 
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
+    df = None
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file is CPRM style (evandro)
@@ -325,6 +329,29 @@ def build_download_button(uri):
     )
     return button
 
+def select_axis(df,feature,axis):
+  
+    return dict(
+        args=[ {axis:[df[feature]], 
+                'name':feature}],
+        label=feature,
+        method="update")
+
+
+def makeAxis(title, tickangle):
+    return {
+      'title': title,
+      'titlefont': { 'size': 20 },
+      'tickangle': tickangle,
+      'tickfont': { 'size': 12 },
+      'tickcolor': 'rgba(0,0,0,0)',
+      'ticklen': 5,
+      'showline': True,
+      'showgrid': True
+    }
+
+
+
 
 @app.callback(Output('output-data-upload', 'children'),
               [Input('upload-data', 'contents')],
@@ -380,8 +407,6 @@ def update_graphic(tab,  nameform, contents):
         
         if contents is not None:
   
-            import plotly.express as px
-            
             relative_filename = nameform
             df = pd.read_excel(relative_filename)
             fig = px.sunburst(df, path=['GROUP PREDICTED', 'MINERAL PREDICTED'])
@@ -405,17 +430,11 @@ def update_biplot(tab,  nameform, contents):
     if tab == 'graphic-table':
         
         if contents is not None:
-  
-            import plotly.express as px
-            
-            import numpy as np
-        
-            if content == None:
-                return
-        
+       
             relative_filename = nameform
         
             df = pd.read_excel(relative_filename)
+            df = df.loc[:, ~df.columns.str.contains('^Unnamed')]  # remove unnamed columns
         
             features = df.columns.to_list()
             clean_features = []
@@ -424,33 +443,208 @@ def update_biplot(tab,  nameform, contents):
                 if df[name].dtypes == np.float or df[name].dtypes == np.int64:
                     clean_features.append(name)
 
-
-            # Create figure
             fig = go.Figure()
             
             # Add traces
             fig.add_trace(
                 go.Scatter(
-                    x=df_new[clean_features[0]],
-                    y=df_new[clean_features[1]],
+                    x=df[clean_features[0]],
+                    y=df[clean_features[0]],
                     mode="markers",
-                    marker=dict(color="DarkOrange")
+                    marker=dict(color='rgba(152, 0, 0, .8)')
                 )
             )
-
-
-
-
-
-
-            return html.Div(className='row',children=[
-                        html.Div([            
-                                dcc.Graph(figure=fig),
-                                className='four columns']),
-                        html.Div([            
-                                dcc.Graph(figure=fig),
-                                className='four columns']),
+            
+            ###### if want to add axis labels ######
+            #fig.update_layout(
+            #    xaxis_title=clean_features[0],
+            #    yaxis_title=clean_features[0],
+            #                  )
+            
+            # Add dropdown
+            
+            fig.update_traces(mode='markers', marker_line_width=2, marker_size=10)
+            
+            ###### if want to add title ######
+            #fig.update_layout(
+            #    title={
+            #        'text': "Biplot",
+            #        'y':0.9,
+            #        'x':0.5,
+            #        'xanchor': 'center',
+            #        'yanchor': 'top'})
+            
+            fig.update_layout(
+                updatemenus=[
+                    dict(
+                        buttons=list(
+                                [select_axis(df,feature,'y') for feature in clean_features],
+                        ),
+                
+                        direction="down",
+                        pad={"r": 10, "t": 10},
+                        showactive=True,
+                        x=-0.05,
+                        xanchor="left",
+                        y=1.20,
+                        yanchor="top"
+                    ),
+                    
+                    dict(
+                        buttons=list(
+                                [select_axis(df,feature,'x') for feature in clean_features],
+                        ),
                         
+                 
+                        direction="up",
+                        pad={"r": 30, "t": 50},
+                        showactive=True,
+                        x=1.05,
+                        xanchor="right",
+                        y=-0.05,
+                        yanchor="middle"
+                    )]        
+                         )
+
+
+
+            return html.Div([
+                        dcc.Graph(figure=fig)
+                            ])
+        
+        
+
+@app.callback(Output('triplot_graphic', 'children'),
+               [Input('graphic_tab', 'value'),
+                Input('form-download', 'action')],
+                [State('upload-data', 'contents')])
+
+def update_triplot(tab,  nameform, contents):
+    #### Callback for the triplot graphic in the graphic table
+    
+    ########## TODO ###########
+    # Color by attribute Group and Minerals
+    # Change the hoever style
+
+    if tab == 'graphic-table':
+        
+        if contents is not None:
+       
+            relative_filename = nameform
+        
+            df = pd.read_excel(relative_filename)
+            df = df.loc[:, ~df.columns.str.contains('^Unnamed')]  # remove unnamed columns
+        
+            features = df.columns.to_list()
+            clean_features = []
+        
+            for name in features:
+                if df[name].dtypes == np.float or df[name].dtypes == np.int64:
+                    clean_features.append(name)
+
+            fig = go.Figure(go.Scatterternary({
+                'mode': 'markers',
+                'a': df[clean_features[0]],
+                'b': df[clean_features[0]],
+                'c': df[clean_features[0]],
+                'text': df.index,
+                'marker': {
+                    'symbol': "circle",
+                    'color': '#DB7365',        
+                    'size': 8,
+                    'line': { 'width': 2 }
+                }
+            }))
+            
+            fig.update_layout({
+                'ternary': {
+                    'sum': 100,
+                    'aaxis': makeAxis('', 0),
+                    'baxis': makeAxis('', 45),
+                    'caxis': makeAxis('', -45)
+                }
+            })
+            
+            fig.update_layout(
+                updatemenus=[
+                    dict(
+                        buttons=list(
+                                [select_axis(df,feature,'a') for feature in clean_features],
+                        ),
+                
+                        direction="down",
+                        pad={"r": 10, "t": 10},
+                        showactive=True,
+                        x=0.45,
+                        xanchor="left",
+                        y=1.20,
+                        yanchor="top"
+                    ),
+                    
+                    dict(
+                        buttons=list(
+                                [select_axis(df,feature,'b') for feature in clean_features],
+                        ),
+                        
+                 
+                        direction="up",
+                        pad={"r": 30, "t": 50},
+                        showactive=True,
+                        x=0.32,
+                        xanchor="right",
+                        y=-0.07,
+                        yanchor="middle"
+                    ),
+            
+                    dict(
+                        buttons=list(
+                                [select_axis(df,feature,'c') for feature in clean_features],
+                        ),
+                        
+                 
+                        direction="up",
+                        pad={"r": 30, "t": 50},
+                        showactive=True,
+                        x=0.85,
+                        xanchor="right",
+                        y=-0.07,
+                        yanchor="middle"
+                    ),
+                    
+                   dict(
+                        buttons=list([
+                            dict(
+                                args=["reversescale", False],
+                                label="Group",
+                                method="update"
+                            ),
+                            dict(
+                                args=["reversescale", True],
+                                label="Mineral",
+                                method="update"
+                            )
+                        ]),
+                        type = "buttons",
+                        direction="right",
+                        pad={"r": 10, "t": 10},
+                        showactive=True,
+                        x=0.75,
+                        xanchor="left",
+                        y=1.065,
+                        yanchor="top"
+                    )
+                ])
+            
+            fig.update_layout(
+                annotations=[
+                    dict(text="Group by", x=0.86, xref="paper", y=1.125, yref="paper",
+                                         showarrow=False)
+                ])
+
+
+
+            return html.Div([
+                        dcc.Graph(figure=fig)
                             ])
 
 #####################################
