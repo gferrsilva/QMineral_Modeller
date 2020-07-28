@@ -51,25 +51,25 @@ library(missRanger)
 
 # Blind Pyroxene
 
-# pyroxene <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
-#   select(1,47,19,14,3,25:46) %>% # select and reorder the columns
-#   mutate(id = X1, X1 = NULL) %>% # Rename Column
-#   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
-#                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
-#   mutate(AS = AS_ppm, AS_ppm = NULL, # Rename columns
-#          ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
-#          SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
-#   filter(GROUP == 'PYROXENE') %>%
-#   select(24,27, 1:2,26, 3:23,25) %>% # Reorder Columns
-#   rename(SiO2 = SIO2,
-#          TiO2 = TIO2,
-#          Al2O3 = AL2O3,
-#          Cr2O3 = CR2O3,
-#          FeO = FEOT,
-#          MnO = MNO,
-#          MgO = MGO,
-#          CaO = CAO,
-#          Na2O = NA2O)
+pyroxene <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
+  select(1,47,19,14,3,25:46) %>% # select and reorder the columns
+  mutate(id = X1, X1 = NULL) %>% # Rename Column
+  mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
+                         ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
+  mutate(AS = AS_ppm, AS_ppm = NULL, # Rename columns
+         ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
+         SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
+  filter(GROUP == 'PYROXENE') %>%
+  select(24,27, 1:2,26, 3:23,25) %>% # Reorder Columns
+  rename(SiO2 = SIO2,
+         TiO2 = TIO2,
+         Al2O3 = AL2O3,
+         Cr2O3 = CR2O3,
+         FeO = FEOT,
+         MnO = MNO,
+         MgO = MGO,
+         CaO = CAO,
+         Na2O = NA2O)
 
 # 
 # 
@@ -304,6 +304,36 @@ formula$Fe3_atom <- ifelse(test = 6 - formula$norm_oxygen_total > 0,
   
 formula$Fe2_atom <- formula$Fe_norm_cations - formula$Fe3_atom
 
+formula$NMg_FeT <- (formula$Fe2_atom + formula$Fe3_atom)/(formula$Fe2_atom + formula$Fe3_atom + formula$Mg_atom)
+formula$NMg_Fe2 <- (formula$Fe2_atom)/(formula$Fe2_atom + formula$Mg_atom)
+
+formula$T_Si <- formula$Si_atom
+formula$T_Al <- ifelse(test = formula$Si_atom < 2,
+                       yes = ifelse(test = (2- formula$Si_atom < formula$Al_atom),
+                                    yes =  2 - formula$Si_atom,
+                                    no = formula$Al_atom),
+                       no = 0)
+formula$M1_Ti <- formula$Ti_atom
+formula$M1_Al <- ifelse(test = (formula$Si_atom + formula$Al_atom -(formula$T_Si + formula$T_Al) == 0),
+                        yes = 0, no = (formula$Si_atom + formula$Al_atom -(formula$T_Si + formula$T_Al)))
+formula$M1_Cr <- formula$Cr_atom
+formula$M1_Fe3 <- formula$Fe3_atom
+formula$M2_Ca <- formula$Ca_atom
+formula$M2_Na <- formula$Na_atom
+formula$M2_Mn <- formula$Mn_atom
+formula$M2_Fe2 <- ifelse(test = (formula$M2_Ca + formula$M2_Na + formula$M2_Mn < 1),
+                         yes = (formula$NMg_Fe2*(1-(formula$M2_Ca + formula$M2_Na + formula$M2_Mn))),
+                         no = 0)
+formula$M1_Fe2 <- ifelse(test = (formula$Fe2_atom - formula$M2_Fe2 > 0),
+                         yes = formula$Fe2_atom - formula$M2_Fe2,
+                         no = 0)
+formula$M2_Mg <- ifelse(test = (1 - formula$NMg_Fe2)*(1 - (formula$M2_Ca + formula$M2_Na + formula$M2_Mn) > 0),
+                        yes = (1 - formula$NMg_Fe2)*(1 - (formula$M2_Ca + formula$M2_Na + formula$M2_Mn)),
+                        no = 0)
+formula$M1_Mg <- ifelse(test = (formula$Mg_atom - formula$M2_Mg > 0),
+                        yes = formula$Mg_atom - formula$M2_Mg,
+                        no = 0)
+
 formula <- formula %>%
   mutate(Wollastonite = round(100*Ca_atom/(Fe2_atom + Ca_atom + Mg_atom),2),
          Enstatite = round(100*Mg_atom/(Fe2_atom + Ca_atom + Mg_atom),2),
@@ -329,26 +359,26 @@ formula %>%
          
 px <- bind_cols(px, formula[52:60])
 
-pca <- prcomp(px[1:9],center = T)
-
-df <- bind_cols(px, as_tibble(pca$x))         
-
-df %>%
-  gather(key = element, value = `WT(%)`, 1:9) %>%
-  ggplot(aes(x = PC1,
-             y = PC2,
-             col = `WT(%)`)) +
-  geom_point(alpha = .4) +
-  scale_color_viridis_c(option = 'A') +
-  # scale_color_binned(type = 'viridis') +
-  facet_wrap(~element,
-             nrow = 2,
-             scales = 'free',)
-
-df %>%
-  filter(!is.na(Classification)) %>%
-  gather(key = element, value = measure, 1:8) %>%
-  ggplot(aes(x = PC1,
-             y = PC2,
-             col = Classification)) +
-  geom_point(alpha = .4)
+# pca <- prcomp(px[1:9],center = T)
+# 
+# df <- bind_cols(px, as_tibble(pca$x))         
+# 
+# df %>%
+#   gather(key = element, value = `WT(%)`, 1:9) %>%
+#   ggplot(aes(x = PC1,
+#              y = PC2,
+#              col = `WT(%)`)) +
+#   geom_point(alpha = .4) +
+#   scale_color_viridis_c(option = 'A') +
+#   # scale_color_binned(type = 'viridis') +
+#   facet_wrap(~element,
+#              nrow = 2,
+#              scales = 'free',)
+# 
+# df %>%
+#   filter(!is.na(Classification)) %>%
+#   gather(key = element, value = measure, 1:8) %>%
+#   ggplot(aes(x = PC1,
+#              y = PC2,
+#              col = Classification)) +
+#   geom_point(alpha = .4)
