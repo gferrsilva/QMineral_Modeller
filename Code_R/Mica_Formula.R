@@ -93,38 +93,17 @@ formula <- tibble(.rows = nrow(mica))
 
 formula$mineral <- mica$MINERAL
 
-formula$Si_mole <- mica$SiO2*1/60.0843
-formula$Si_oxygen <- mica$SiO2*2/60.0843
-
-formula$Ti_mole <- mica$TiO2*1/79.8988
-formula$Ti_oxygen <- mica$TiO2*2/79.8988
-
-formula$Al_mole <- mica$Al2O3*2/101.9613
-formula$Al_oxygen <- mica$Al2O3*3/101.9613
-
-formula$Cr_mole <- mica$Cr2O3*2/159.6922
-formula$Cr_oxygen <- mica$Cr2O3*3/159.6922
-
-formula$Fe_mole <- mica$FeO*1/71.8464
-formula$Fe_oxygen <- mica$FeO*1/71.8464
-
-formula$Mn_mole <- mica$MnO*1/70.9374
-formula$Mn_oxygen <- mica$MnO*1/70.9374
-
-formula$Mg_mole <- mica$MgO*1/40.3044
-formula$Mg_oxygen <- mica$MgO*1/40.3044
-
-formula$Ca_mole <- mica$CaO*1/56.0794
-formula$Ca_oxygen <- mica$CaO*1/56.0794
-
-formula$Na_mole <- mica$Na2O*2/61.979
-formula$Na_oxygen <- mica$Na2O*1/61.9794
-
-formula$K_mole <- mica$K2O*2/94.196
-formula$K_oxygen <- mica$K2O*1/94.196
-
-formula$Cl_mole <- mica$Cl*1/35.453
-
+formula$Si_mole <- mica$SiO2/30.045
+formula$Ti_mole <- mica$TiO2/39.949
+formula$Al_mole <- mica$Al2O3/33.987
+formula$Cr_mole <- mica$Cr2O3/50.667
+formula$Fe_mole <- mica$FeO/71.846
+formula$Mn_mole <- mica$MnO/70.937
+formula$Mg_mole <- mica$MgO/40.304
+formula$Ca_mole <- mica$CaO/56.079
+formula$Na_mole <- mica$Na2O/61.979
+formula$K_mole <- mica$K2O/94.196
+formula$Cl_mole <- mica$Cl/35.453
 formula$F_mole <- mica$Fluor*1/18.998
 
 formula$Li_mole <- mica$Li2O/29.887
@@ -161,10 +140,10 @@ formula$OH <- ifelse(test = ((4 - (formula$F_norm_cations + formula$Cl_norm_cati
                      no = 0)
 
 formula$Z_Si <- formula$Si_norm_cations/2
-formula$Z_Al <- ifelse(test = formula$T_Si > 8,
+formula$Z_Al <- ifelse(test = formula$Z_Si > 8,
                        yes = 0,
-                       no = ifelse(test = 2*(formula$Al_norm_cations/3) > (8 - formula$T_Si),
-                                   yes = 8 - formula$T_Si,
+                       no = ifelse(test = 2*(formula$Al_norm_cations/3) > (8 - formula$Z_Si),
+                                   yes = 8 - formula$Z_Si,
                                    no = 2*(formula$Al_norm_cations/3)))
 
 Z_sum <- formula %>%
@@ -177,9 +156,9 @@ formula <- formula %>%
   bind_cols(Z_sum)
 remove(Z_sum)
 
-formula$Y_Al <- ifelse(test = formula$T_Si + 2*(formula$Al_norm_cations/3) < 8,
+formula$Y_Al <- ifelse(test = formula$Z_Si + 2*(formula$Al_norm_cations/3) < 8,
                        yes = 0,
-                       no = 2*(formula$Al_norm_cations/3) - formula$T_Al)
+                       no = 2*(formula$Al_norm_cations/3) - formula$Z_Al)
 
 formula$Y_Ti <- formula$Ti_norm_cations/2
 formula$Y_Cr <- 2*formula$Cr_norm_cations/3
@@ -226,3 +205,6 @@ H_sum <- formula %>%
 formula <- formula %>%
   bind_cols(H_sum)
 remove(H_sum)
+
+# t <- formula %>%
+#   select(ends_with('_sum'))
