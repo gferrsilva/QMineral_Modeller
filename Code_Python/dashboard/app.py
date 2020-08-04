@@ -22,7 +22,8 @@ def encode_image(image_file):
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets,prevent_initial_callbacks=True)
+
 server = app.server
 app.title = 'Qmin'
 
@@ -159,9 +160,8 @@ app.layout = html.Div(
                         children=[
                          html.Div(id='output-data-upload',
                                   children=[
-                                      html.H2('Upload dataset',
-                                              style={'text-align': 'center'})
-                                      ]),
+                                          html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'})
+                                     ]),
                          html.Div(
                          id="download-area",
                          className="block",
@@ -184,19 +184,15 @@ app.layout = html.Div(
                         value='graphic-table',
                         className='custom-tab',
                         children=[
-                          html.Div(id='General_graphic',children=[
-                              html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'}),   
-                              ]),
+                          html.Div(id='General_graphic',
+                                  children=[
+                                          html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'})
+                                     ]),
                           html.Div(id='biplot_graphic'),
                           html.Div(id='triplot_graphic')
                            ]),
                      
-                     
-                     
-                     
-                     
-                     
-                     
+
                              ])],
                                   className='item-a'),
                                           informations.status_area()
@@ -305,10 +301,8 @@ def parse_contents(contents, filename, date, write=False):
             }
             ),
         
-        #dcc.Graph(figure=fig),
 
-        html.Hr(),  # horizontal line
-
+        html.Hr(), 
     ]), filename_output
 
 def build_download_button(uri):
@@ -360,7 +354,6 @@ def makeAxis(title, tickangle):
                State('columns-separator', 'placeholder')]
                )
 def update_output(list_of_contents, list_of_names, list_of_dates, csep=None):
-    # print('columns-separator', csep)
 
     if list_of_contents is not None:
          results = [
@@ -389,9 +382,10 @@ def show_download_button(list_of_contents, list_of_names, list_of_dates):
              zip(list_of_contents, list_of_names, list_of_dates)]
          filename = results[0][1]
 
-         #return [build_download_button(filename)]
-         # print("Show Button ", filename)
          return filename
+     
+    else:
+         return None
 
 
 
@@ -414,6 +408,15 @@ def update_graphic(tab,  nameform, contents):
             return html.Div([
                         dcc.Graph(figure=fig)
                             ])
+        else:
+            return html.Div([
+                     html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'})
+                        ])
+    
+    else:
+        return html.Div([
+                     html.H3('Upload your dataset',style={'text-align': 'center','padding':'320px'})
+                        ])
         
         
         
@@ -512,7 +515,12 @@ def update_biplot(tab,  nameform, contents):
                         dcc.Graph(figure=fig)
                             ])
         
-        
+        else:
+            return None
+    
+    else:
+        return None
+                
 
 @app.callback(Output('triplot_graphic', 'children'),
                [Input('graphic_tab', 'value'),
@@ -647,7 +655,13 @@ def update_triplot(tab,  nameform, contents):
                         dcc.Graph(figure=fig)
                             ])
 
-#####################################
+
+        else:
+            return None
+    
+    else:
+        return None
+        
 
 @app.server.route('/downloads/<path:path>')
 def serve_static(path):
