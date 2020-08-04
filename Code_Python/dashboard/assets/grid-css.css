@@ -123,3 +123,61 @@ body {
 .item-g:hover {
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
+
+/* SPin css*/
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+._dash-loading-callback {
+  border: 8px solid #f3f3f3;
+  border-radius: 30%;
+  border-top: 8px solid #3498db;
+  width: 30px;
+  height: 30px;
+  margin-top: -5px;
+  margin-bottom: -5px;
+  display: inline-block;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  background-colour: #ffffff;
+  -webkit-animation: fadein 1s linear forwards, spin 2s infinite linear; /* Safari and Chrome */
+  animation: fadein 1s linear forwards, spin 2s infinite linear;
+  animation-delay: 1s;
+  -webkit-animation-delay: 1s;
+}

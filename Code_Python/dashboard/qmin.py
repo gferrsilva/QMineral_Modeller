@@ -7,9 +7,11 @@ import itertools
 import pickle
 import matplotlib.pyplot as plt
 
+
 class Error(Exception):
     """Base class for exceptions in this module."""
     pass
+
 
 class InputError(Error):
     """Exception raised for errors in the input.
@@ -21,6 +23,7 @@ class InputError(Error):
 
     def __init__(self, message):
         self.message = message
+
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -92,9 +95,9 @@ def oob_curve(nmin, nmax):
 
 def saveModel(model_name):
     # Save Model
-    path = '../model_py/'
-    pickle.dump(model, open(path+model_name, 'wb'))
-    print("Model Saved ...\n"+path+model_name)
+    path = '../../model_py/'
+    pickle.dump(model, open(path + model_name, 'wb'))
+    print("Model Saved ...\n" + path + model_name)
 
 
 def load_model():
@@ -104,13 +107,14 @@ def load_model():
 
     return model
 
+
 def test_cprm_datasets(filename):
     # Features used in training!
     models = load_model()
-    #print(models)
+    # print(models)
     Qmin_RF_features = models['Train Features']
-    #Qmin_RF_features = trainFeatures.values.tolist()
-    #print(Qmin_RF_features)
+    # Qmin_RF_features = trainFeatures.values.tolist()
+    # print(Qmin_RF_features)
     df = pd.read_csv(filename, encoding="ISO-8859-1")
     df_w = df
 
@@ -134,33 +138,34 @@ def test_cprm_datasets(filename):
 
     group_class = models['GROUP'].predict(df)
     df_c = df.copy()
-    df_qc = quality_entropy(models['GROUP'],df,'group')
+    df_qc = quality_entropy(models['GROUP'], df, 'group')
     mineral_class = models['SULFIDE'].predict(df_c)
-    df_qc2 = quality_entropy(models["SULFIDE"],df_c,'mineral')
+    df_qc2 = quality_entropy(models["SULFIDE"], df_c, 'mineral')
     df_w['GROUP_CLASS'] = group_class
     df_w['QC GROUP'] = df_qc['QC GROUP']
-   # df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+    # df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['MINERAL_CLASS'] = mineral_class
-    #df_w['CERTAINTY MINERAL'] = df_qc2['CERTAINTY MINERAL']
+    # df_w['CERTAINTY MINERAL'] = df_qc2['CERTAINTY MINERAL']
     df_w['QC MINERAL'] = df_qc2['QC MINERAL']
     df_w['2nd PREDICT MINERAL'] = df_qc2['2nd PREDICT MINERAL']
 
     df_w.to_excel(filename[:-4] + '_classify.xls')
     cols = df_w.columns.tolist()
-    cols = cols[-5:] +cols[:-5]
+    cols = cols[-5:] + cols[:-5]
     df_w = df_w[cols]
-   # print(df_w)
+    # print(df_w)
     print(classification_report(df_w['MINERAL'], mineral_class))
     print(accuracy_score(df_w['MINERAL'], mineral_class))
     return df_w.round(4)
 
+
 def test_cprm_datasets_web(filename):
     # Features used in training!
     models = load_model()
-    #print(models)
+    # print(models)
     Qmin_RF_features = models['Train Features']
-    #Qmin_RF_features = trainFeatures.values.tolist()
-    #print(Qmin_RF_features)
+    # Qmin_RF_features = trainFeatures.values.tolist()
+    # print(Qmin_RF_features)
     df = pd.read_csv(filename, encoding="ISO-8859-1")
     df_w = df
 
@@ -195,7 +200,7 @@ def test_cprm_datasets_web(filename):
     df_w['QC MINERAL'] = df_qc2['QC MINERAL']
     df_w['2nd PREDICT MINERAL'] = df_qc2['2nd PREDICT MINERAL']
 
-    #df_w.to_excel(filename[:-4] + '_classify.xls')
+    # df_w.to_excel(filename[:-4] + '_classify.xls')
     return df_w.round(4)
 
 
@@ -211,10 +216,9 @@ def organize(df):
         el.append(str(df_references['Element'][i]).strip().upper())
     df_references.replace(dic)
     df_references['Element_Upper'] = el
-     
-    # Loop to convert Element to oxide if needed 
-    #TODO: Check for + in ion exp Ca2+
 
+    # Loop to convert Element to oxide if needed
+    # TODO: Check for + in ion exp Ca2+
     for i in df.columns:
         c = i.strip().upper()
 
@@ -256,10 +260,10 @@ def organize(df):
         dic[df.columns[i]] = str(df.columns[i]).strip().upper()
     df = df.rename(columns=dic)
 
-    #Remove Columns not in Qmin_Group_RF (Oxides used in trainnig RF model)
+    # Remove Columns not in Qmin_Group_RF (Oxides used in trainnig RF model)
     for i in df.columns:
         if i == 'FEO':
-            df = df.rename(columns={'FEO':'FEOT'})
+            df = df.rename(columns={'FEO': 'FEOT'})
             continue
         if i not in model['Train Features']:
             df = df.drop(columns=i)
@@ -273,12 +277,12 @@ def organize(df):
 
     return df
 
+
 def quality_entropy(model, df, gtype):
-    #Determine Quality of esimativy based on entropy of probs
+    # Determine Quality of esimativy based on entropy of probs
     from scipy.stats import entropy
 
     probs = model.predict_proba(df)
-
 
     if gtype == 'group':
         df['CERTAINTY GROUP'] = 0.0
@@ -293,7 +297,7 @@ def quality_entropy(model, df, gtype):
         ent = entropy(i, base=len(i))
 
         if gtype == 'group':
-            df.iloc[j, df.columns.get_loc('CERTAINTY GROUP')] =1 - ent
+            df.iloc[j, df.columns.get_loc('CERTAINTY GROUP')] = 1 - ent
             if 1 - ent > 0.7:
                 df.iloc[j, df.columns.get_loc('QC GROUP')] = 'HIGH QUALITY'
             elif 1 - ent > 0.5:
@@ -314,19 +318,22 @@ def quality_entropy(model, df, gtype):
 
     return df
 
-def load_data_ms_web(filename, separator_diferent=False,ftype ='csv'):
+
+def load_data_ms_web(filename, separator_diferent=False, ftype='csv',
+                     skipfooter=6, skiprow=3):
+    from formula import get_formula, append_df_to_excel
+
     model = load_model()
 
     if ftype == 'csv':
-        #df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
+        # df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
         df = pd.read_csv(filename)
     elif ftype == 'xls' or ftype == 'xlsx':
-        df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
+        df = pd.read_excel(filename, skipfooter=skipfooter, skiprows=skiprow)
     #     df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
     else:
-         raise InputError("Input file not suported!!!")
+        raise InputError("Input file not suported!!!")
 
-    #df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
     df_w = df
 
     # Check if values is separated with , instead of .
@@ -336,8 +343,8 @@ def load_data_ms_web(filename, separator_diferent=False,ftype ='csv'):
 
     # Predict Group
     df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
-    df_qc = quality_entropy(model['GROUP'],df,'group')
-    #df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+    df_qc = quality_entropy(model['GROUP'], df, 'group')
+    # df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['QC GROUP'] = df_qc['QC GROUP']
 
     groups = df_w['GROUP PREDICTED'].unique()
@@ -352,14 +359,14 @@ def load_data_ms_web(filename, separator_diferent=False,ftype ='csv'):
             df = df.stack().str.replace(',', '.').unstack()
         df = organize(df)
         predictions = model[group].predict(df)
-       # print(group+'\n\n')
+        # print(group+'\n\n')
         df_qc = quality_entropy(model[group], df, 'mineral')
 
         # predictions = model[group].predict(df)
         df = df_w[df_w['GROUP PREDICTED'] == group]
-        #df['GROUP PREDICTED'] = group
+        # df['GROUP PREDICTED'] = group
         df['MINERAL PREDICTED'] = predictions
-       # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+        # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
         df['QC MINERAL'] = df_qc['QC MINERAL']
         df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
 
@@ -367,17 +374,25 @@ def load_data_ms_web(filename, separator_diferent=False,ftype ='csv'):
 
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
     cols = df_all.columns.tolist()
-    cols = cols[-5:] +cols[:-5]
+    cols = cols[-5:] + cols[:-5]
     df_all = df_all[cols]
 
-    return df_all.round(4)
+    formulas, dic_formulas = get_formula(df_all)
+    df_all.insert(5, 'FORMULA', formulas['Formula'])
+
+    groups_df = formulas['GROUP PREDICTED'].unique()
+    for group in groups_df:
+        df_partial = formulas[formulas['GROUP PREDICTED'] == group]
+        append_df_to_excel('formula_calculator_output.xlsx', df_partial, sheet_name=group + '_formula')
+
+    return df_all.round(4), dic_formulas
+
 
 def load_data_ms(filename, separator_diferent=False):
     model = load_model()
 
     if filename[-3:] == 'csv':
         df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
-        df = pd.read_csv(filename )
     elif filename[-3:] == 'xls' or filename[-4:] == 'xlsx':
         df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
     else:
@@ -391,8 +406,8 @@ def load_data_ms(filename, separator_diferent=False):
 
     # Predict Group
     df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
-    df_qc = quality_entropy(model['GROUP'],df,'group')
-    #df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
+    df_qc = quality_entropy(model['GROUP'], df, 'group')
+    # df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['QC GROUP'] = df_qc['QC GROUP']
 
     groups = df_w['GROUP PREDICTED'].unique()
@@ -407,23 +422,23 @@ def load_data_ms(filename, separator_diferent=False):
             df = df.stack().str.replace(',', '.').unstack()
         df = organize(df)
         predictions = model[group].predict(df)
-       # print(group+'\n\n')
+        # print(group+'\n\n')
         df_qc = quality_entropy(model[group], df, 'mineral')
 
         # predictions = model[group].predict(df)
         df = df_w[df_w['GROUP PREDICTED'] == group]
-        #df['GROUP PREDICTED'] = group
+        # df['GROUP PREDICTED'] = group
         df['MINERAL PREDICTED'] = predictions
-        #df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+        # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
         df['QC MINERAL'] = df_qc['QC MINERAL']
         df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
 
         df_partial.append(df)
 
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
-    #print(df_all)
+    # print(df_all)
     cols = df_all.columns.tolist()
-    cols = cols[-5:] +cols[:-5]
+    cols = cols[-5:] + cols[:-5]
     df_all = df_all[cols]
 
     outfilename = filename[:-4] + '_classify.xls'
@@ -432,10 +447,11 @@ def load_data_ms(filename, separator_diferent=False):
 
     return df_all
 
-def _odf2df(odf):
-    #convert Orange Data table to Pandas DataFrame
 
-    #TODO Deal with Categorical Variable where Orange convert to ints with indices of text
+def _odf2df(odf):
+    # convert Orange Data table to Pandas DataFrame
+
+    # TODO Deal with Categorical Variable where Orange convert to ints with indices of text
     col = []
     for i in odf.domain:
         col.append(i.name)
@@ -450,20 +466,19 @@ def predict_mineral_orange(odf):
 
     model = load_model()
 
-    #Convert from Orange Data table to Pandas
+    # Convert from Orange Data table to Pandas
     df = _odf2df(odf)
 
-    #Making a copy of df
+    # Making a copy of df
     df_w = df
     # Adjust Dataframe for predict, removing columns, sorting, etc
     df = organize(df)
 
     # Predict Group
     df_w['GROUP PREDICTED'] = model['GROUP'].predict(df)
-    df_qc = quality_entropy(model['GROUP'],df,'group')
+    df_qc = quality_entropy(model['GROUP'], df, 'group')
     df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['QC GROUP'] = df_qc['QC GROUP']
-
 
     groups = df_w['GROUP PREDICTED'].unique()
 
@@ -487,4 +502,3 @@ def predict_mineral_orange(odf):
 
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
     return df_all
-
