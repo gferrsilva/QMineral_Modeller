@@ -1,4 +1,4 @@
-![jpeg](figures/Qmin_logo.png)
+![jpeg](figures/QMIN_Logo_new.jpg)
 
 ## Introduction
 
