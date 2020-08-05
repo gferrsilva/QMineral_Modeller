@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from qmin import load_model
 
 class MolWeight():
 
@@ -19,6 +20,76 @@ class MolWeight():
         self.CL = 35.453
         self.ZNO = 81.38
 
+
+def organize(df):
+    model = load_model()
+    table_reference = '../references/OXIDE_TO_ELEMENT.csv'
+    df_references = pd.read_csv(table_reference, sep=';')
+
+    dic = {}
+    el = []
+    for i in range(len(df_references['Element'])):
+        dic[i] = str(df_references['Element'][i]).strip().upper()
+        el.append(str(df_references['Element'][i]).strip().upper())
+    df_references.replace(dic)
+    df_references['Element_Upper'] = el
+
+    # Loop to convert Element to oxide if needed
+    # TODO: Check for + in ion exp Ca2+
+
+    for i in df.columns:
+        c = i.strip().upper()
+
+        a = df_references[df_references['Element_Upper'] == c]
+
+        if len(a) != 0:
+            df[i] = df[i].astype('float')
+            if c == 'S' or c == 'AG' or c == 'AS' or i == 'F' or c == 'CL':
+                continue
+            else:
+                if len(a[a['Valency'] == 1]['Factor']) == 1:
+                    if c == 'CU':
+                        factor = float(a[a['Valency'] == 2]['Factor'])
+
+                        df[c + 'O'] = df[i] * factor
+                    else:
+                        factor = float(a[a['Valency'] == 1]['Factor'])
+
+                        df[c + 'O'] = df[i] * factor
+
+                elif len(a[a['Valency'] == 2]['Factor']) == 1:
+                    factor = float(a[a['Valency'] == 2]['Factor'])
+                    df[c + 'O'] = df[i] * factor
+
+                elif len(a[a['Valency'] == 3]['Factor']) == 1:
+                    factor = float(a[a['Valency'] == 3]['Factor'])
+
+                    if c == 'CO':
+                        df[c + 'O'] = df[i] * factor
+                    else:
+                        df[c + '2O3'] = df[i] * factor
+
+                elif len(a[a['Valency'] == 5]['Factor']) == 1:
+                    factor = float(a[a['Valency'] == 5]['Factor'])
+                    df[c + '2O5'] = df[i] * factor
+
+    dic = {}
+    for i in range(len(df.columns)):
+        dic[df.columns[i]] = str(df.columns[i]).strip().upper()
+    df = df.rename(columns=dic)
+
+    for i in df.columns:
+        if i == 'FEOT':
+            df = df.rename(columns={'FEOT':'FEO'})
+            continue
+    # Add missing columns
+    for i in model['Train Features']:
+        if i not in df.columns:
+            df[i] = 0
+
+    return df
+
+>>>>>>> layout
 def get_weights(df_grt):
     ''' Return DataFrame of moles weights for use in formulas '''
 
@@ -165,7 +236,8 @@ def garnet_formula(df_grt):
     df_f.loc[df_f['MN_Atom'] > 0, 'Formula'] += 'Mn' + df_f['MN_Atom'].astype('str')
     df_f.loc[df_f['MG_Atom'] > 0, 'Formula'] += 'Mg' + df_f['MG_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += (df_f['CA_Atom'] + df_f['FE2_Atom'] + df_f['MN_Atom'] + df_f['MG_Atom']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['CA_Atom'] + df_f['FE2_Atom'] +
+                                      df_f['MN_Atom'] + df_f['MG_Atom']).round(1).astype('str')
 
     #octaedrico
     df_f['Formula'] += '('
@@ -174,18 +246,19 @@ def garnet_formula(df_grt):
     df_f.loc[df_f['CR_Atom'] > 0, 'Formula'] += 'Cr' + df_f['CR_Atom'].astype('str')
     df_f.loc[df_f['TI_Atom'] > 0, 'Formula'] += 'Ti' + df_f['TI_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += (df_f['FE3_Atom'] + df_f['AL_Atom'] + df_f['CR_Atom'] + df_f['TI_Atom']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['FE3_Atom'] + df_f['AL_Atom'] +
+                                      df_f['CR_Atom'] + df_f['TI_Atom']).round(1).astype('str')
 
     #tetraedrico
     df_f['Formula'] += '('
     df_f.loc[df_f['SI_Atom'] > 0, 'Formula'] += 'Si' + df_f['SI_Atom'].astype('str')
     df_f['Formula'] += 'O' + (df_f['SI_NormOxygen']/df_f['SI_Atom']).round(1).astype('str') + ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['SI_Atom']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom']).round(1).astype('str')
     #
     print(df_f['Formula'])
   #  df_f.to_excel('formula_garnet.xlsx')
 
-    return df_f[['Classification', 'Formula', 'CaTi_Grt', 'andradite', 'uvarovite', 'spessartine',
+    return df_f[['Formula', 'Classification', 'CaTi_Grt', 'andradite', 'uvarovite', 'spessartine',
                  'grossular', 'pyrope', 'almandine']]
 
 def feldspar_formula(df_fdp):
@@ -216,13 +289,13 @@ def feldspar_formula(df_fdp):
     df_f.loc[df_f['NA_Atom'] > 0, 'Formula'] += 'Na' + df_f['NA_Atom'].astype('str')
     df_f.loc[df_f['CA_Atom'] > 0, 'Formula'] += 'Ca' + df_f['CA_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['K_Atom'] + df_f['NA_Atom'] + df_f['CA_Atom']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['K_Atom'] + df_f['NA_Atom'] + df_f['CA_Atom']).round(1).astype('str')
 
     #sito T - tetraedrico
     df_f.loc[df_f['SI_Atom'] > 0, 'Formula'] += '(Si' + df_f['SI_Atom'].astype('str')
     df_f.loc[df_f['AL_Atom'] > 0, 'Formula'] += 'Al' + df_f['AL_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['SI_Atom'] + df_f['AL_Atom']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom'] + df_f['AL_Atom']).round(1).astype('str')
     df_f['Formula'] += 'O' + df_f['NormOxygen_Total'].round(1).astype('str')
 
     #df_f.to_excel('formula_feldspar.xlsx')
@@ -254,21 +327,22 @@ def olivine_formula(df_oli):
 
     df_classification = df_f[['Forsterite', 'Fayalite', 'Tephroite', 'Ca-Olivine']]
     df_f['Classification'] = df_classification.idxmax(axis=1)
+
     #Formula Olivina M2TO4
     #sitio M - octaedrico
     df_f['Formula'] = '('
-    df_f.loc[df_f['FE2_Atom'] > 0, 'Formula'] += 'Fe' + df_f['FE2_Atom'].astype('str')
-    df_f.loc[df_f['MG_Atom'] > 0, 'Formula'] += 'Mg' + df_f['MG_Atom'].astype('str')
-    df_f.loc[df_f['CA_Atom'] > 0, 'Formula'] += 'Ca' + df_f['CA_Atom'].astype('str')
-    df_f.loc[df_f['MN_Atom'] > 0, 'Formula'] += 'Mn' + df_f['MN_Atom'].astype('str')
+    df_f.loc[df_f['FE2_Atom'] > 0, 'Formula'] += 'Fe' + df_f['FE2_Atom'].round(1).astype('str')
+    df_f.loc[df_f['MG_Atom'] > 0, 'Formula'] += 'Mg' + df_f['MG_Atom'].round(1).astype('str')
+    df_f.loc[df_f['CA_Atom'] > 0, 'Formula'] += 'Ca' + df_f['CA_Atom'].round(1).astype('str')
+    df_f.loc[df_f['MN_Atom'] > 0, 'Formula'] += 'Mn' + df_f['MN_Atom'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = '+ (df_f['FE2_Atom'] + df_f['MG_Atom'] +
+    df_f['Formula'] += '\u03A3' + (df_f['FE2_Atom'] + df_f['MG_Atom'] +
                                      df_f['CA_Atom'] + df_f['MN_Atom']).round(1).astype('str')
 
     #sito T - tetraedrico
     df_f.loc[df_f['SI_Atom'] > 0, 'Formula'] += '(Si' + df_f['SI_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['SI_Atom']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom']).round(1).astype('str')
 
     df_f['Formula'] += 'O' + df_f['NormOxygen_Total'].round(1).astype('str')
     #df_f.to_excel('formula_olivina.xlsx')
@@ -361,7 +435,7 @@ def pyroxene_formula(df_px):
     df_f.loc[df_f['M2_Fe2'].round(1) > 0, 'Formula'] += 'Fe' + df_f['M2_Fe2'].round(1).astype('str')
     df_f.loc[df_f['M2_Mg'].round(1) > 0, 'Formula'] += 'Mg' + df_f['M2_Mg'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['M2_Ca'].round(1) + df_f['M2_Na'].round(1) +
+    df_f['Formula'] += '\u03A3' + (df_f['M2_Ca'].round(1) + df_f['M2_Na'].round(1) +
                                       df_f['M2_Mn'].round(1) + df_f['M2_Fe2'].round(1) +
                                       df_f['M2_Mg'].round(1)).round(1).astype('str')
     #M2 octaedrico
@@ -373,7 +447,7 @@ def pyroxene_formula(df_px):
     df_f.loc[df_f['M1_Mg'].round(1) > 0, 'Formula'] += 'Mg' + df_f['M1_Mg'].round(1).astype('str')
     df_f.loc[df_f['M1_Ti'].round(1) > 0, 'Formula'] += 'Ti' + df_f['M1_Ti'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['M1_Fe3'].round(1) + df_f['M1_Fe2'].round(1) + df_f['M1_Al'].round(1) +
+    df_f['Formula'] += '\u03A3' + (df_f['M1_Fe3'].round(1) + df_f['M1_Fe2'].round(1) + df_f['M1_Al'].round(1) +
                         df_f['M1_Ti'].round(1) + df_f['M1_Mg'].round(1) + df_f['M1_Ti'].round(1)).round(1).astype('str')
 
     #sitio T - tetraedrico
@@ -381,8 +455,8 @@ def pyroxene_formula(df_px):
     df_f.loc[df_f['T_Si'].round(1) > 0, 'Formula'] += 'Si' + df_f['T_Si'].round(1).astype('str')
     df_f.loc[df_f['T_Al'].round(1) > 0, 'Formula'] += 'Al' + df_f['T_Al'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['T_Si'].round(1) + df_f['T_Al'].round(1)).round(1).astype('str')
-    df_f['Formula'] += 'O'  + (df_f['NormOxygen_Total']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['T_Si'].round(1) + df_f['T_Al'].round(1)).round(1).astype('str')
+    df_f['Formula'] += 'O' + (df_f['NormOxygen_Total']).round(1).astype('str')
 
    # df_f.to_excel('formula_pyroxene.xlsx')
     df_out = df_f[['Formula', "T_Si", "T_Al", 'M1_Ti', 'M1_Al', 'M1_Cr',
@@ -456,7 +530,7 @@ def micas_formula(df_mica):
     df_f.loc[df_f['X_Na'].round(1) > 0, 'Formula'] += 'Na' + df_f['X_Na'].round(1).astype('str')
     df_f.loc[df_f['X_K'].round(1) > 0, 'Formula'] += 'K' + df_f['X_K'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['X_Ca'].round(1) + df_f['X_Na'].round(1) +
+    df_f['Formula'] += '\u03A3' + (df_f['X_Ca'].round(1) + df_f['X_Na'].round(1) +
                                       df_f['X_K'].round(1)).round(1).astype('str')
     #sitio Y
     df_f['Formula'] += '('
@@ -470,7 +544,7 @@ def micas_formula(df_mica):
     #df_f.loc[df_f['Y_Cu'].round(1) > 0, 'Formula'] += 'Cu' + df_f['Y_Cu'].round(1).astype('str')
     df_f.loc[df_f['Y_Li'].round(1) > 0, 'Formula'] += 'Li' + df_f['Y_Li'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['Y_Al'].round(1) + df_f['Y_Ti'].round(1) + df_f['Y_Cr'].round(1) +
+    df_f['Formula'] += '\u03A3' + (df_f['Y_Al'].round(1) + df_f['Y_Ti'].round(1) + df_f['Y_Cr'].round(1) +
                                     df_f['Y_Fe'].round(1) + df_f['Y_Mn'].round(1) + df_f['Y_Mg'].round(1) +
                                       df_f['Y_Li'].round(1)).round(1).astype('str')
     #Sitio Z
@@ -478,7 +552,7 @@ def micas_formula(df_mica):
     df_f.loc[df_f['Z_Si'].round(1) > 0, 'Formula'] += 'Si' + df_f['Z_Si'].round(1).astype('str')
     df_f.loc[df_f['Z_Al'].round(1) > 0, 'Formula'] += 'Al' + df_f['Z_Al'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['Z_Si'].round(1) + df_f['Z_Al'].round(1)).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['Z_Si'].round(1) + df_f['Z_Al'].round(1)).round(1).astype('str')
     # Oxygen
     df_f['Formula'] += 'O' + '20'
     #sitio H
@@ -487,14 +561,14 @@ def micas_formula(df_mica):
     df_f.loc[df_f['H_F'].round(1) > 0, 'Formula'] += 'F' + df_f['H_F'].round(1).astype('str')
     df_f.loc[df_f['H_Cl'].round(1) > 0, 'Formula'] += 'Cl' + df_f['H_Cl'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['H_OH'].round(1) + df_f['H_F'].round(1) +
+    df_f['Formula'] += '\u03A3' + (df_f['H_OH'].round(1) + df_f['H_F'].round(1) +
                                       df_f['H_Cl'].round(1)).round(1).astype('str')
 
-    df_f.to_excel('formula_mica.xlsx')
+    #df_f.to_excel('formula_mica.xlsx')
                                       #M2 octaedrico
 
     #print(df_f)
-    return df_f['Formula']
+    return df_f
 
 def spinel_formula(df_sp):
 
@@ -511,7 +585,6 @@ def spinel_formula(df_sp):
             el = el[:2]
         if el[0] == 'K':
             el = 'K'
-        print(el)
 
         df_f[el + '_NormCations'] = 3 * df_f[el + '_mole'] / df_f['moles_cation']
         if el in ['SI', 'TI']:
@@ -557,22 +630,138 @@ def spinel_formula(df_sp):
     df_f.loc[df_f['X_Zn'] > 0, 'Formula'] += 'Zn' + df_f['X_Zn'].astype('str')
     df_f.loc[df_f['X_Ti'] > 0, 'Formula'] += 'Ti' + df_f['X_Ti'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['X_total']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['X_total']).round(1).astype('str')
     #sitio Y
     df_f['Formula'] += '('
     df_f.loc[df_f['Y_Fe'] > 0, 'Formula'] += 'Fe' + df_f['Y_Fe'].astype('str')
     df_f.loc[df_f['Y_Al'] > 0, 'Formula'] += 'Al' + df_f['Y_Al'].astype('str')
     df_f.loc[df_f['Y_Cr'] > 0, 'Formula'] += 'Cr' + df_f['Y_Cr'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3 = ' + (df_f['Y_total']).round(1).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['Y_total']).round(1).astype('str')
     #Oxygen
     df_f['Formula'] += ' O' + df_f['NormOxygen_Total'].round(1).astype('str')
 
-    df_f.to_excel('formula_spinel.xlsx')
-    print(df_f['Formula'])
+    #df_f.to_excel('formula_spinel.xlsx')
+    #print(df_f['Formula'])
+    #return df_f[['Formula']]
+    return df_f
+
+def get_function(group, df_partial):
+    formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL']
+
+    if group == formulas_ready[0]:
+        df = garnet_formula(df_partial)
+    elif group == formulas_ready[1]:
+        df = feldspar_formula(df_partial)
+    elif group == formulas_ready[2]:
+        df = olivine_formula(df_partial)
+    elif group == formulas_ready[3]:
+        df = pyroxene_formula(df_partial)
+    elif group == formulas_ready[4]:
+        df = micas_formula(df_partial)
+    elif group == formulas_ready[5]:
+        df = spinel_formula(df_partial)
+    else:
+        print('Not implemented Formula Calulator')
+        df = pd.DataFrame(column=['Formula'])
+    return df
+
+def append_df_to_excel(filename, df, sheet_name='Sheet1',
+                       startrow=None, truncate_sheet=False,
+                       **to_excel_kwargs):
+    """
+    https://stackoverflow.com/questions/20219254/how-to-write-to-an-existing-excel-file-without-overwriting-data-using-pandas
+    Append a DataFrame [df] to existing Excel file [filename]
+    into [sheet_name] Sheet.
+    If [filename] doesn't exist, then this function will create it.
+
+    Parameters:
+      filename : File path or existing ExcelWriter
+                 (Example: '/path/to/file.xlsx')
+      df : dataframe to save to workbook
+      sheet_name : Name of sheet which will contain DataFrame.
+                   (default: 'Sheet1')
+      startrow : upper left cell row to dump data frame.
+                 Per default (startrow=None) calculate the last row
+                 in the existing DF and write to the next row...
+      truncate_sheet : truncate (remove and recreate) [sheet_name]
+                       before writing DataFrame to Excel file
+      to_excel_kwargs : arguments which will be passed to `DataFrame.to_excel()`
+                        [can be dictionary]
+
+    Returns: None
+    """
+    from openpyxl import load_workbook
+
+    # ignore [engine] parameter if it was passed
+    if 'engine' in to_excel_kwargs:
+        to_excel_kwargs.pop('engine')
+
+    writer = pd.ExcelWriter(filename, engine='openpyxl')
+
+    # Python 2.x: define [FileNotFoundError] exception if it doesn't exist
+    try:
+        FileNotFoundError
+    except NameError:
+        FileNotFoundError = IOError
 
 
+    try:
+        # try to open an existing workbook
+        writer.book = load_workbook(filename)
 
+        # get the last row in the existing Excel sheet
+        # if it was not specified explicitly
+        if startrow is None and sheet_name in writer.book.sheetnames:
+            startrow = writer.book[sheet_name].max_row
+
+        # truncate sheet
+        if truncate_sheet and sheet_name in writer.book.sheetnames:
+            # index of [sheet_name] sheet
+            idx = writer.book.sheetnames.index(sheet_name)
+            # remove [sheet_name]
+            writer.book.remove(writer.book.worksheets[idx])
+            # create an empty sheet [sheet_name] using old index
+            writer.book.create_sheet(sheet_name, idx)
+
+        # copy existing sheets
+        writer.sheets = {ws.title:ws for ws in writer.book.worksheets}
+    except FileNotFoundError:
+        # file does not exist yet, we will create it
+        pass
+
+    if startrow is None:
+        startrow = 0
+
+    # write out the new sheet
+    df.to_excel(writer, sheet_name, startrow=startrow, **to_excel_kwargs)
+
+    # save the workbook
+    writer.save()
+
+def get_formula(df):
+    '''Run formula calculator for groups in list'''
+    #import openpyxl
+    formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL']
+    df = organize(df)
+
+    #groups_df = df['GROUP'].unique()
+    groups_df = df['GROUP PREDICTED'].unique()
+    dfs = []
+    for group in groups_df:
+       df_partial = df[df['GROUP PREDICTED'] == group]
+       #df_partial = df[df['GROUP'] == group]
+       if group in formulas_ready:
+           df_formula = get_function(group, df_partial)
+           dfs.append(pd.concat([df_partial, df_formula['Formula']], axis=1))
+       else:
+           dfs.append(df_partial)
+       #   append_df_to_excel('formula_calculator_output.xlsx', df_formula, sheet_name=group+'_formula')
+    df_all = pd.concat(dfs, axis=0)
+
+
+    return df_all
+>>>>>>> layout
 
 
 if __name__ == '__main__':
@@ -591,6 +780,7 @@ if __name__ == '__main__':
     #feldspar_formula(df_fdp)
    # pyroxene_formula(df_px)
     #micas_formula(df_mc)
-    spinel_formula(df_sp)
+    #spinel_formula(df_sp)
+    get_formula(df)
 
 
