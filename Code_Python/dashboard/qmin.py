@@ -95,13 +95,13 @@ def oob_curve(nmin, nmax):
 
 def saveModel(model_name):
     # Save Model
-    path = '../../model_py/'
+    path = './model_py/'
     pickle.dump(model, open(path + model_name, 'wb'))
     print("Model Saved ...\n" + path + model_name)
 
 
 def load_model():
-    modelsaved = '../../model_py/allmodels.pkl'
+    modelsaved = './model_py/allmodels.pkl'
     with open(modelsaved, "rb") as f:
         model = pickle.load(f)
 

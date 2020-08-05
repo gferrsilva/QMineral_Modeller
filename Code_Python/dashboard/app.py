@@ -232,10 +232,10 @@ def write_excel(df, dic_formula):
     return relative_filename
 
 
-def parse_contents(contents, filename, date, write=False):
+def parse_contents(contents, filename, date, write=False, sep=','):
     import qmin
 
-    content_type, content_string = contents.split(',')
+    content_type, content_string = contents.split(sep)
     decoded = base64.b64decode(content_string)
     df = None
     try:
@@ -357,15 +357,17 @@ def makeAxis(title, tickangle):
 
 
 @app.callback(Output('output-data-upload', 'children'),
-              [Input('upload-data', 'contents')],
+              [Input('upload-data', 'contents'),
+               Input('columns-separator', 'placeholder')],
               [State('upload-data', 'filename'),
                State('upload-data', 'last_modified'),
-               State('columns-separator', 'placeholder')]
+               ]
               )
-def update_output(list_of_contents, list_of_names, list_of_dates, csep=None):
+def update_output(list_of_contents, csep=None, list_of_names='', list_of_dates=''):
+    print('separator', csep)
     if list_of_contents is not None:
         results = [
-            parse_contents(c, n, d) for c, n, d in
+            parse_contents(c, n, d, sep=csep) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)]
         children = [results[0][0]]
 
@@ -374,23 +376,19 @@ def update_output(list_of_contents, list_of_names, list_of_dates, csep=None):
         return html.Div([html.H3('Upload your dataset', style={'text-align': 'center',
                                                                'padding': '320px'})])
 
-# Dash CSS
-#app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
-
-# Loading screen CSS
-#app.css.append_css({"external_scripts": "assets/spin.css"})
-
 @app.callback(
     Output("form-download", "action"),
-    [Input('upload-data', 'contents')],
+    [Input('upload-data', 'contents'),
+     Input('columns-separator', 'placeholder')],
     [State('upload-data', 'filename'),
-     State('upload-data', 'last_modified')])
-def show_download_button(list_of_contents, list_of_names, list_of_dates):
+     State('upload-data', 'last_modified')
+     ])
+def show_download_button(list_of_contents, csep=None, list_of_names='', list_of_dates=''):
+    print('separator', csep)
     if list_of_contents is not None:
         results = [
-            parse_contents(c, n, d) for c, n, d in
+            parse_contents(c, n, d, sep=csep) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)]
-        # print('ERROR'*10, results[0][1])
         # try:
         filename = results[0][1]
         # except:
@@ -400,6 +398,7 @@ def show_download_button(list_of_contents, list_of_names, list_of_dates):
 
     else:
         return None
+
 
 @app.callback(Output('triplot-dropdown', 'children'),
             [Input('graphic_tab', 'value'),
@@ -454,6 +453,7 @@ def update_dropdown(tab, nameform, content):
     else:
         return None
 
+
 @app.callback(Output('General_graphic', 'children'),
               [Input('graphic_tab', 'value'),
                Input('form-download', 'action')],
@@ -488,7 +488,7 @@ def update_graphic(tab, nameform, contents):
                Input('form-download', 'action')],
               [State('upload-data', 'contents')])
 def update_biplot(tab, nameform, contents):
-    #### Callback for the biplot graphic in the graphic table
+    # Callback for the biplot graphic in the graphic table
 
     if tab == 'graphic-table':
 
@@ -596,8 +596,6 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
         return html.Div([
                 dcc.Graph(figure=fig)
             ])
-
-
 
 
 @app.server.route('/downloads/<path:path>')
