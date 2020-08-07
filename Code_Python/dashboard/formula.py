@@ -280,8 +280,8 @@ def feldspar_formula(df_fdp):
     df_f.pop('temp')
     df_f['FE2_Atom'] = df_f['FE_NormCations'] - df_f['FE3_Atom']
 
-    df_f['albite'] = np.round((df_f['CA_Atom'] / (df_f['CA_Atom'] + df_f['K_Atom'] + df_f['NA_Atom'])), 2)
-    df_f['anorthite'] = np.round((df_f['NA_Atom'] / (df_f['CA_Atom'] + df_f['K_Atom'] + df_f['NA_Atom'])), 2)
+    df_f['anorthite'] = np.round((df_f['CA_Atom'] / (df_f['CA_Atom'] + df_f['K_Atom'] + df_f['NA_Atom'])), 2)
+    df_f['albite'] = np.round((df_f['NA_Atom'] / (df_f['CA_Atom'] + df_f['K_Atom'] + df_f['NA_Atom'])), 2)
     df_f['orthoclase'] = np.round((df_f['K_Atom'] / (df_f['CA_Atom'] + df_f['K_Atom'] + df_f['NA_Atom'])), 2)
     df_classification = df_f[['albite', 'anorthite', 'orthoclase']]
     df_f['Classification'] = df_classification.idxmax(axis=1)
@@ -791,4 +791,4 @@ if __name__ == '__main__':
     # pyroxene_formula(df_px)
     # micas_formula(df_mc)
     # spinel_formula(df_sp)
-    get_formula(df)
+    get_formula(df_fdp)

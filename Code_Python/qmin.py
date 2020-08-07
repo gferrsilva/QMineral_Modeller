@@ -7,6 +7,7 @@ import itertools
 import pickle
 import matplotlib.pyplot as plt
 
+
 class Error(Exception):
     """Base class for exceptions in this module."""
     pass
@@ -98,7 +99,7 @@ def saveModel(model_name):
 
 
 def load_model():
-    modelsaved = '../model_py/allmodels.pkl'
+    modelsaved = '../../model_py/allmodels.pkl'
     with open(modelsaved, "rb") as f:
         model = pickle.load(f)
 
@@ -184,9 +185,9 @@ def test_cprm_datasets_web(filename):
 
     group_class = models['GROUP'].predict(df)
     df_c = df.copy()
-    df_qc = quality_entropy(models['GROUP'],df,'group')
+    df_qc = quality_entropy(models['GROUP'], df, 'group')
     mineral_class = models['SULFIDE'].predict(df_c)
-    df_qc2 = quality_entropy(models["SULFIDE"],df_c,'mineral')
+    df_qc2 = quality_entropy(models["SULFIDE"], df_c, 'mineral')
     df_w['GROUP_ClASS'] = group_class
     df_w['QC GROUP'] = df_qc['QC GROUP']
     df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
@@ -203,48 +204,58 @@ def organize(df):
     model = load_model()
     table_reference = '../references/OXIDE_TO_ELEMENT.csv'
     df_references = pd.read_csv(table_reference, sep=';')
-        
+
+    dic = {}
+    el = []
+    for i in range(len(df_references['Element'])):
+        dic[i] = str(df_references['Element'][i]).strip().upper()
+        el.append(str(df_references['Element'][i]).strip().upper())
+    df_references.replace(dic)
+    df_references['Element_Upper'] = el
+     
+    # Loop to convert Element to oxide if needed 
+    #TODO: Check for + in ion exp Ca2+
+
+    for i in df.columns:
+        c = i.strip().upper()
+
+        a = df_references[df_references['Element_Upper'] == c]
+
+        if len(a) != 0:
+            df[i] = df[i].astype('float')
+            if c == 'S' or c == 'AG' or c == 'AS' or i == 'F' or c == 'CL':
+                continue
+            else:
+                if len(a[a['Valency'] == 1]['Factor']) == 1:
+                    if c == 'CU':
+                        factor = float(a[a['Valency'] == 2]['Factor'])
+
+                        df[c + 'O'] = df[i] * factor
+                    else:
+                        factor = float(a[a['Valency'] == 1]['Factor'])
+
+                        df[c + 'O'] = df[i] * factor
+
+                elif len(a[a['Valency'] == 2]['Factor']) == 1:
+                    factor = float(a[a['Valency'] == 2]['Factor'])
+                    df[c + 'O'] = df[i] * factor
+
+                elif len(a[a['Valency'] == 3]['Factor']) == 1:
+                    factor = float(a[a['Valency'] == 3]['Factor'])
+
+                    if c == 'CO':
+                        df[c + 'O'] = df[i] * factor
+                    else:
+                        df[c + '2O3'] = df[i] * factor
+
+                elif len(a[a['Valency'] == 5]['Factor']) == 1:
+                    factor = float(a[a['Valency'] == 5]['Factor'])
+                    df[c + '2O5'] = df[i] * factor
+
     dic = {}
     for i in range(len(df.columns)):
         dic[df.columns[i]] = str(df.columns[i]).strip().upper()
     df = df.rename(columns=dic)
-
-
-     
-    # Loop to convert Element to oxide if needed 
-    #TODO: Check for + in ion exp Ca2+
-    for i in df.columns:
-        c = i.strip().upper()
-        a = df_references[df_references['Element'] == i.strip()]
-
-        if len(a) != 0:
-            if c == 'S' or c == 'AG' or c == 'AS' or i == 'F' or c == 'CL':
-                #print(c, len(a),'Element in Table Do nothing')
-                continue
-            else:
-                if len(a[a['Valency']==1]['Factor']) == 1:
-                    factor = float(a[a['Valency']==1]['Factor'])
-                    df[c+'O'] = df[i]*factor
-
-                elif len(a[a['Valency']==2]['Factor']) == 1:
-                    factor = float(a[a['Valency']==2]['Factor'])
-                    if c == 'FE':
-                        df['FEOT'] = df[i]*factor
-                    else:
-                        df[c+'O'] = df[i]*factor
-
-                elif len(a[a['Valency']==3]['Factor']) == 1:
-                    factor = float(a[a['Valency']==3]['Factor'])
-
-                    if c == 'CO':
-                        df[c+'O'] = df[i]*factor
-                    else:
-                        df[c+'2O3'] = df[i]*factor
-
-                elif len(a[a['Valency']==5]['Factor']) == 1:
-                    factor = float(a[a['Valency']==5]['Factor'])
-                    df[c+'2O5'] = df[i]*factor
-
 
     #Remove Columns not in Qmin_Group_RF (Oxides used in trainnig RF model)
     for i in df.columns:
@@ -305,6 +316,8 @@ def quality_entropy(model, df, gtype):
     return df
 
 def load_data_ms_web(filename, separator_diferent=False,ftype ='csv'):
+    from formula import get_formula
+
     model = load_model()
 
     if ftype == 'csv':
@@ -357,16 +370,19 @@ def load_data_ms_web(filename, separator_diferent=False,ftype ='csv'):
 
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
     cols = df_all.columns.tolist()
-    cols = cols[-5:] +cols[:-5]
+    cols = cols[-5:] + cols[:-5]
     df_all = df_all[cols]
+    formulas = get_formula(df_all)
+    df_all.insert(5, 'FORMULA', formulas['Formula'])
 
-    return df_all.round(4)
+    return df_all.round(4), formulas
 
 def load_data_ms(filename, separator_diferent=False):
     model = load_model()
 
     if filename[-3:] == 'csv':
         df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
+        df = pd.read_csv(filename )
     elif filename[-3:] == 'xls' or filename[-4:] == 'xlsx':
         df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
     else:

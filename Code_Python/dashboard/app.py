@@ -88,7 +88,9 @@ def upload_card():
             # Allow multiple files to be uploaded
             multiple=True
         ),
+        html.Div(id='checkChange'),
         dcc.Checklist(
+            id='checkDataProcedings',
             options=[
                 {'label': 'I accept to agreggate my data in the training database of Qmin', 'value': 'true'},
             ],
@@ -193,9 +195,10 @@ app.layout = html.Div(
                                                                                style={'text-align': 'center',
                                                                                       'padding': '320px'})
                                                                    ]),
-                                                          html.Div(id='biplot_graphic'),
+                                                          html.Div(id='biplot_dropdown'),
+                                                          html.Div(id='biplot-graphic'),
                                                           html.Div(id='triplot-dropdown'),
-                                                          html.Div(id='triplot_graphic')
+                                                          html.Div(id='triplot-graphic')
                                                       ]),
 
                                           ])],
@@ -360,11 +363,9 @@ def makeAxis(title, tickangle):
               [Input('upload-data', 'contents'),
                Input('columns-separator', 'placeholder')],
               [State('upload-data', 'filename'),
-               State('upload-data', 'last_modified'),
-               ]
-              )
+               State('upload-data', 'last_modified')])
 def update_output(list_of_contents, csep=None, list_of_names='', list_of_dates=''):
-    print('separator', csep)
+    #print('separator', csep)
     if list_of_contents is not None:
         results = [
             parse_contents(c, n, d, sep=csep) for c, n, d in
@@ -379,12 +380,12 @@ def update_output(list_of_contents, csep=None, list_of_names='', list_of_dates='
 @app.callback(
     Output("form-download", "action"),
     [Input('upload-data', 'contents'),
-     Input('columns-separator', 'placeholder')],
+     Input('columns-separator', 'placeholder'),
+     Input('checkDataProcedings', 'value')],
     [State('upload-data', 'filename'),
-     State('upload-data', 'last_modified')
-     ])
-def show_download_button(list_of_contents, csep=None, list_of_names='', list_of_dates=''):
-    print('separator', csep)
+     State('upload-data', 'last_modified')])
+def show_download_button(list_of_contents, csep=None, teste='true', list_of_names='', list_of_dates=''):
+    #print('separator', csep)
     if list_of_contents is not None:
         results = [
             parse_contents(c, n, d, sep=csep) for c, n, d in
@@ -394,10 +395,86 @@ def show_download_button(list_of_contents, csep=None, list_of_names='', list_of_
         # except:
         #     print('Error: Button filename Download')
         #     return ''
+        sendDataEmail(teste, filename)
         return filename
 
     else:
         return None
+
+
+@app.callback(Output('biplot_dropdown', 'children'),
+            [Input('graphic_tab', 'value'),
+             Input('form-download', 'action')],
+            [State('upload-data', 'contents')])
+def update_biplot_dropdown(tab, nameform, content):
+    import numpy as np
+
+    if content == None:
+        return
+
+    relative_filename = nameform
+
+    df = pd.read_excel(relative_filename)
+
+    features = df.columns.to_list()
+    clean_features = []
+
+    for name in features:
+        if df[name].dtypes == np.float or df[name].dtypes == np.int64:
+            clean_features.append(name)
+    if tab == 'graphic-table':
+
+        return html.Div([
+        html.Div([
+            dcc.Dropdown(
+                id='bdropdown1',
+                options=[{'label': i, 'value': i} for i in clean_features],
+                value=clean_features[2]
+            )], style={'width': '33%', 'display': 'inline-block'}),
+        html.Div([
+            dcc.Dropdown(
+                id='bdropdown2',
+                options=[{'label': i, 'value': i} for i in clean_features],
+                value=clean_features[3]
+            )], style={'width': '33%', 'display': 'inline-block'}),
+            html.Div([
+                dcc.Dropdown(
+                    id='bdropdown3',
+                    options=[{'label': 'MINERAL PREDICTED', 'value': 'MINERAL PREDICTED'},
+                             {'label': 'GROUP PREDICTED', 'value': 'GROUP PREDICTED'}],
+                    value='MINERAL PREDICTED'
+                )], style={'width': '24%', 'display': 'inline-block'}),
+            html.Div(id='dd-output-container'),
+        ], style={'passing': 10})
+    else:
+        return None
+
+
+@app.callback(Output('biplot-graphic', 'children'),
+              [Input('graphic_tab', 'value'),
+               Input('bdropdown1', 'value'),
+               Input('bdropdown2', 'value'),
+               Input('bdropdown3', 'value'),
+               Input('form-download', 'action')],
+              [State('upload-data', 'contents')])
+def update_biplot(tabs, dp1, dp2, dp3, nameform, contents):
+    import plotly.express as px
+    if tabs == 'graphic-table':
+
+        if contents == None:
+            return
+
+        relative_filename = nameform
+
+        df = pd.read_excel(relative_filename)
+
+        fig = px.scatter(df, x=df[dp1], y=df[dp2], color=df[dp3],
+                         hover_data=['GROUP PREDICTED', 'MINERAL PREDICTED'])
+        return html.Div([
+            dcc.Graph(figure=fig)
+        ])
+    return None
+
 
 
 @app.callback(Output('triplot-dropdown', 'children'),
@@ -483,86 +560,40 @@ def update_graphic(tab, nameform, contents):
         ])
 
 
-@app.callback(Output('biplot_graphic', 'children'),
-              [Input('graphic_tab', 'value'),
-               Input('form-download', 'action')],
-              [State('upload-data', 'contents')])
-def update_biplot(tab, nameform, contents):
-    # Callback for the biplot graphic in the graphic table
+def sendDataEmail(teste, file_data):
 
-    if tab == 'graphic-table':
+    import smtplib
+    from email.mime.application import MIMEApplication
+    from email.mime.multipart import MIMEMultipart
 
-        if contents is not None:
+    if teste[0] == 'true':
+        From = "postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org"
+        To = "qmin.mineral@gmail.com"
+        # Create a text/plain message
+        msg = MIMEMultipart()
 
-            relative_filename = nameform
+        msg['Subject'] = "Data from QMIN"
+        msg['From'] = "postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org"
+        msg['To'] = "qmin.mineral@gmail.com"
 
-            df = pd.read_excel(relative_filename)
-            df = df.loc[:, ~df.columns.str.contains('^Unnamed')]  # remove unnamed columns
+        filename = file_data
+        fp = open(filename, 'rb')
+        att = MIMEApplication(fp.read(), _subtype="xls")
+        fp.close()
+        att.add_header('Content-Disposition', 'attachment', filename=filename)
+        msg.attach(att)
 
-            features = df.columns.to_list()
-            clean_features = []
+        s = smtplib.SMTP('smtp.mailgun.org', 587)
 
-            for name in features:
-                if df[name].dtypes == np.float or df[name].dtypes == np.int64:
-                    clean_features.append(name)
+        s.login('postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org',
+            'acbc4e8bdfa843cb4c66d3e2eddd579b-f7d0b107-2a58389a')
+        s.sendmail(From, To, msg.as_string())
+        s.quit()
 
-            fig = go.Figure()
-
-            # Add traces
-            fig.add_trace(
-                go.Scatter(
-                    x=df[clean_features[0]],
-                    y=df[clean_features[0]],
-                    mode="markers",
-                    marker=dict(color='rgba(152, 0, 0, .8)')
-                )
-            )
-
-            fig.update_traces(mode='markers', marker_line_width=2, marker_size=10)
-
-            fig.update_layout(
-                updatemenus=[
-                    dict(
-                        buttons=list(
-                            [select_axis(df, feature, 'y') for feature in clean_features],
-                        ),
-
-                        direction="down",
-                        pad={"r": 10, "t": 10},
-                        showactive=True,
-                        x=-0.05,
-                        xanchor="left",
-                        y=1.20,
-                        yanchor="top"
-                    ),
-
-                    dict(
-                        buttons=list(
-                            [select_axis(df, feature, 'x') for feature in clean_features],
-                        ),
-
-                        direction="up",
-                        pad={"r": 30, "t": 50},
-                        showactive=True,
-                        x=1.05,
-                        xanchor="right",
-                        y=-0.05,
-                        yanchor="middle"
-                    )]
-            )
-
-            return html.Div([
-                dcc.Graph(figure=fig)
-            ])
-
-        else:
-            return None
-
-    else:
-        return None
+    return None
 
 
-@app.callback(Output('triplot_graphic', 'children'),
+@app.callback(Output('triplot-graphic', 'children'),
                [Input('graphic_tab', 'value'),
                 Input('dropdown1', 'value'),
                 Input('dropdown2', 'value'),
@@ -596,6 +627,10 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
         return html.Div([
                 dcc.Graph(figure=fig)
             ])
+    else:
+        return None
+
+
 
 
 @app.server.route('/downloads/<path:path>')

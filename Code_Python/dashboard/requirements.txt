@@ -20,4 +20,5 @@ matplotlib
 openpyxl
 uuid
 warnings
-
+smtplib
+email
