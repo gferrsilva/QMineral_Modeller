@@ -3,7 +3,7 @@ import datetime
 import io
 import os
 import pandas as pd
-import plotly.graph_objects as go
+#import plotly.graph_objects as go
 import dash
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
@@ -11,7 +11,7 @@ import dash_html_components as html
 import dash_table
 from web_app import about, table, plot, informations
 import plotly.express as px
-import numpy as np
+#import numpy as np
 
 
 def encode_image(image_file):
@@ -235,32 +235,36 @@ def write_excel(df, dic_formula):
     return relative_filename
 
 
-def parse_contents(contents, filename, date, write=False, sep=','):
+def parse_contents(contents, filename, date, write=False, sep=',',
+                   decimalsep='.', headerskip=0, footerkip=0):
     import qmin
-
+    sep = ','
     content_type, content_string = contents.split(sep)
     decoded = base64.b64decode(content_string)
     df = None
     try:
         if 'csv' in filename:
             # Assume that the user uploaded a CSV file is CPRM style (evandro)
-            df, dic_formulas = qmin.load_data_ms_web(io.StringIO(decoded.decode('ISO-8859-1')), ftype='csv')
+            df, dic_formulas = qmin.load_data_ms_web(io.StringIO(decoded.decode('ISO-8859-1')),
+                                                     separator_diferent=sep, ftype='csv')
             # filename_output = write_excel(df)
 
         elif 'xls' in filename or 'xlsx' in filename:
             # Assume that the user uploaded an excel file
             # This excel is format of Microssonda!!!!
+            sep = ','
+            content_type, content_string = contents.split(sep)
+            decoded = base64.b64decode(content_string)
+
             df, dic_formulas = qmin.load_data_ms_web(io.BytesIO(decoded), ftype='xls')
-        # print(dic_formulas)
         filename_output = write_excel(df, dic_formulas)
-       # print(filename_output)
 
         # if write:
         #     filename_output = write_excel(df)
     except Exception as e:
         print(e)
         return html.Div([
-            'There was an error processing this file.'
+            html.H5('There was an error processing this file.')
         ])
 
     return html.Div([
@@ -288,7 +292,7 @@ def parse_contents(contents, filename, date, write=False, sep=','):
                     'backgroundColor': 'rgb(248, 248, 248)'
                 },
                 {
-                    'if': {'column_id': 'GROUP PREDICTED'},
+                    'if': {'column_id': 'PREDICTED GROUP'},
                     'backgroundColor': '#4C5EA1',
                     'color': 'white'
                 },
@@ -360,17 +364,39 @@ def makeAxis(title, tickangle):
 
 
 @app.callback(Output('output-data-upload', 'children'),
-              [Input('upload-data', 'contents'),
-               Input('columns-separator', 'placeholder')],
-              [State('upload-data', 'filename'),
-               State('upload-data', 'last_modified')])
-def update_output(list_of_contents, csep=None, list_of_names='', list_of_dates=''):
-    #print('separator', csep)
+              [Input('upload-data', 'contents')],
+              [State('columns-separator', 'value'),
+               State('upload-data', 'filename'),
+               State('upload-data', 'last_modified'),
+               State('header-skip', 'value'),
+               State('footer-skip', 'value'),
+               State('nsep', 'value')])
+def update_output(list_of_contents, csep=',',  list_of_names='',
+                  list_of_dates='', hs=2, fs=9, dc='.'):
+
+    if csep == None:
+        csep = ','
+    if hs == None:
+        hs = 0
+    if fs == None:
+        fs = 0
+    if dc == None:
+        dc = '.'
+    print('separator', csep, type(csep))
+    print('header-skip', hs)
+    print('footer-skip', fs)
+    print('decimal-separator', dc)
     if list_of_contents is not None:
         results = [
-            parse_contents(c, n, d, sep=csep) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
+            parse_contents(c, n, d, sep=csep, decimalsep=dc, headerskip=hs,
+                           footerkip=fs) for c, n, d in zip(list_of_contents, list_of_names, list_of_dates)]
+        # results = [parse_contents(list_of_contents[0], list_of_names, list_of_dates,
+        #                           sep=csep, decimalsep='.', headerskip=3, footerkip=6)]
+        #print(results, len(results))
+        if len(results) == 1:
+            return results[0]
         children = [results[0][0]]
+
 
         return children
     else:
@@ -380,21 +406,41 @@ def update_output(list_of_contents, csep=None, list_of_names='', list_of_dates='
 @app.callback(
     Output("form-download", "action"),
     [Input('upload-data', 'contents'),
-     Input('columns-separator', 'placeholder'),
      Input('checkDataProcedings', 'value')],
-    [State('upload-data', 'filename'),
-     State('upload-data', 'last_modified')])
-def show_download_button(list_of_contents, csep=None, teste='true', list_of_names='', list_of_dates=''):
-    #print('separator', csep)
+    [State('columns-separator', 'value'),
+     State('upload-data', 'filename'),
+     State('upload-data', 'last_modified'),
+     State('header-skip', 'value'),
+     State('footer-skip', 'value'),
+     State('nsep', 'value')])
+def show_download_button(list_of_contents, teste='true', csep=',',
+                         list_of_names='', list_of_dates='', hs=2, fs=9, dc='.'):
+
+    if csep == None:
+        csep = ','
+    if hs == None:
+        hs = 0
+    if fs == None:
+        fs = 0
+    if dc == None:
+        dc = '.'
+
+    print('2separator', csep)
+
     if list_of_contents is not None:
         results = [
-            parse_contents(c, n, d, sep=csep) for c, n, d in
+            parse_contents(c, n, d, sep=csep, decimalsep=dc, headerskip=hs,
+                           footerkip=fs) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)]
+        # results = [
+        #     parse_contents(c, n, d, sep=csep) for c, n, d in
+        #     zip(list_of_contents, list_of_names, list_of_dates)]
         # try:
         filename = results[0][1]
         # except:
         #     print('Error: Button filename Download')
         #     return ''
+        teste = 'False'
         sendDataEmail(teste, filename)
         return filename
 
@@ -440,9 +486,9 @@ def update_biplot_dropdown(tab, nameform, content):
             html.Div([
                 dcc.Dropdown(
                     id='bdropdown3',
-                    options=[{'label': 'MINERAL PREDICTED', 'value': 'MINERAL PREDICTED'},
-                             {'label': 'GROUP PREDICTED', 'value': 'GROUP PREDICTED'}],
-                    value='MINERAL PREDICTED'
+                    options=[{'label': 'PREDICTED MINERAL', 'value': 'PREDICTED MINERAL'},
+                             {'label': 'PREDICTED GROUP', 'value': 'PREDICTED GROUP'}],
+                    value='PREDICTED MINERAL'
                 )], style={'width': '24%', 'display': 'inline-block'}),
             html.Div(id='dd-output-container'),
         ], style={'passing': 10})
@@ -469,7 +515,7 @@ def update_biplot(tabs, dp1, dp2, dp3, nameform, contents):
         df = pd.read_excel(relative_filename)
 
         fig = px.scatter(df, x=df[dp1], y=df[dp2], color=df[dp3],
-                         hover_data=['GROUP PREDICTED', 'MINERAL PREDICTED'])
+                         hover_data=['PREDICTED GROUP', 'PREDICTED MINERAL'])
         return html.Div([
             dcc.Graph(figure=fig)
         ])
@@ -521,9 +567,9 @@ def update_dropdown(tab, nameform, content):
         html.Div([
             dcc.Dropdown(
                 id='dropdown4',
-                options=[{'label': 'MINERAL PREDICTED', 'value': 'MINERAL PREDICTED'},
-                         {'label': 'GROUP PREDICTED', 'value': 'GROUP PREDICTED'}],
-                value='MINERAL PREDICTED'
+                options=[{'label': 'PREDICTED MINERAL', 'value': 'PREDICTED MINERAL'},
+                         {'label': 'PREDICTED GROUP', 'value': 'PREDICTED GROUP'}],
+                value='PREDICTED MINERAL'
             )], style={'width': '24%', 'display': 'inline-block'}),
             html.Div(id='dd-output-container'),
         ], style={'passing': 10})
@@ -544,7 +590,7 @@ def update_graphic(tab, nameform, contents):
 
             relative_filename = nameform
             df = pd.read_excel(relative_filename)
-            fig = px.sunburst(df, path=['GROUP PREDICTED', 'MINERAL PREDICTED'])
+            fig = px.sunburst(df, path=['PREDICTED GROUP', 'PREDICTED MINERAL'])
 
             return html.Div([
                 dcc.Graph(figure=fig)
@@ -617,13 +663,13 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
             fig = px.scatter_ternary(df,
                                      a=df[dp1], b=df[dp2],
                                      c=df[dp3], size_max=15,
-                                     color=dp4, hover_name=df['MINERAL PREDICTED'],
+                                     color=dp4, hover_name=df['PREDICTED MINERAL'],
                                      size=df['Total'])
         else:
             fig = px.scatter_ternary(df,
                                  a=df[dp1], b=df[dp2],
                                  c=df[dp3], size_max=15,
-                                 color=dp4, hover_name=df['MINERAL PREDICTED'])
+                                 color=dp4, hover_name=df['PREDICTED MINERAL'])
         return html.Div([
                 dcc.Graph(figure=fig)
             ])
@@ -631,13 +677,11 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
         return None
 
 
-
-
 @app.server.route('/downloads/<path:path>')
 def serve_static(path):
     import flask
     root_dir = os.getcwd()
-    return flask.send_from_directory(
+    return flask.from_directory(
         os.path.join(root_dir, 'downloads'), path
     )
 
