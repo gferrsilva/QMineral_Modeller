@@ -28,6 +28,7 @@ library(tidyverse) # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data
 library(ggthemes) # Predefined themes
 library(caret) # Machine Learning Toolkit
 library(randomForest) # Random Forest library
+library(factoextra)
 
 #####
 # Built-in Functions
@@ -57,6 +58,13 @@ minerals <- minerals %>%
 
 pca <- prcomp(minerals[6:21],center = T,scale. = T,) # PCA with rescaling and centering
 
+biplot <- fviz_pca_var(pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+)
+
+
 summary(pca) # Summary of each PC
 
 minerals <- bind_cols(minerals, as_tibble(pca$x)) # appending the PCA values on minerals database
@@ -76,7 +84,7 @@ index <- createDataPartition(input$GROUP, p = 0.7, list = FALSE) # Train-test sp
 train_data <- input[as.vector(index), c(3,6:27)] # Selecting the train_data (GROUP + PCA)
 test_data  <- input[-index, 6:27]  # Selecting the test_data (PCA)
 y_test <- as_tibble(input[-index,3])  # Selecting the test_classes (GROUP)
-
+y_pca <- as_tibble(input[-index,28:43])
 ## Random Forest Setting up
 
 ctrl <- trainControl(method = "repeatedcv",classProbs = T, # Setting up the RF hyperparameters
@@ -115,7 +123,7 @@ plotTable <- heat %>%
 
 plotTable$prop[is.nan(plotTable$prop)] <- 0 # if there is any NaN value on any cell of the matrix, defines it as zero
 
-min <- as_tibble(cbind(y_test, test_data, pred_1)) # creates a database with true_values of the test, test data and prediction for the test
+min <- as_tibble(cbind(y_test, pred_1, test_data, y_pca)) # creates a database with true_values of the test, test data and prediction for the test
 
 # Data Vis ----
 
@@ -169,6 +177,7 @@ min <- as_tibble(cbind(y_test, test_data, pred_1)) # creates a database with tru
 )
 
 CairoPDF(file = 'figures/R_RF_ClassificationByGroup', width = 9, height = 8) # Creates a PDF file and addresses a name/path
+print(biplot)
 print(p.testset) # First Page, Test Set Spatialization
 print(p.confmatrx) # Second Page, Confusion Matrix
 dev.off() # Figure device Off

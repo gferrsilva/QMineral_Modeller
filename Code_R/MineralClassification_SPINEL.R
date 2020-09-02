@@ -123,11 +123,11 @@ blind <- blind %>%
 spin <- spin %>%
   bind_rows(blind)
 
-export <- spin %>%
-  group_by(MINERAL) %>%
-  sample_n(30, replace = T)
+# export <- spin %>%
+#   group_by(MINERAL) %>%
+#   sample_n(30, replace = T)
 
-write.csv(export, 'data_input/spinel_model.csv')
+write.csv(spin, 'data_input/spinel.csv')
 
 pca <- prcomp(spin[6:27], center = T)
 

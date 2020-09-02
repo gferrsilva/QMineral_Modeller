@@ -124,11 +124,11 @@ blind <- blind %>%
 amphibole <- amph %>%
   bind_rows(blind)
 
-export <- amphibole %>%
-  group_by(MINERAL) %>%
-  sample_n(30, replace = T)
+# export <- amphibole %>%
+#   group_by(MINERAL) %>%
+#   sample_n(30, replace = T)
 
-write.csv(export, 'data_input/amphibole_model.csv')
+# write.csv(export, 'data_input/amphibole.csv')
 
 pca <- prcomp(amphibole[6:27], center = T)
 

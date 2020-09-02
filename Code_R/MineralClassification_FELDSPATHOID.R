@@ -122,11 +122,11 @@ blind <- blind %>%
 feldspathoid <- foid %>%
   bind_rows(blind)
 
-export <- feldspathoid %>%
-  group_by(MINERAL) %>%
-  sample_n(30, replace = T)
+# export <- feldspathoid %>%
+#   group_by(MINERAL) %>%
+#   sample_n(30, replace = T)
 
-write.csv(export, 'data_input/feldspathoid_model.csv')
+write.csv(feldspathoid, 'data_input/feldspathoid.csv')
 
 pca <- prcomp(feldspathoid[6:27], center = T)
 

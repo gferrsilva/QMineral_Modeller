@@ -121,12 +121,12 @@ blind <- blind %>%
 
 mica <- mica %>%
   bind_rows(blind)
+# 
+# export <- mica %>%
+#   group_by(MINERAL) %>%
+#   sample_n(30, replace = T)
 
-export <- mica %>%
-  group_by(MINERAL) %>%
-  sample_n(30, replace = T)
-
-write.csv(export, 'data_input/mica_model.csv')
+write.csv(mica, 'data_input/mica.csv')
 
 pca <- prcomp(mica[6:27], center = T)
 

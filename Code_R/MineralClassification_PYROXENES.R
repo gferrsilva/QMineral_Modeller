@@ -310,9 +310,11 @@ cpx_rf <- cpx1 %>%
 pyroxene <- opx_rf %>%
   bind_rows(cpx_rf)
 
-input <- pyroxene %>% # manipulating the minerals database and associate the answer with input object
-  group_by(MINERAL) %>% # grouping the instances by the mineral 'GROUP' class
-  sample_n(30, replace = T) # sampling 300 instances of each 'GROUP', with replacement
+write.csv(pyroxene, 'data_input/pyroxene.csv')
+
+# input <- pyroxene %>% # manipulating the minerals database and associate the answer with input object
+#   group_by(MINERAL) %>% # grouping the instances by the mineral 'GROUP' class
+#   sample_n(30, replace = T) # sampling 300 instances of each 'GROUP', with replacement
 
 index <- createDataPartition(input$MINERAL, p = 0.7, list = FALSE) # Train-test split using an index
 train_data <- input[as.vector(index), c(4,6:27)] # Selecting the train_data (GROUP + PCA)

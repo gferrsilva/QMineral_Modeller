@@ -19,7 +19,8 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # Ajustando o work direction
+
+setwd("~/GitHub/MinChem_Modeller") # Ajustando o work direction
 
 set.seed(123) # Ajustando o 'Random State' da máquina para reproduzir os códigos
 

@@ -122,11 +122,11 @@ blind <- blind %>%
 garnet <- grt %>%
   bind_rows(blind)
 
-export <- garnet %>%
-  group_by(MINERAL) %>%
-  sample_n(30, replace = T)
+# export <- garnet %>%
+#   group_by(MINERAL) %>%
+#   sample_n(30, replace = T)
 
-write.csv(export, 'data_input/garnet_model.csv')
+write.csv(garnet, 'data_input/garnet.csv')
 
 pca <- prcomp(garnet[6:27], center = T)
 

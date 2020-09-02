@@ -120,12 +120,12 @@ blind <- blind %>%
 clay <- clay %>%
   bind_rows(blind)
 
+# 
+# export <- clay %>%
+#   group_by(MINERAL) %>%
+#   sample_n(30, replace = T)
 
-export <- clay %>%
-  group_by(MINERAL) %>%
-  sample_n(30, replace = T)
-
-write.csv(export, 'data_input/claymineral_model.csv')
+write.csv(clay, 'data_input/claymineral.csv')
 
 
 pca <- prcomp(clay[6:27], center = T)

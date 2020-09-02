@@ -121,11 +121,11 @@ blind <- blind %>%
 carbonate <- carb %>%
   bind_rows(blind)
 
-export <- carbonate %>%
-  group_by(MINERAL) %>%
-  sample_n(30, replace = T)
+# export <- carbonate %>%
+#   group_by(MINERAL) %>%
+#   sample_n(30, replace = T)
 
-write.csv(export, 'data_input/carbonate_model.csv')
+write.csv(carbonate, 'data_input/carbonate_model.csv')
 
 pca <- prcomp(carbonate[6:27], center = T)
 
