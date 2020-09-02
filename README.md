@@ -1,4 +1,4 @@
-![jpeg](figures/Qmin_logo.jpg)
+![jpeg](figures/QMIN_Logo_new.jpg)
 
 ## Introduction
 
@@ -91,6 +91,14 @@ Rasvumite, Sphalerite, Stromeyerite.
 
 <p>
 
+## Mineral Formula Calculation
+
+### _Mineral Formula Calculation by Deterministic Approach_
+The mineral formulas here implemented for _**Feldspar**_, _**Garnet**_, _**Mica**_, _**Olivine**_, _**Pyroxene**_ and _**Spinel**_ were calculated based on EPMA data and the total content of Fe3+ was obtained, when possible, by the charge balance after the calculation of [atom per formula unit number](https://www.researchgate.net/post/How_can_I_convert_wt_of_oxide_to_apfu_atom_per_formula_unit_like_table_1_in_attached_file_without_content_of_Li2O_and_H2O).
+Then, the formula printed out in the output is the product of several calculations concatenated into a string datatype column.
+
+### _Mineral Formula Calculation by Probabilistic Approach_
+The calculation formula for **Amphiboles** will be made by a multivariate regression for each one of the Crystallographic Sites, still in development, and will later be made available in this repository.
 
 ## Status
 
