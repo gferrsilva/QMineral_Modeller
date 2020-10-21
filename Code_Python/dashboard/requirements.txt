@@ -18,7 +18,7 @@ plotly>=2.0.9
 xlrd
 matplotlib
 openpyxl
-uuid
-warnings
-smtplib
-email
+#uuid
+#warnings
+#smtplib
+#email
