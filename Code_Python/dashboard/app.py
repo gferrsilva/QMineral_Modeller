@@ -1,9 +1,7 @@
 import base64
-import datetime
 import io
 import os
 import pandas as pd
-#import plotly.graph_objects as go
 import dash
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
@@ -11,7 +9,6 @@ import dash_html_components as html
 import dash_table
 from web_app import about, table, plot, informations
 import plotly.express as px
-#import numpy as np
 
 
 def encode_image(image_file):
@@ -35,14 +32,6 @@ def upload_card():
         html.Div([
             html.H4("Upload Files",
                     style={'text-align': 'center'}),
-            html.Div(className='row',
-                     children=[
-                         html.P("Decimal Separator:",
-                                className='four columns'),
-                         dcc.Input(id='nsep',
-                                   size='1',
-                                   placeholder='.',
-                                   className='two columns')]),
             html.B(),
             html.Div(className='row',
                      children=[html.P("  Column Separator:",
@@ -144,7 +133,30 @@ app.layout = html.Div(
                          # Define the right element
                          html.Div(className='four columns div-user-controls',
                                   children=[upload_card(),
+                                            html.Div([
+                                                html.Div(children=[html.H4("Contact"),
+                                                                   html.P("Name:"),
+                                                                   dcc.Input(id='nameEmail')
+                                                                   ]),
+                                                html.Div(children=[html.P("E-mail:"),
+                                                                   dcc.Input(id='endEmail',
+                                                                             type='email')
+                                                                   ]),
+                                                html.Div(children=[html.P("Issues:"),
+                                                                   dcc.Textarea(
+                                                                       id='textarea-state-email',
+                                                                       value='',
+                                                                       style={'width': '100%', 'height': 200},
+                                                                   ),
+                                                                   html.Button('Submit',
+                                                                               id='textarea-state-example-button',
+                                                                               n_clicks=0),
+                                                                   html.Div(id='textarea-state-example-output',
+                                                                            style={'whiteSpace': 'pre-line'})
+                                                                   ])]),
                                             informations.about_card()]),
+
+
                          # Define the left element
                          html.Div(id='right_container',
                                   className='eight columns div-for-charts bg-grey',
@@ -203,7 +215,8 @@ app.layout = html.Div(
 
                                           ])],
                                       className='item-a'),
-                                      informations.status_area()
+                                      informations.status_area(),
+
                                   ])
                      ])  # Define the right element
         ])
@@ -252,7 +265,7 @@ def parse_contents(contents, filename, date, write=False, sep=',',
         elif 'xls' in filename or 'xlsx' in filename:
             # Assume that the user uploaded an excel file
             # This excel is format of Microssonda!!!!
-            sep = ','
+           # sep = ','
             content_type, content_string = contents.split(sep)
             decoded = base64.b64decode(content_string)
 
@@ -369,10 +382,10 @@ def makeAxis(title, tickangle):
                State('upload-data', 'filename'),
                State('upload-data', 'last_modified'),
                State('header-skip', 'value'),
-               State('footer-skip', 'value'),
-               State('nsep', 'value')])
+               State('footer-skip', 'value')
+               ])
 def update_output(list_of_contents, csep=',',  list_of_names='',
-                  list_of_dates='', hs=2, fs=9, dc='.'):
+                  list_of_dates='', hs=2, fs=9):
 
     if csep == None:
         csep = ','
@@ -380,15 +393,13 @@ def update_output(list_of_contents, csep=',',  list_of_names='',
         hs = 0
     if fs == None:
         fs = 0
-    if dc == None:
-        dc = '.'
+
     print('separator', csep, type(csep))
     print('header-skip', hs)
     print('footer-skip', fs)
-    print('decimal-separator', dc)
     if list_of_contents is not None:
         results = [
-            parse_contents(c, n, d, sep=csep, decimalsep=dc, headerskip=hs,
+            parse_contents(c, n, d, sep=csep, headerskip=hs,
                            footerkip=fs) for c, n, d in zip(list_of_contents, list_of_names, list_of_dates)]
         # results = [parse_contents(list_of_contents[0], list_of_names, list_of_dates,
         #                           sep=csep, decimalsep='.', headerskip=3, footerkip=6)]
@@ -411,10 +422,10 @@ def update_output(list_of_contents, csep=',',  list_of_names='',
      State('upload-data', 'filename'),
      State('upload-data', 'last_modified'),
      State('header-skip', 'value'),
-     State('footer-skip', 'value'),
-     State('nsep', 'value')])
+     State('footer-skip', 'value')
+     ])
 def show_download_button(list_of_contents, teste='true', csep=',',
-                         list_of_names='', list_of_dates='', hs=2, fs=9, dc='.'):
+                         list_of_names='', list_of_dates='', hs=2, fs=9):
 
     if csep == None:
         csep = ','
@@ -422,14 +433,13 @@ def show_download_button(list_of_contents, teste='true', csep=',',
         hs = 0
     if fs == None:
         fs = 0
-    if dc == None:
-        dc = '.'
+
 
     print('2separator', csep)
 
     if list_of_contents is not None:
         results = [
-            parse_contents(c, n, d, sep=csep, decimalsep=dc, headerskip=hs,
+            parse_contents(c, n, d, sep=csep, headerskip=hs,
                            footerkip=fs) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)]
         # results = [
@@ -440,7 +450,7 @@ def show_download_button(list_of_contents, teste='true', csep=',',
         # except:
         #     print('Error: Button filename Download')
         #     return ''
-        teste = 'False'
+        teste = 'true'
         sendDataEmail(teste, filename)
         return filename
 
@@ -606,6 +616,42 @@ def update_graphic(tab, nameform, contents):
         ])
 
 
+@app.callback(
+    Output('textarea-state-example-output', 'children'),
+    [Input('textarea-state-example-button', 'n_clicks')],
+    [State('textarea-state-email', 'value'),
+     State('nameEmail', 'value'),
+     State('endEmail', 'value')])
+def update_output(n_clicks, value, name, endemail):
+    if n_clicks > 0:
+        sendEmail(value, name, endemail)
+        return 'E-mail send!:'
+
+
+def sendEmail(text, name = '', from_email=''):
+
+    import smtplib
+    from email.mime.text import MIMEText
+
+    text = name + '\n\n' + from_email + '\n\n' + text
+    msg = MIMEText(text)
+
+    # Create a text/plain message
+
+    msg['Subject'] = "USER COMUNICATION from QMIN"
+    msg['From'] = "postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org"
+    msg['To'] = "qmin.mineral@gmail.com"
+
+    s = smtplib.SMTP('smtp.mailgun.org', 587)
+
+    s.login('postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org',
+        'acbc4e8bdfa843cb4c66d3e2eddd579b-f7d0b107-2a58389a')
+    s.send_message(msg)
+    s.quit()
+
+    return None
+
+
 def sendDataEmail(teste, file_data):
 
     import smtplib
@@ -681,10 +727,11 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
 def serve_static(path):
     import flask
     root_dir = os.getcwd()
-    return flask.from_directory(
+    return flask.send_from_directory(
         os.path.join(root_dir, 'downloads'), path
     )
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.server.run(port=8000, host='127.0.0.1', debug=True)
+    #app.run_server(debug=True)

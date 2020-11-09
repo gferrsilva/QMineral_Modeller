@@ -336,7 +336,8 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
         df = pd.read_csv(filename, sep=',')
     elif ftype == 'xls' or ftype == 'xlsx':
        # df = pd.read_excel(filename, skipfooter=skipfooter, skiprows=skiprow)
-        df = pd.read_excel(filename,  skiprows=3, skipfooter=6)
+        df = pd.read_excel(filename)
+        #df = pd.read_excel(filename,  skiprows=3, skipfooter=6)
     else:
         print('Error in read input')
         raise InputError("Input file not supported!!!")
@@ -356,27 +357,43 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
     # df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['GROUP QC'] = df_qc['GROUP QC']
     groups = df_w['PREDICTED GROUP'].unique()
+    print(groups)
+
 
     # Predict Mineral
     df_partial = []
 
     for group in groups:
+        print('Predicting Mineral for group:', group)
         df = df_w[df_w['PREDICTED GROUP'] == group]
+        #print(df)
+        # if group == 'QUARTZ':
+        #     print(df)
         # Check if values is separated with , instead of .
         # if separator_diferent:
         #     df = df.stack().str.replace(',', '.').unstack()
         df = organize(df)
-        predictions = model[group].predict(df)
-        # print(group+'\n\n')
-        df_qc = quality_entropy(model[group], df, 'mineral')
+       # df = df.astype('float64')
+        try:
+            predictions = model[group].predict(df)
+            df_qc = quality_entropy(model[group], df, 'mineral')
+            # predictions = model[group].predict(df)
+            df = df_w[df_w['PREDICTED GROUP'] == group]
+            # df['PREDICTED GROUP'] = group
+            # print(df)
+            df['PREDICTED MINERAL'] = predictions
 
-        # predictions = model[group].predict(df)
-        df = df_w[df_w['PREDICTED GROUP'] == group]
-        # df['PREDICTED GROUP'] = group
-        df['PREDICTED MINERAL'] = predictions
-        # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
-        df['MINERAL QC'] = df_qc['MINERAL QC']
-        df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
+            #print(df['PREDICTED MINERAL'])
+            # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+            df['MINERAL QC'] = df_qc['MINERAL QC']
+            df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
+        except ZeroDivisionError:
+            pass
+
+        # print(group+'\n\n')
+
+
+
 
         df_partial.append(df)
 
@@ -384,7 +401,8 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
     cols = df_all.columns.tolist()
     cols = cols[-5:] + cols[:-5]
     df_all = df_all[cols]
-
+    #print('eerro aqui')
+    #exit()
     formulas, dic_formulas = get_formula(df_all)
     df_all.insert(5, 'FORMULA', formulas['Formula'])
 
