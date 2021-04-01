@@ -240,10 +240,12 @@ def write_excel(df, dic_formula):
     writer = pd.ExcelWriter(absolute_filename)
     df.to_excel(writer, 'QMIN')
     writer.save()
+    writer.close()
 
-    for key in dic_formula.keys():
-        if len(dic_formula[key]) > 0:
-            append_df_to_excel(absolute_filename, dic_formula[key], sheet_name=key + '_formula')
+    #####ERROR EM ESCREVER OUTRAS ABAS
+    # for key in dic_formula.keys():
+    #     if len(dic_formula[key]) > 0:
+    #         append_df_to_excel(absolute_filename, dic_formula[key], sheet_name=key + '_formula')
 
     return relative_filename
 
@@ -270,6 +272,7 @@ def parse_contents(contents, filename, date, write=False, sep=',',
             decoded = base64.b64decode(content_string)
 
             df, dic_formulas = qmin.load_data_ms_web(io.BytesIO(decoded), ftype='xls')
+
         filename_output = write_excel(df, dic_formulas)
 
         # if write:
@@ -450,8 +453,8 @@ def show_download_button(list_of_contents, teste='true', csep=',',
         # except:
         #     print('Error: Button filename Download')
         #     return ''
-        teste = 'true'
-        sendDataEmail(teste, filename)
+        test = 'true'
+        sendDataEmail(test, filename)
         return filename
 
     else:

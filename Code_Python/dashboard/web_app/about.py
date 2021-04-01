@@ -34,64 +34,106 @@ Any other mineral not listed bellow will not perform as desired:
 
 ## Groups
 
-* AMPHIBOLES (29 minerals): Actinolite, Antophyllite, Arfvedsonite,
-Barroisite, Cummingtonie, Eckermannite, Edenite, Fe-Ti-Tschermakite,
-Fe-Tschermakite, Fe-Trschermakitic Hornblende, Ferrincnybite, Gedrite,
-Glaucophane, Hastingsite, Kataphorite, Magnesio-Hastingsite, 
-Magnesio-Hornblende, Magnesio-Arfvedsonite, Magnesio-Kataphorite,
-Oxykaersutite, Pargasite, Richterite, Riebeckite, Ti-Mg-Hastingsite,
-Tremolite, Tschermakite, Winchite.
+* AMPHIBOLES (13 minerals): ACTINOLITE ARFVEDSONITE CUMMINGTONITE EDENITE HASTINGSITE HORNBLENDE (SENSU LATO) KAERSUTITE KATOPHORITE MAGNESIOHASTINGSITE PARGASITE RICHTERITE RIEBECKITE TREMOLITE.
 
 * APATITE
 
-* CARBONATES (31 minerals): Alstonite, Ancylite, Ankerite, Barytocalcite,
-Breunnerite, Burbankite, Calcite, Carbocernaite, Cebaite, Cordylite,
-Dolomite, Fluoro-Carbonate, Gregoryite, Huanghoite, Khanneshite,
-Kukharenkoite, Kutnahorite, Magnesiosiderite, Magnesite, Mckelveyite,
-Norsethite, Nyerereite, Olekminskite, Pirssonite, Qaqarssukite,
-Rhodochrosite, Shortite, Siderite, Spurrite, Strontianite, Witherite
+* CARBONATES (13 minerals): ANCYLITE
+ANKERITE
+BURBANKITE
+CACARBOCERNAITE
+DOLOMITE
+GREGORYITE
+KUKHARENKOITE (SENSU LATO)
+KUTNAHORITE
+MAGNESITE
+NATROFAIRCHILDITE/NYEREREITE/ZEMKORITE
+SHORTITE
+SIDERITELCITE
 
-* CLAY-MINERALS (9 minerals): Beidellite, Corrensite, Illite, Kaolinite,
-Montmorillonite, Nontronite, Palagonite, Saponite, Smectite
 
-* FELDSPARS (10 minerals): Albite, Andesine, Anorthite, Anorthoclase, 
-Bytownite, Labradorite, Microcline, Oligoclase, Orthoclase, Sanidine
+* CLAY-MINERALS (5 minerals): BEIDELLITE
+CORRENSITE
+ILLITE
+MONTMORILLONITE
+SAPONITE 
 
-* FELDSPATHOIDS (11 minerals): Analcime, Cancrinite, Hauyne, Kaliophilite,
-Kalsilite, Leucite, Nepheline, Nosean, Pseudoleucite, Sodalite, Vishnevite
+* FELDSPARS (8 minerals): ALBITE
+ANDESINE
+ANORTHITE
+ANORTHOCLASE
+BYTOWNITE
+K-FELDSPAR
+LABRADORITE
+OLIGOCLASE
 
-* GARNETS (8 minerals): Almandine, Andradite, Grossular, Hibschite,
-Hydrogarnet, Melanite, Pyrope, Schorlomite
+* FELDSPATHOIDS (8 minerals): ANALCIME
+CANCRINITE
+HAUYNE
+KALSILITE/KALIOPHILITE/PANUNZITE/TRIKALSILITE
+LEUCITE
+NEPHELINE
+NOSEAN
+SODALITE
+
+* GARNETS (5 minerals): ALMANDINE
+ANDRADITE
+GROSSULAR
+PYROPE
+SCHORLOMITE 
 
 * ILMENITE
 
-* MICAS (17 minerals): Annite, Biotite, Celadonite, Glauconite,
-Hydromica, Hydromuscovite, Lepidolite, Margarite, Muscovite,
-Paragonite, Phengite, Phengite-muscovite, Phlogopite, Sericite,
-Siderophyllite, Yangzhumingite, Zinnwaldite
+* MICAS (6 minerals): BIOTITE (SENSU LATO)
+CELADONITE
+MUSCOVITE
+PARAGONITE
+YANGZHUMINGITE
+ZINNWALDITE (SENSU LATO) 
 
-* OLIVINES (5 minerals): Fayalite, Forsterite, Iddingsite, Monticellite,
-Ringwoodite
+* OLIVINES (3 minerals): FAYALITE
+FORSTERITE
+MONTICELLITE 
 
 * PEROVSKITE
 
-* PYROXENES (20 minerals): Acmite, Aegirine, Augite, Clinoenstatite
-Cr-diopside, Diopside, Enstatite, Fassaite, Fe-diopside, Ferroaugite
-Ferrohedenbergite, Ferropigeonite, Ferrosilite, Hedenbergite, Hypersthene
-Jadeite, Omphacite, Pigeonite, Salite, Titan-augite
+* PYROXENES (9 minerals):  AEGIRINE
+AUGITE
+DIOPSIDE
+ENSTATITE/CLINOENSTATITE
+FERROSILITE/CLINOFERROSILITE
+HEDENBERGITE
+OMPHACITE
+PIGEONITE
+TITAN-AUGITE
 
 * QUARTZ
 
-* SPINELS (11 minerals): Al-spinel, Chrome-spinel, Chromite, Fe-chromite,
-Gahnite, Hercynite, Magnesioferrite, Magnetite, Pleonaste, Titano-magnetite,
-Ulvospinel
+* SPINELS (5 minerals): CHROMITE
+HERCYNITE
+MAGNETITE
+SPINEL
+ULVOSPINEL 
 
-* SULFIDES (31 minerals): Alabandite, Arsenopyrite, Bornite, Chalcocite, Chalcopyrite
-Chlorbartonite, Cobaltite, Cubanite, Galena, Gersdorffite, Godlevskite,
-Guanglinite, Heazlewoodite, Hexatestibiopanickelite, Hollingworthite,
-Irarsite, Isocubanite, Linnaeite, Mackinawite, Maucherite, Merenskyite,
-Molybdenite, Nickeline, Parkerite, Pentlandite, Polydymite, Pyrite, Pyrrhotite,
-Rasvumite, Sphalerite, Stromeyerite.
+* SULFIDES (19 minerals): ALABANDITE
+ARSENOPYRITE
+BORNITE
+CHALCOCITE
+CHALCOPYRITE
+CHLORBARTONITE
+CUBANITE
+GALENA
+HEAZLEWOODITE
+ISOCUBANITE
+MACKINAWITE
+MERENSKYITE
+PENTLANDITE
+POLYDYMITE
+PYRITE
+PYRRHOTITE
+RASVUMITE
+SPHALERITE
+STROMEYERITE 
 
 * TITANITE
 
