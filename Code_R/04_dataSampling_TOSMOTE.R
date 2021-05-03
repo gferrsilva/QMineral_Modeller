@@ -1,5 +1,5 @@
 #####
-# Mineral Group Classification by Random Forest
+# Sampling instances to SMOTE
 # 
 # version: 1.0 (2020/05/20)
 #
