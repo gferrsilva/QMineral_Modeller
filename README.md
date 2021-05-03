@@ -23,7 +23,7 @@ should be undertaken to see average behavior.
 dependent on the quality of the entry data. Consider the best practice to input
 data with the sum of elements concentration between 98-102%
 
-:warning: At the current state, Qmin is able to predict among 17 groups and 188 different minerals.
+:warning: At the current state, Qmin is able to predict among 17 groups and 100 different minerals.
 Any other mineral not listed bellow will not perform as desired:
 
 * AMPHIBOLES (13 minerals): ACTINOLITE, ARFVEDSONITE, CUMMINGTONITE, EDENITE,
