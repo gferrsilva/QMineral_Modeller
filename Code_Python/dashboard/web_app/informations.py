@@ -22,19 +22,16 @@ def about_card():
                        will change without notice.                       
                        * The model is stochastic. Multiple runs with different seeds (or random state)
                        should be undertaken to see average behavior.                       
-                       * At the current state, Qmin is able to predict among 17 groups and 188 different minerals
+                       * At the current state, Qmin is able to predict among 19 groups and 102 different minerals
                        . Any other mineral not listed bellow will not perform as desired:
                        
                        '''),
                          
                 html.Details([                
-                    html.Summary('AMPHIBOLES (29 minerals)',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Actinolite, Antophyllite, Arfvedsonite, Barroisite,
-                    Cummingtonie, Eckermannite, Edenite, Fe-Ti-Tschermakite,
-                    Fe-Tschermakite, Fe-Trschermakitic Hornblende, Ferrincnybite,
-                    Gedrite, Glaucophane, Hastingsite, Kataphorite, Magnesio-Hastingsite,
-                    Magnesio-Hornblende, Magnesio-Arfvedsonite, Magnesio-Kataphorite, Oxykaersutite,
-                    Pargasite, Richterite, Riebeckite, Ti-Mg-Hastingsite, Tremolite, Tschermakite, Winchite''')
+                    html.Summary('AMPHIBOLES (13 minerals)',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''ACTINOLITE, ARFVEDSONITE, CUMMINGTONITE, EDENITE, HASTINGSITE,
+                     HORNBLENDE (SENSU LATO), KAERSUTITE, KATOPHORITE, MAGNESIOHASTINGSITE, 
+                     PARGASITE, RICHTERITE, RIEBECKITE, TREMOLITE''')
                     ]),
                            
                html.Details([                
@@ -43,33 +40,44 @@ def about_card():
                     ]),
                
                html.Details([                
-                    html.Summary('CARBONATES (31 minerals)',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Alstonite, Ancylite, Ankerite, Barytocalcite, Breunnerite,
-                           Burbankite, Calcite, Carbocernaite, Cebaite, Cordylite, Dolomite,
-                           Fluoro-Carbonate, Gregoryite, Huanghoite, Khanneshite, Kukharenkoite,
-                           Kutnahorite, Magnesiosiderite, Magnesite, Mckelveyite, Norsethite,
-                           Nyerereite, Olekminskite, Pirssonite, Qaqarssukite, Rhodochrosite, 
-                           Shortite, Siderite, Spurrite, Strontianite, Witherite''')
+                    html.Summary('CARBONATES (13 minerals)',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''ANCYLITE, ANKERITE, BURBANKITE, CACARBOCERNAITE, DOLOMITE, GREGORYITE, 
+                    KUKHARENKOITE (SENSU LATO), KUTNAHORITE, MAGNESITE, 
+                    NATROFAIRCHILDITE/NYEREREITE/ZEMKORITE, SHORTITE, SIDERITELCITE''')
                     ]),
+
+        html.Details([
+            html.Summary('CHLORITE', style={'font-weight': 'bold', 'letter-spacing': '2.1px', 'font-size': '16px',
+                                             'padding-left': '12px'}),
+            html.P('''CHLORITE (SENSU LATO)''')
+        ]),
                            
                html.Details([                
-                    html.Summary('CLAY-MINERALS (9 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Beidellite, Corrensite, Illite, Kaolinite, Montmorillonite, Nontronite, Palagonite, Saponite, Smectite''')
+                    html.Summary('CLAY-MINERALS (5 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''BEIDELLITE, CORRENSITE, ILLITE, MONTMORILLONITE, SAPONITE''')
                     ]),
+        html.Details([
+            html.Summary('EPIDOTE', style={'font-weight': 'bold', 'letter-spacing': '2.1px', 'font-size': '16px',
+                                            'padding-left': '12px'}),
+            html.P('''EPIDOTE (SENSU LATO)''')
+        ]),
                                           
                html.Details([                
-                    html.Summary('FELDSPARS (10 minerals)',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Albite, Andesine, Anorthite, Anorthoclase, Bytownite, Labradorite, Microcline, Oligoclase, Orthoclase, Sanidine''')
+                    html.Summary('FELDSPARS (8 minerals)',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''ALBITE, ANDESINE, ANORTHITE, ANORTHOCLASE, BYTOWNITE, K-FELDSPAR,
+                     LABRADORITE, OLIGOCLASE''')
                     ]),
                                                          
                html.Details([                
-                    html.Summary('FELDSPATHOIDS (11 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Analcime, Cancrinite, Hauyne, Kaliophilite, Kalsilite, Leucite, Nepheline, Nosean, Pseudoleucite, Sodalite, Vishnevite''')
+                    html.Summary('FELDSPATHOIDS (8 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''ANALCIME, CANCRINITE, HAUYNE, 
+                    KALSILITE/KALIOPHILITE/PANUNZITE/TRIKALSILITE, LEUCITE, NEPHELINE, NOSEAN, 
+                    SODALITE''')
                     ]),
                                                                         
                html.Details([                
-                    html.Summary('GARNETS (8 minerals)',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Almandine, Andradite, Grossular, Hibschite, Hydrogarnet, Melanite, Pyrope, Schorlomite''')
+                    html.Summary('GARNETS (5 minerals)',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''ALMANDINE, ANDRADITE, GROSSULAR, PYROPE, SCHORLOMITE ''')
                     ]),
                                                                                        
                html.Details([                
@@ -78,13 +86,14 @@ def about_card():
                     ]),
                                                                                                       
                html.Details([                
-                    html.Summary('MICAS (17 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Annite, Biotite, Celadonite, Glauconite, Hydromica, Hydromuscovite, Lepidolite, Margarite, Muscovite, Paragonite, Phengite, Phengite-muscovite, Phlogopite, Sericite, Siderophyllite, Yangzhumingite, Zinnwaldite''')
+                    html.Summary('MICAS (6 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''BIOTITE (SENSU LATO), CELADONITE, MUSCOVITE, PARAGONITE, YANGZHUMINGITE,
+                     ZINNWALDITE (SENSU LATO)''')
                     ]),
                                                                                                                      
                html.Details([                
-                    html.Summary('OLIVINES (5 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Fayalite, Forsterite, Iddingsite, Monticellite, Ringwoodite''')
+                    html.Summary('OLIVINES (3 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''FAYALITE, FORSTERITE, MONTICELLITE''')
                     ]),
                
                html.Details([                
@@ -93,8 +102,9 @@ def about_card():
                     ]),
                               
                html.Details([                
-                    html.Summary('PYROXENES (20 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Acmite, Aegirine, Augite, Clinoenstatite Cr-diopside, Diopside, Enstatite, Fassaite, Fe-diopside, Ferroaugite Ferrohedenbergite, Ferropigeonite, Ferrosilite, Hedenbergite, Hypersthene Jadeite, Omphacite, Pigeonite, Salite, Titan-augite''')
+                    html.Summary('PYROXENES (9 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P(''' AEGIRINE, AUGITE, DIOPSIDE, ENSTATITE/CLINOENSTATITE, 
+                    FERROSILITE/CLINOFERROSILITE, HEDENBERGITE, OMPHACITE, PIGEONITE, TITAN-AUGITE''')
                     ]),
                                              
                html.Details([                
@@ -103,13 +113,15 @@ def about_card():
                     ]),
                                                             
                html.Details([                
-                    html.Summary('SPINELS (11 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Al-spinel, Chrome-spinel, Chromite, Fe-chromite, Gahnite, Hercynite, Magnesioferrite, Magnetite, Pleonaste, Titano-magnetite, Ulvospinel''')
+                    html.Summary('SPINELS (5 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''CHROMITE, HERCYNITE, MAGNETITE, SPINEL, ULVOSPINEL ''')
                     ]),
                
                html.Details([                
-                    html.Summary('SULFIDES (31 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
-                    html.P('''Alabandite, Arsenopyrite, Bornite, Chalcocite, Chalcopyrite Chlorbartonite, Cobaltite, Cubanite, Galena, Gersdorffite, Godlevskite, Guanglinite, Heazlewoodite, Hexatestibiopanickelite, Hollingworthite, Irarsite, Isocubanite, Linnaeite, Mackinawite, Maucherite, Merenskyite, Molybdenite, Nickeline, Parkerite, Pentlandite, Polydymite, Pyrite, Pyrrhotite, Rasvumite, Sphalerite, Stromeyerite.''')
+                    html.Summary('SULFIDES (19 minerals) ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),
+                    html.P('''ALABANDITE, ARSENOPYRITE, BORNITE, CHALCOCITE, CHALCOPYRITE, CHLORBARTONITE, 
+                    CUBANITE, GALENA, HEAZLEWOODITE, ISOCUBANITE, MACKINAWITE, MERENSKYITE, PENTLANDITE,
+                     POLYDYMITE, PYRITE, PYRRHOTITERASVUMITE, SPHALERITE, STROMEYERITE ''')
                     ]),
                               
                html.Details([                

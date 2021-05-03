@@ -26,64 +26,50 @@ data with the sum of elements concentration between 98-102%
 :warning: At the current state, Qmin is able to predict among 17 groups and 188 different minerals.
 Any other mineral not listed bellow will not perform as desired:
 
-* AMPHIBOLES (29 minerals): Actinolite, Antophyllite, Arfvedsonite,
-Barroisite, Cummingtonie, Eckermannite, Edenite, Fe-Ti-Tschermakite,
-Fe-Tschermakite, Fe-Trschermakitic Hornblende, Ferrincnybite, Gedrite,
-Glaucophane, Hastingsite, Kataphorite, Magnesio-Hastingsite, 
-Magnesio-Hornblende, Magnesio-Arfvedsonite, Magnesio-Kataphorite,
-Oxykaersutite, Pargasite, Richterite, Riebeckite, Ti-Mg-Hastingsite,
-Tremolite, Tschermakite, Winchite.
+* AMPHIBOLES (13 minerals): ACTINOLITE, ARFVEDSONITE, CUMMINGTONITE, EDENITE,
+HASTINGSITE, HORNBLENDE (SENSU LATO), KAERSUTITE, KATOPHORITE, MAGNESIOHASTINGSITE,
+PARGASITE, RICHTERITE, RIEBECKITE, TREMOLITE.
 
-* APATITE
+* APATITE: APATITE (SENSU LATO)
 
-* CARBONATES (31 minerals): Alstonite, Ancylite, Ankerite, Barytocalcite,
-Breunnerite, Burbankite, Calcite, Carbocernaite, Cebaite, Cordylite,
-Dolomite, Fluoro-Carbonate, Gregoryite, Huanghoite, Khanneshite,
-Kukharenkoite, Kutnahorite, Magnesiosiderite, Magnesite, Mckelveyite,
-Norsethite, Nyerereite, Olekminskite, Pirssonite, Qaqarssukite,
-Rhodochrosite, Shortite, Siderite, Spurrite, Strontianite, Witherite
+* CARBONATES (13 minerals): ANCYLITE, ANKERITE, BURBANKITE, CALCITE, CARBOCERNAITE,
+DOLOMITE, GREGORYITE, KUKHARENKOITE (SENSU LATO), KUTNAHORITE, MAGNESITE,
+NATROFAIRCHILDITE/NYEREREITE/ZEMKORITE, SHORTITE, SIDERITE
 
-* CLAY-MINERALS (9 minerals): Beidellite, Corrensite, Illite, Kaolinite,
-Montmorillonite, Nontronite, Palagonite, Saponite, Smectite
 
-* FELDSPARS (10 minerals): Albite, Andesine, Anorthite, Anorthoclase, 
-Bytownite, Labradorite, Microcline, Oligoclase, Orthoclase, Sanidine
+* CLAY-MINERALS (5 minerals): BEIDELLITE, CORRENSITE, ILLITE, MONTMORILLONITE, SAPONITE
 
-* FELDSPATHOIDS (11 minerals): Analcime, Cancrinite, Hauyne, Kaliophilite,
-Kalsilite, Leucite, Nepheline, Nosean, Pseudoleucite, Sodalite, Vishnevite
+* FELDSPARS (8 minerals): ALBITE, ANDESINE, ANORTHITE, ANORTHOCLASE, BYTOWNITE, K-FELDSPAR,
+LABRADORITE, OLIGOCLASE
 
-* GARNETS (8 minerals): Almandine, Andradite, Grossular, Hibschite,
-Hydrogarnet, Melanite, Pyrope, Schorlomite
+* FELDSPATHOIDS (8 minerals): ANALCIME, CANCRINITE, HAUYNE, LEUCITE, NEPHELINE, NOSEAN, 
+TRIKALSILITE/KALSILITE/KALIOPHILITE/PANUNZITE, SODALITE
+
+
+* GARNETS (5 minerals): ALMANDINE, ANDRADITE, GROSSULAR, PYROPE, SCHORLOMITE
 
 * ILMENITE
 
-* MICAS (17 minerals): Annite, Biotite, Celadonite, Glauconite,
-Hydromica, Hydromuscovite, Lepidolite, Margarite, Muscovite,
-Paragonite, Phengite, Phengite-muscovite, Phlogopite, Sericite,
-Siderophyllite, Yangzhumingite, Zinnwaldite
+* MICAS (6 minerals): BIOTITE (SENSU LATO), CELADONITE, MUSCOVITE, PARAGONITE, YANGZHUMINGITE,
+ZINNWALDITE (SENSU LATO)
 
-* OLIVINES (5 minerals): Fayalite, Forsterite, Iddingsite, Monticellite,
-Ringwoodite
+
+* OLIVINES (3 minerals): FAYALITE, FORSTERITE, MONTICELLITE
 
 * PEROVSKITE
 
-* PYROXENES (20 minerals): Acmite, Aegirine, Augite, Clinoenstatite
-Cr-diopside, Diopside, Enstatite, Fassaite, Fe-diopside, Ferroaugite
-Ferrohedenbergite, Ferropigeonite, Ferrosilite, Hedenbergite, Hypersthene
-Jadeite, Omphacite, Pigeonite, Salite, Titan-augite
+* PYROXENES (9 minerals): AEGIRINE, AUGITE, DIOPSIDE, ENSTATITE/CLINOENSTATITE,
+FERROSILITE/CLINOFERROSILITE, HEDENBERGITE, OMPHACITE, PIGEONITE, TITAN-AUGITE
 
 * QUARTZ
 
-* SPINELS (11 minerals): Al-spinel, Chrome-spinel, Chromite, Fe-chromite,
-Gahnite, Hercynite, Magnesioferrite, Magnetite, Pleonaste, Titano-magnetite,
-Ulvospinel
+* SPINELS (5 minerals): CHROMITE, HERCYNITE, MAGNETITE, SPINEL, ULVOSPINEL
 
-* SULFIDES (31 minerals): Alabandite, Arsenopyrite, Bornite, Chalcocite, Chalcopyrite
-Chlorbartonite, Cobaltite, Cubanite, Galena, Gersdorffite, Godlevskite,
-Guanglinite, Heazlewoodite, Hexatestibiopanickelite, Hollingworthite,
-Irarsite, Isocubanite, Linnaeite, Mackinawite, Maucherite, Merenskyite,
-Molybdenite, Nickeline, Parkerite, Pentlandite, Polydymite, Pyrite, Pyrrhotite,
-Rasvumite, Sphalerite, Stromeyerite.
+
+* SULFIDES (18 minerals): ALABANDITE, ARSENOPYRITE, BORNITE, CHALCOCITE, CHALCOPYRITE,
+CHLORBARTONITE, CUBANITE/ISOCUBANITE, GALENA, HEAZLEWOODITE, MACKINAWITE,
+PENTLANDITE, POLYDYMITE, PYRITE, PYRRHOTITE, RASVUMITE, SPHALERITE, STROMEYERITE
+
 
 * TITANITE
 
@@ -101,6 +87,9 @@ Then, the formula printed out in the output is the product of several calculatio
 The calculation formula for **Amphiboles** will be made by a multivariate regression for each one of the Crystallographic Sites, still in development, and will later be made available in this repository.
 
 ## Status
+The current fluxogram of processing is shown below.
+
+![jpeg](Fluxogram.jpg)
 
 This model is in active development and subject to significant code changes
 to:
@@ -123,19 +112,19 @@ and was used for the model's test and calibration. Those are available in the fo
 Project Developed on R and Python3 languages.<p>
 
 The data wrangling, first missing value imputaion, convertion elements to oxides, and balancing
-of mineral instances was done in R. The code is available in the [Code_R](./Code_R) folder. Some
-Random Forest classification models are also available in the [model_r](./model_r) folder.
+of mineral instances was done in R. The code is available in the [Code_R](./Code_R) folder.
 
 The final models used in this work were developed on Python3 language, and are available in the [model_py](./model_py) folder.
 All python codes are available in the [Code_Python](./Code_Python) folder.
 
 ## Contributors
 
-* [Guilherme Ferreira da Silva](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4452179T4&idiomaExibicao=2), (E-mail: guilherme.ferreira@cprm.gov.br)
-* [Marcos Vinícius Ferreira](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4331039T8&idiomaExibicao=2), (E-mail: marcos.ferreira@cprm.gov.br)
-* [Iago Sousa Lima Costa](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4360736A0&idiomaExibicao=2), (E-mail: iago.costa@cprm.gov.br)
-* [Renato Bernardes Borges](http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4272197D7&idiomaExibicao=2), (E-mail: renato.bernardes@unb.br)
+* [Guilherme Ferreira da Silva](http://lattes.cnpq.br/3088062889595212), (E-mail: guilherme.ferreira@cprm.gov.br)
+* [Marcos Vinícius Ferreira](http://lattes.cnpq.br/0664633989688055), (E-mail: marcos.ferreira@cprm.gov.br)
+* [Iago Sousa Lima Costa](http://lattes.cnpq.br/9427131869731616), (E-mail: iago.costa@cprm.gov.br)
+* [Renato Bernardes Borges](http://lattes.cnpq.br/6396868621473599), (E-mail: renato.bernardes@unb.br)
+* [Carlos Eduardo Miranda Mota](http://lattes.cnpq.br/9373929014144622), (E-mail: renato.bernardes@unb.br)
 
 ## Copyright and License
 
-The source code for Qmin is licensed under the MIT License, see [LICENSE](LICENSE).
+The source code for Qmin is licensed based on the BSD 3-Clause License, see [LICENSE](LICENSE).
