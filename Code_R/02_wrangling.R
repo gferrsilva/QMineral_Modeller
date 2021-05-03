@@ -22,7 +22,7 @@
 
 setwd("~/GitHub/MinChem_Modeller") # Ajustando o work direction
 
-set.seed(123) # Ajustando o 'Random State' da m·quina para reproduzir os cÛdigos
+set.seed(123) # Ajustando o 'Random State' da m√°quina para reproduzir os c√≥digos
 
 # Lista de elementos a ser selecionados do banco de dados original
 selection <- c('SIO2(WT%)', 'TIO2(WT%)', 'AL2O3(WT%)', 'CR2O3(WT%)', 
@@ -32,7 +32,7 @@ selection <- c('SIO2(WT%)', 'TIO2(WT%)', 'AL2O3(WT%)', 'CR2O3(WT%)',
                'PBO(WT%)','S(WT%)','ZRO2(WT%)')
 selsulf <- c('FE(WT%)','NI(WT%)','CU(WT%)','CO(WT%)','ZN(WT%)','AS(WT%)','PB(WT%)')
 
-# SimplifcaÁ„o dos elementos electionados acima
+# Simplifca√ß√£o dos elementos electionados acima
 elems_names <- c('SIO2','TIO2','AL2O3','CR2O3','FEOT','CAO',
                  'MGO','MNO','K2O','NA2O','P2O5','H20','F','CL',
                  'NIO','CUO','COO','ZNO','AS_ppm','PBO','S','ZRO2')
@@ -41,13 +41,13 @@ elems_names <- c('SIO2','TIO2','AL2O3','CR2O3','FEOT','CAO',
 #####
 #Import Packages
 #####
-library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipulaÁ„o e visualizaÁ„o de dados. Equivalente ao pandas, matplotlib, seaborn, etc
+library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipula√ß√£o e visualiza√ß√£o de dados. Equivalente ao pandas, matplotlib, seaborn, etc
 library(missRanger) # Biblioteca de Missing Values Imputation by Randon Forest Regression
 
 #####
 # Built-in Functions
 #####
-col.fillrate <- function(df, sort = F) { # Apresenta a proporÁ„o de dados preenchidos, por coluna
+col.fillrate <- function(df, sort = F) { # Apresenta a propor√ß√£o de dados preenchidos, por coluna
   require(dplyr)
   cols <- NULL
   clist <- data.frame(`Column.Name`= character(),
@@ -73,10 +73,10 @@ col.fillrate <- function(df, sort = F) { # Apresenta a proporÁ„o de dados preenc
 
 # Amphiboles -----
 
-df1 <- read_csv('data_raw/GEOROC/AMPHIBOLES.csv',n_max = 38639,na = 'NA') # importar o arquivo amphiboles.csv para um arquivo tempor·rio df1
+df1 <- read_csv('data_raw/GEOROC/AMPHIBOLES.csv',n_max = 38639,na = 'NA') # importar o arquivo amphiboles.csv para um arquivo tempor√°rio df1
 
 amph <- df1 %>%
-  filter(!is.na(`SIO2(WT%)`)) # filtra todos os dados que n„o tenham valores na columa de SiO2
+  filter(!is.na(`SIO2(WT%)`)) # filtra todos os dados que n√£o tenham valores na columa de SiO2
 
 amph_labels <- amph[1:23] # seleciona os metadados
 
@@ -87,10 +87,10 @@ amph_elems <- amph %>% # seleciona as colunas de elementos
 
 names(amph_elems) <- elems_names # renomeia as colunas de elementos
 
-amph_elems <- sapply(amph_elems,as.numeric) # define as vari·veis como numÈricas
+amph_elems <- sapply(amph_elems,as.numeric) # define as vari√°veis como num√©ricas
 amph_elems <- as_tibble(amph_elems) # converte o df para formato 'tibble', do Tidyverse
 
-remove(df1,amph) # descarta vari·veis
+remove(df1,amph) # descarta vari√°veis
 
 # Apatites -----
 
@@ -531,9 +531,9 @@ remove(df1,zirc)
 # DATA IMPUTATION 
 #####
 
-# Missing Value imputation by random forest regression. pmm.k = 3, 3 elementos para mÈdia mÛvel
-# num.tress = 100, verbose = 2 (output os OOB de cada regress„o)
-# Repetido uma vez para cada elemento (poderia ter feito um for, mas fiquei com preguiÁa. Conserto isso depois)
+# Missing Value imputation by random forest regression. pmm.k = 3, 3 elementos para m√©dia m√≥vel
+# num.tress = 100, verbose = 2 (output os OOB de cada regress√£o)
+# Repetido uma vez para cada elemento (poderia ter feito um for, mas fiquei com pregui√ßa. Conserto isso depois)
 
 amph_elems1 <- missRanger(amph_elems, pmm.k = 3, num.trees = 100, verbose = 2)
 apat_elems1 <- missRanger(apat_elems, pmm.k = 3, num.trees = 100, verbose = 2)
