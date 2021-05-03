@@ -1,6 +1,6 @@
 #####
 # Data wrangling and primary classifier of selected minerals
-# Outlier removing, Mineral names recoding and Non-Mineral removing
+# Outlier removal, Mineral names recoding and Non-Mineral removing
 # 
 # version: 1.0 (2020/12/17)
 #
@@ -25,14 +25,14 @@
 
 setwd("~/GitHub/MinChem_Modeller") # Ajustando o work direction
 
-set.seed(123) # Ajustando o 'Random State' da m·quina para reproduzir os cÛdigos
+set.seed(123) # Ajustando o 'Random State' da m√°quina para reproduzir os c√≥digos
 
 tic <- Sys.time()
 #####
 #Import Packages
 #####
 
-library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipulaÁ„o e visualizaÁ„o de dados. Equivalente ao pandas, matplotlib, seaborn, etc
+library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipula√ß√£o e visualiza√ß√£o de dados. Equivalente ao pandas, matplotlib, seaborn, etc
 library(dbscan) # outlier detection
 library(factoextra) # Cluster viz
 
@@ -40,7 +40,7 @@ library(factoextra) # Cluster viz
 # DATA WRANGLING 
 #####
 
-min <- read_csv('data_input/minerals.csv',na = 'NA') # importar o arquivo amphiboles.csv para um arquivo tempor·rio df1
+min <- read_csv('data_input/minerals.csv',na = 'NA') # importar o arquivo amphiboles.csv para um arquivo tempor√°rio df1
 
 # Fixing the mineral names acoording to IMA's recomendation
 
@@ -147,7 +147,7 @@ dbscan::kNNdistplot(amph %>%
 # amph.db <- dbscan::dbscan(amph %>%
 #                             select(25:38),eps = 5,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = amph.db,
 #              data =  amph %>%
 #                select(25:38),
@@ -180,7 +180,7 @@ apat <- min %>%
 apat.db <- dbscan::dbscan(apat %>%
                             select(25:39),eps = 5,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = apat.db,
 #              data =  apat %>%
 #                select(25:39),
@@ -213,7 +213,7 @@ carb <- min %>%
 carb.db <- dbscan::dbscan(carb %>%
                             select(25:35,37:39),eps = 10,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = carb.db,
 #              data =  carb %>%
 #                select(25:35,37:39),
@@ -246,7 +246,7 @@ clay <- min %>%
 clay.db <- dbscan::dbscan(clay %>%
                             select(25:36),eps = 10,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = clay.db,
 #              data =  clay %>%
 #                select(25:36),
@@ -279,7 +279,7 @@ feld <- min %>%
 feld.db <- dbscan::dbscan(feld %>%
                             select(25:35),eps = 3,minPts = 10)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = feld.db,
 #              data =  feld %>%
 #                select(25:35),
@@ -314,7 +314,7 @@ foid <- min %>%
 foid.db <- dbscan::dbscan(foid %>%
                             select(25:36),eps = 5,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = foid.db,
 #              data =  foid %>%
 #                select(25:36),
@@ -346,7 +346,7 @@ gart <- min %>%
 gart.db <- dbscan::dbscan(gart %>%
                             select(25:37),eps = 3,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = gart.db,
 #              data =  gart %>%
 #                select(25:37),
@@ -380,7 +380,7 @@ ilm <- min %>%
 ilm.db <- dbscan::dbscan(ilm %>%
                             select(25:34),eps = 4,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = ilm.db,
 #              data =  ilm %>%
 #                select(25:34),
@@ -413,7 +413,7 @@ mica <- min %>%
 mica.db <- dbscan::dbscan(mica %>%
                            select(25:39),eps = 5,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = mica.db,
 #              data =  mica %>%
 #                select(25:39),
@@ -446,7 +446,7 @@ oliv <- min %>%
 oliv.db <- dbscan::dbscan(oliv %>%
                             select(25:36),eps = 2,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = oliv.db,
 #              data =  oliv %>%
 #                select(25:36),
@@ -478,7 +478,7 @@ pero <- min %>%
 pero.db <- dbscan::dbscan(pero %>%
                             select(25:35),eps = 3,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = pero.db,
 #              data =  pero %>%
 #                select(25:35),
@@ -510,7 +510,7 @@ px <- min %>%
 px.db <- dbscan::dbscan(px %>%
                             select(25:35),eps = 3,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = px.db,
 #              data =  px %>%
 #                select(25:35),
@@ -543,7 +543,7 @@ qtz <- min %>%
 qtz.db <- dbscan::dbscan(qtz %>%
                           select(25:34),eps = 2,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = qtz.db,
 #              data =  qtz %>%
 #                select(25:34),
@@ -576,7 +576,7 @@ spn <- min %>%
 spn.db <- dbscan::dbscan(spn %>%
                            select(25:34),eps = 5,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = spn.db,
 #              data =  spn %>%
 #                select(25:34),
@@ -610,7 +610,7 @@ sulf <- min %>%
 sulf.db <- dbscan::dbscan(sulf %>%
                            select(29,30,39:45),eps = 3000,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = sulf.db,
 #              data =  sulf %>%
 #                select(29,30,39:45),
@@ -644,7 +644,7 @@ titn <- min %>%
 titn.db <- dbscan::dbscan(titn %>%
                             select(25:39),eps = 8,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = titn.db,
 #              data =  titn %>%
 #                select(25:39),
@@ -678,7 +678,7 @@ zirc <- min %>%
 zirc.db <- dbscan::dbscan(zirc %>%
                             select(25:26,46),eps = 1,minPts = 5)
 
-# vizualizaÁ„o
+# vizualiza√ß√£o
 # fviz_cluster(object = zirc.db,
 #              data =  zirc %>%
 #                select(25:26,46),
