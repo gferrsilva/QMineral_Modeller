@@ -1,46 +1,39 @@
+  
+#####
+# Visualizing instances from SMOTE
+# 
+# version: 1.0 (2021/05/20)
+#
+# Last modifications:
+#
+# -----
+# Amphiboles, Apatites, Carbonates, Clay Minerals, Feldspars, Feldspathoides,
+# Garnets, Ilmenites, Micas, Olivines, Perovskites, Pyroxenes, Quartz, Sulfides,
+# Titanite, Zircon
+# -----
+# Guilherme Ferreira, (guilherme.ferreira@cprm.gov.br)
+# May, 2021
+#####
+
+#####
+# Setting up the enviroment
+#####
+setwd('~/GitHub/MinChem_Modeller/data_train')
 library(tidyverse)
 
-setwd('~/GitHub/MinChem_Modeller/data_train')
+#####
+# Reading
+#####
 
 fromSMOTE <- read.csv('SMOTE_Random_Sampler_v2.csv',)
 
-t <- fromSMOTE %>%
+write.csv(x = fromSMOTE %>%
   group_by(GROUP, MINERAL) %>%
-  count()
+  count(),file = '~/GitHub/MinChem_Modeller/references/listofminerals_final.csv')
 
-write.csv(x = t,file = '~/GitHub/MinChem_Modeller/references/listofminerals_final.csv')
-
-
-grupo <- 'FELDSPAR'
-
-pca <- prcomp(fromSMOTE[fromSMOTE$GROUP == grupo,1:22],center = TRUE)
-
-pca.list <- as.list(summary(pca))
-
-summary(pca)
-
-df <- fromSMOTE %>%
-  filter(GROUP == grupo) %>%
-  bind_cols(as_tibble(pca$x)) 
-
-xlab <- pca.list$importance[[2,'PC1']]
-ylab <- pca.list$importance[[2,'PC2']]
-
-df %>%
-  ggplot(aes(x = PC1, y = PC2, col = MINERAL)) +
-  geom_point() +
-  labs(x = paste0('PC1 (',round(100*xlab,1),'% of data variance)'),
-       y = paste0('PC2 (',round(100*ylab,1),'%)')) +
-  coord_equal()
-
-
-df %>%
-  filter(GROUP == 'CARBONATE') %>%
-  ggplot(aes(x = PC1, y = PC2, col = MINERAL)) +
-  geom_point()
-
-
-
+#####
+# Functions
+#####
 
 plot_pca_byGroup <- function(grupo = grupo,
                              leg.position = NULL,
@@ -68,16 +61,14 @@ plot_pca_byGroup <- function(grupo = grupo,
   
 }
 
-
-plot_pca_byGroup(grupo = 'FELDSPAR')
+#####
+# Applying
+#####
 
 
 lista <- c('FELDSPAR','GARNET','PYROXENE','AMPHIBOLES', 'CARBONATE',
            'OLIVINE','FELDSPATHOID')
 
-Cairo::CairoPDF(file = '~/GitHub/MinChem_Modeller/figures/SMOTE_leg.pdf',
-                width = 6,height = 6)
 lapply(lista, plot_pca_byGroup,
-       # leg.position = 'none',
+       leg.position = 'none',
        alpha = .5)
-dev.off()
