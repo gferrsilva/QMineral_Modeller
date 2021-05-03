@@ -17,7 +17,7 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
 set.seed(0) # defining the 'random state' of the pseudo-random generator
 
 #####
@@ -39,7 +39,7 @@ library(factoextra) # Deal with PCA and PCA datavis
 # PREPRARING DATA 
 #####
 
-minerals <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
+minerals <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
   select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
@@ -55,8 +55,7 @@ minerals$MINERAL <- minerals$MINERAL %>%
 
 amph <- minerals %>%
   filter(MINERAL != 'AMPHIBOLE',
-         MINERAL != 'STILPNOMELANE',
-         MINERAL != 'HORNBLENDE')
+         MINERAL != 'STILPNOMELANE')
 
 blind <- minerals %>%
   filter(MINERAL == 'AMPHIBOLE')
@@ -67,68 +66,76 @@ amph <- amph %>%
          ROCK = factor(ROCK),
          SAMPLE = factor(SAMPLE))
 
-input <- amph %>% # manipulating the minerals database and associate the answer with input object
-  group_by(MINERAL) %>% # grouping the instances by the mineral 'GROUP' class
-  sample_n(30, replace = T) # sampling 300 instances of each 'GROUP', with replacement
+amph['SOMA'] <- rowSums(amph[6:27])
 
-#####
-# Random Forest
-#####
+amph <- amph %>%
+  filter(SOMA >= 98,
+         SOMA <= 102)
 
-# Defining the First Model ----
+# input <- amph %>% # manipulating the minerals database and associate the answer with input object
+#   group_by(MINERAL) %>% # grouping the instances by the mineral 'GROUP' class
+#   sample_n(30, replace = T) # sampling 300 instances of each 'GROUP', with replacement
+# 
+# #####
+# # Random Forest
+# #####
+# 
+# # Defining the First Model ----
+# 
+# # Train-Test-Blind split
+# 
+# ## Train-test split
+# index <- createDataPartition(input$MINERAL, p = 0.7, list = FALSE) # Train-test split using an index
+# train_data <- input[as.vector(index), c(4,6:27)] # Selecting the train_data (GROUP + PCA)
+# test_data  <- input[-index, 6:27]  # Selecting the test_data (PCA)
+# y_test <- as_tibble(input[-index,4])  # Selecting the test_classes (GROUP)
+# 
+# ## Random Forest Setting up
+# 
+# ctrl <- trainControl(method = "repeatedcv",#classProbs = T, # Setting up the RF hyperparameters
+#                      number = 5,   # Number of folds on cross validation
+#                      repeats = 5, # Number of repeats on every fold
+#                      verboseIter = T, # Output the result of every iteration on the console
+#                      sampling = "up") # upsampling instances with unbalanced classes
+# 
+# ## Model Fit
+# 
+# amphibole_rf_over <- caret::train(MINERAL ~ ., # training the model
+#                                 data = train_data, # data for training
+#                                 method = "rf", # method choosen for traininf
+#                                 preProcess = c("scale", "center"), # Pre-process
+#                                 trControl = ctrl, ntree = 150)#, type = 'prob') # Defines the hyperparameters
+# 
+# print(amphibole_rf_over) # Print on the console the summary of the model
+# 
+# #### Test
+# 
+# pred <- as_tibble(predict(amphibole_rf_over, test_data)) # predict the classes of the test set
+# 
+# confusionMatrix(pred$value, factor(y_test$MINERAL)) # confusion matrix printed out on the console
+# (accuracy_m1 = mean(y_test == pred)) # associate the accuracy to an object
+# 
+# 
+# #### Blind
+# 
+# pred1 <- as_tibble(predict(amphibole_rf_over, blind)) # predict the classes of the test set
+# 
+# blind <- blind %>%
+#   mutate(MINERAL = pred1$value,
+#          id = factor(id))
+# 
+# #### Merging Datasets
+# 
+# amphibole <- amph %>%
+#   bind_rows(blind)
 
-# Train-Test-Blind split
+set.seed(42)
+export <- amph %>%
+  group_by(MINERAL) %>%
+  # sample_n(50, replace = TRUE) %>%
+  distinct(.keep_all = TRUE)
 
-## Train-test split
-index <- createDataPartition(input$MINERAL, p = 0.7, list = FALSE) # Train-test split using an index
-train_data <- input[as.vector(index), c(4,6:27)] # Selecting the train_data (GROUP + PCA)
-test_data  <- input[-index, 6:27]  # Selecting the test_data (PCA)
-y_test <- as_tibble(input[-index,4])  # Selecting the test_classes (GROUP)
-
-## Random Forest Setting up
-
-ctrl <- trainControl(method = "repeatedcv",#classProbs = T, # Setting up the RF hyperparameters
-                     number = 5,   # Number of folds on cross validation
-                     repeats = 5, # Number of repeats on every fold
-                     verboseIter = T, # Output the result of every iteration on the console
-                     sampling = "up") # upsampling instances with unbalanced classes
-
-## Model Fit
-
-amphibole_rf_over <- caret::train(MINERAL ~ ., # training the model
-                                data = train_data, # data for training
-                                method = "rf", # method choosen for traininf
-                                preProcess = c("scale", "center"), # Pre-process
-                                trControl = ctrl, ntree = 150)#, type = 'prob') # Defines the hyperparameters
-
-print(amphibole_rf_over) # Print on the console the summary of the model
-
-#### Test
-
-pred <- as_tibble(predict(amphibole_rf_over, test_data)) # predict the classes of the test set
-
-confusionMatrix(pred$value, factor(y_test$MINERAL)) # confusion matrix printed out on the console
-(accuracy_m1 = mean(y_test == pred)) # associate the accuracy to an object
-
-
-#### Blind
-
-pred1 <- as_tibble(predict(amphibole_rf_over, blind)) # predict the classes of the test set
-
-blind <- blind %>%
-  mutate(MINERAL = pred1$value,
-         id = factor(id))
-
-#### Merging Datasets
-
-amphibole <- amph %>%
-  bind_rows(blind)
-
-# export <- amphibole %>%
-#   group_by(MINERAL) %>%
-#   sample_n(30, replace = T)
-
-# write.csv(export, 'data_input/amphibole.csv')
+write.csv(export, 'data_input/amphibole.csv')
 
 pca <- prcomp(amphibole[6:27], center = T)
 
@@ -293,3 +300,4 @@ print(biplot)
 print(p.testset) # First Page, Test Set Spatialization
 print(p.confmatrx) # Second Page, Confusion Matrix
 dev.off() # Figure device Off
+

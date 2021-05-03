@@ -17,8 +17,8 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
-set.seed(123) # defining the 'random state' of the pseudo-random generator
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
+set.seed(0) # defining the 'random state' of the pseudo-random generator
 
 #####
 #Import Packages
@@ -39,7 +39,7 @@ library(factoextra) # Deal with PCA and PCA datavis
 # PREPRARING DATA 
 #####
 
-minerals <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
+minerals <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
   select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
@@ -64,6 +64,13 @@ carb <- carb %>%
          GROUP = factor(GROUP),
          ROCK = factor(ROCK),
          SAMPLE = factor(SAMPLE))
+
+
+carb['SOMA'] <- rowSums(carb[6:27])
+
+carb <- carb %>%
+  filter(SOMA >= 45,
+         SOMA <= 65)
 
 input <- carb %>% # manipulating the minerals database and associate the answer with input object
   group_by(MINERAL) %>% # grouping the instances by the mineral 'GROUP' class
@@ -121,11 +128,12 @@ blind <- blind %>%
 carbonate <- carb %>%
   bind_rows(blind)
 
-# export <- carbonate %>%
-#   group_by(MINERAL) %>%
-#   sample_n(30, replace = T)
+export <- carbonate %>%
+  group_by(MINERAL) %>%
+  sample_n(50, replace = TRUE) %>%
+  distinct(.keep_all = TRUE)
 
-write.csv(carbonate, 'data_input/carbonate_model.csv')
+write.csv(carbonate, 'data_input/toSMOTE/carbonate_model.csv')
 
 pca <- prcomp(carbonate[6:27], center = T)
 
@@ -225,7 +233,9 @@ saveRDS(carbonate_rf_over, 'model_r/carbonate.RDS')
      "maroon", "orchid1", "deeppink1", "blue1", "steelblue4",
      "darkturquoise", "green1", "yellow4", "yellow3",
      "darkorange4", "brown"
-)))
+)) +
+  theme(legend.position = 'bottom')
+)
 
 
 # Confusion Matrix ----

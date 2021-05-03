@@ -17,7 +17,7 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
 set.seed(0) # defining the 'random state' of the pseudo-random generator
 
 #####
@@ -39,7 +39,7 @@ library(factoextra) # Deal with PCA and PCA datavis
 # PREPRARING DATA 
 #####
 
-minerals <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
+minerals <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
   select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
@@ -51,11 +51,20 @@ minerals <- read_csv('data_input/minerals.csv') %>% # Read file and associate to
   select(24,27, 1:2,26, 3:23,25) # Reorder Columns
 
 minerals$MINERAL <- minerals$MINERAL %>%
-  replace_na('SPINEL')
+  replace_na('SPINEL_NA')
 
 spin <- minerals %>%
   filter(MINERAL != 'SPINEL',
          MINERAL != 'MAGNETITE/CHROMITE')
+
+spin.ss <- minerals %>%
+  filter(MINERAL == 'SPINEL',
+         AL2O3 > 65,
+         MGO > 25,
+         NIO < 2)
+
+spin <- spin %>%
+  bind_rows(spin.ss)
 
 blind <- minerals %>%
   filter(MINERAL == 'SPINEL')
@@ -67,9 +76,17 @@ spin <- spin %>%
          ROCK = factor(ROCK),
          SAMPLE = factor(SAMPLE))
 
+# Excluding bad data
+
+spin['SOMA'] <- rowSums(spin[6:27])
+
+spin <- spin %>%
+  filter(SOMA >= 98,
+         SOMA <= 102)
+
 input <- spin %>% # manipulating the minerals database and associate the answer with input object
   group_by(MINERAL) %>% # grouping the instances by the mineral 'GROUP' class
-  sample_n(30, replace = T) # sampling 300 instances of each 'GROUP', with replacement
+  sample_n(50, replace = TRUE) # sampling 300 instances of each 'GROUP', with replacement
 
 #####
 # Random Forest
@@ -123,13 +140,21 @@ blind <- blind %>%
 spin <- spin %>%
   bind_rows(blind)
 
-# export <- spin %>%
-#   group_by(MINERAL) %>%
-#   sample_n(30, replace = T)
+spin['SOMA'] <- rowSums(spin[6:27])
 
-write.csv(spin, 'data_input/spinel.csv')
+spin <- spin %>%
+  filter(SOMA >= 98,
+         SOMA <= 102)
 
-pca <- prcomp(spin[6:27], center = T)
+set.seed(42)
+export <- spin %>%
+  group_by(MINERAL) %>%
+  sample_n(50, replace = FALSE) %>%
+  distinct(.keep_all = TRUE)
+
+write.csv(spin, 'data_input/toSMOTE/spinel.csv')
+
+pca <- prcomp(export[6:27], center = T)
 
 fviz_pca_var(pca,
              col.var = "contrib", # Color by contributions to the PC
@@ -141,13 +166,13 @@ fviz_pca_var(pca,
                 addEllipses = F, label = "var")
 )
 
-spin <- spin %>%
+df <- export %>%
   bind_cols(as_tibble(pca$x)) %>%
   mutate(x1 = NULL)
 
 # Defining the Final model ----
 
-input1 <- spin %>% # manipulating the minerals database and associate the answer with input object
+input1 <- df %>% # manipulating the minerals database and associate the answer with input object
   group_by(MINERAL) %>% # grouping the instances by the mineral 'GROUP' class
   sample_n(240, replace = T) # sampling 300 instances of each 'GROUP', with replacement
 

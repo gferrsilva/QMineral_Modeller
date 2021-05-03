@@ -17,7 +17,7 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
 set.seed(0) # defining the 'random state' of the pseudo-random generator
 
 #####
@@ -39,15 +39,15 @@ library(factoextra) # Deal with PCA and PCA datavis
 # PREPRARING DATA 
 #####
 
-files <- list.files('data_input', pattern = '_model')
+files <- list.files('data_input/toSMOTE', pattern = '.csv')
 
-minerals <- sapply(paste0('data_input/',files), read_csv) %>%
+minerals <- sapply(paste0('data_input/toSMOTE/',files), read_csv) %>%
   bind_rows()
 
 # Quartz ----
 
-quartz <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
-  select(1,47,19,14,3,25:46) %>% # select and reorder the columns
+quartz <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
+  dplyr::select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
@@ -55,14 +55,15 @@ quartz <- read_csv('data_input/minerals.csv') %>% # Read file and associate to a
          ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
          SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
   filter(GROUP == 'QUARTZ') %>%
-  select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
+  dplyr::select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
   group_by(MINERAL) %>%
-  sample_n(30)
+  sample_n(50,replace = FALSE) %>%
+  distinct(.keep_all = TRUE)
 
 # Ilmenite ----
 
-ilmenite <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
-  select(1,47,19,14,3,25:46) %>% # select and reorder the columns
+ilmenite <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
+  dplyr::select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
@@ -70,13 +71,14 @@ ilmenite <- read_csv('data_input/minerals.csv') %>% # Read file and associate to
          ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
          SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
   filter(GROUP == 'ILMENITE') %>%
-  select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
-  sample_n(30, replace = T)
+  dplyr::select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
+  sample_n(50, replace = FALSE) %>%
+  distinct(.keep_all = TRUE)
 
 # Apatite ----
 
-apatite <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
-  select(1,47,19,14,3,25:46) %>% # select and reorder the columns
+apatite <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
+  dplyr::select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
@@ -84,13 +86,14 @@ apatite <- read_csv('data_input/minerals.csv') %>% # Read file and associate to 
          ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
          SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
   filter(GROUP == 'APATITE') %>%
-  select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
-  sample_n(30)
+  dplyr::select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
+  sample_n(50, replace = FALSE) %>%
+  distinct(.keep_all = TRUE)
 
 # Titanite ----
 
-titanite <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
-  select(1,47,19,14,3,25:46) %>% # select and reorder the columns
+titanite <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
+  dplyr::select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
@@ -98,14 +101,15 @@ titanite <- read_csv('data_input/minerals.csv') %>% # Read file and associate to
          ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
          SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
   filter(GROUP == 'TITANITE') %>%
-  select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
-  #group_by(MINERAL) %>%
-  sample_n(30)
+  dplyr::select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
+  group_by(MINERAL) %>%
+  sample_n(50,replace = FALSE) %>%
+  distinct(.keep_all = TRUE)
 
 # Zircon ----
 
-zircon <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
-  select(1,47,19,14,3,25:46) %>% # select and reorder the columns
+zircon <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
+  dplyr::select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
@@ -113,13 +117,14 @@ zircon <- read_csv('data_input/minerals.csv') %>% # Read file and associate to a
          ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
          SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
   filter(GROUP == 'ZIRCON') %>%
-  select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
-  sample_n(30)
+  dplyr::select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
+  sample_n(50,replace = FALSE) %>%
+  distinct(.keep_all = TRUE)
 
 # Perovskite ----
 
-perovskite <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
-  select(1,47,19,14,3,25:46) %>% # select and reorder the columns
+perovskite <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
+  dplyr::select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
@@ -127,28 +132,82 @@ perovskite <- read_csv('data_input/minerals.csv') %>% # Read file and associate 
          ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
          SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
   filter(MINERAL == 'PEROVSKITE') %>%
-  select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
-  #group_by(MINERAL) %>%
-  sample_n(30)
+  dplyr::select(24,27, 1:2,26, 3:23,25) %>%# Reorder Columns
+  group_by(MINERAL) %>%
+  sample_n(50,replace = FALSE) %>%
+  distinct(.keep_all = TRUE)
+
+# Pyroxenes ----
+set.seed(42)
+pyroxene <- read_csv('data_input/toSMOTE/pyroxene_model.csv') %>%
+  select(-X1) %>%
+  group_by(MINERAL) %>%
+  sample_n(50,replace = TRUE) %>%
+  distinct(.keep_all = TRUE)
 
 
 #####
 # JOINING DATA
 #####
 
-minerals <- minerals %>%
-  bind_rows(apatite,
+set.seed(42)
+toSMOTE <- minerals %>%
+  filter(GROUP != 'PYROXENE') %>%
+  bind_rows(pyroxene,
+            apatite,
             ilmenite,
             perovskite,
             quartz,
             titanite,
             zircon) %>%
-  as_tibble()
+  as_tibble() %>%
+  filter(MINERAL != 'COBALTITE',
+         MINERAL != 'GERSDORFFITE',
+         MINERAL != 'GODLEVSKITE',
+         MINERAL != 'GUANGLINITE',
+         MINERAL != 'HEXATESTIBIOPANICKELITE',
+         MINERAL != 'HOLLINGWORTHITE',
+         MINERAL != 'LINNAEITE',
+         MINERAL != 'MAUCHERITE',
+         MINERAL != 'MARGARITE',
+         MINERAL != 'NICKELINE',
+         MINERAL != 'NONTRONITE',
+         MINERAL != 'PARKERITE',
+         MINERAL != 'VISHNEVITE',
+         MINERAL != 'HUANGHOITE-(Ce)',
+         MINERAL != 'IRARSITE',
+         MINERAL != 'KAOLINITE',
+         MINERAL != 'KHANNESHITE',
+         MINERAL != 'MCKELVEYITE-(Y)',
+         MINERAL != 'OLEKMINSKITE',
+         MINERAL != 'MOLYBDENITE',
+         MINERAL != 'QAQARSSUKITE-(Ce)',
+         MINERAL != 'WITHERITE',
+         MINERAL != 'PIRSSONITE',
+         MINERAL != 'FERRORICHTERITE',
+         MINERAL != 'MAGNESIOKATAPHORITE',
+         MINERAL != 'GLAUCOPHANE',
+         MINERAL != 'NORSETHITE',
+         MINERAL != 'WINCHITE',
+         MINERAL != 'CORDYLITE (SENSU LATO)',
+         MINERAL != 'HORNBLENDE',
+         MINERAL != 'CEBAITE-(Ce)',
+         MINERAL != 'MAGNESIOARFVEDSONITE',
+         MINERAL != 'BARROISITE',
+         MINERAL != 'STRONTIANITE',
+         MINERAL != 'FERRO-TSCHERMAKITE',
+         MINERAL != 'ALSTONITE/BARYTOCALCITE/PARALSTONITE',
+         MINERAL != 'JADEITE',
+         MINERAL != 'ANTHOPHYLLITE')
 
-write.csv(minerals, 'data_input/minerals_balanced.csv')
+write.csv(toSMOTE, 'data_input/minerals_balanced.csv')
 
-contagem <- minerals %>%
+contagem <- toSMOTE %>%
   group_by(MINERAL, GROUP) %>%
   count()
 
 write.csv(contagem, 'references/listofminerals.csv')
+
+
+
+

@@ -17,8 +17,8 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
-set.seed(123) # defining the 'random state' of the pseudo-random generator
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
+set.seed(0) # defining the 'random state' of the pseudo-random generator
 
 # Lista de elementos a ser selecionados do banco de dados original
 selection <- c('SIO2(WT%)', 'TIO2(WT%)', 'AL2O3(WT%)', 'CR2O3(WT%)', 
@@ -71,7 +71,9 @@ names(opx_elems) <- elems_names
 opx_elems <- sapply(opx_elems,as.numeric)
 opx_elems <- as_tibble(opx_elems)
 
-opx_elems1 <- missRanger(opx_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+opx_elems1 <- sapply(opx_elems, replace_na, 0)
+
+# opx_elems1 <- missRanger(opx_elems, pmm.k = 3, num.trees = 100, verbose = 2)
 
 opx <- as_tibble(cbind(opx_labels,opx_elems1)) %>%
   mutate(GROUP = 'PYROXENE') %>%
@@ -88,6 +90,13 @@ opx <- as_tibble(cbind(opx_labels,opx_elems1)) %>%
 
 remove(opx_elems,opx_elems1,opx_labels)
 
+opx['SOMA'] <- rowSums(opx[6:27])
+
+opx <- opx %>%
+  filter(SOMA > 99,
+         SOMA < 101) %>%
+  select(-SOMA)
+
 opx1 <- opx %>%
   filter(MINERAL != 'ORTHOPYROXENE',
          MINERAL != 'BRONZITE',
@@ -96,6 +105,67 @@ opx1 <- opx %>%
          
 opx_blind <- opx %>%
   filter(MINERAL == 'ORTHOPYROXENE')
+
+
+opx1$MINERAL <- recode(.x = opx1$MINERAL,
+                           ACMITE = 'AEGIRINE',
+                           ALABANDITE = 'ALABANDITE/BROWNEITE/RAMBERGITE',
+                           ALSTONITE = 'ALSTONITE/BARYTOCALCITE/PARALSTONITE',
+                           ANALCYLITE = 'ANALCYLITE (SENSU LATO)',
+                           ANNITE = 'BIOTITE (SENSU LATO)',
+                           APATITE = 'APATITE (SENSU LATO)',
+                           BARYTOCALCITE = 'ALSTONITE/BARYTOCALCITE/PARALSTONITE',
+                           BIOTITE = 'BIOTITE (SENSU LATO)',
+                           BREUNNERITE = 'MAGNESITE',
+                           CEBAITE = 'CEBAITE-(Ce)',
+                           CLINOENSTATITE = 'ENSTATITE/CLINOENSTATITE',
+                           CORDYLITE = 'CORDYLITE (SENSU LATO)',
+                           `CR-DIOPSIDE` = 'DIOPSIDE',
+                           CUBANITE = 'CUBANITE/ISOCUBANITE',
+                           ENSTATITE = 'ENSTATITE/CLINOENSTATITE',
+                           FASSAITE = 'AUGITE',
+                           `FE-CHROMITE` = 'CHROMITE',
+                           `FE-DIOPSIDE` = 'DIOPSIDE',
+                           FERROAUGITE = 'AUGITE',
+                           FERROHEDENBERGITE = 'HEDENBERGITE',
+                           FERROPIGEONITE = 'PIGEONITE',
+                           FERROSILITE = 'FERROSILITE/CLINOFERROSILITE',
+                           `FE-TI-TSCHERMAKITE` = 'FERRO-TSCHERMAKITE',
+                           `FE-TSCHERMAKITE` = 'FERRO-TSCHERMAKITE',
+                           GUANGLINITE = 'ISOMERTIEITE/MERTIEITE-I',
+                           HASTINGSITE = 'HASTINGSITE',
+                           HUANGHOITE = 'HUANGHOITE-(Ce)',
+                           ISOCUBANITE = 'CUBANITE/ISOCUBANITE',
+                           KALIOPHILITE = 'KALSILITE/KALIOPHILITE/PANUNZITE/TRIKALSILITE',
+                           KALSILITE = 'KALSILITE/KALIOPHILITE/PANUNZITE/TRIKALSILITE',
+                           KATOPHORITE = 'KATOPHORITE',
+                           KUKHARENKOITE = 'KUKHARENKOITE (SENSU LATO)',
+                           LEPIDOLITE = 'LEPIDOLITE (SENSU LATO)',
+                           MAGNESIOKATOPHORITE = 'MAGNESIOKATAPHORITE',
+                           MAGNESIOSIDERITE = 'SIDERITE',
+                           MCKELVEYITE = 'MCKELVEYITE-(Y)',
+                           MELANITE = 'ANDRADITE',
+                           MICROCLINE = 'K-FELDSPAR',
+                           NYEREREITE = 'NATROFAIRCHILDITE/NYEREREITE/ZEMKORITE',
+                           ORTHOCLASE = 'K-FELDSPAR',
+                           OXYKAERSUTITE = 'KAERSUTITE',
+                           `PHENGITE-MUSCOVITE` = 'MUSCOVITE',
+                           PHLOGOPITE = 'BIOTITE (SENSU LATO)',
+                           PLEONASTE = 'SPINEL',
+                           QAQARSSUKITE = 'QAQARSSUKITE-(Ce)',
+                           SALITE = 'DIOPSIDE',
+                           SANIDINE = 'K-FELDSPAR',
+                           SIDEROPHYLLITE = 'BIOTITE (SENSU LATO)',
+                           `TITAN-MAGNESIO-HASTINGSITE` = 'MAGNESIOHASTINGSITE',
+                           `TITANO-MAGNETITE` = 'MAGNETITE',
+                           ZINNWALDITE = 'ZINNWALDITE (SENSU LATO)',
+                           `(AL)KALIFELDSPAR` = 'K-FELDSPAR',
+                           HORNBLENDE = 'HORNBLENDE (SENSU LATO)',
+                           `FERRI-TSCHERMAKITE` = 'HORNBLENDE (SENSU LATO)',
+                           `FERRI-TSCHERMAKITIC HORNBLENDE` = 'HORNBLENDE',
+                           `MAGNESIO-HORNBLENDE` = 'MAGNESIO-HORNBLENDE',
+                           `MAGNESIO-HASTINGSITE` = 'MAGNESIOHASTINGSITE',
+                           TSCHERMAKITE = 'HORNBLENDE (SENSU LATO)') 
 
 #####
 # CPX Wrangling
@@ -122,7 +192,9 @@ names(cpx_elems) <- elems_names
 cpx_elems <- sapply(cpx_elems,as.numeric)
 cpx_elems <- as_tibble(cpx_elems)
 
-cpx_elems1 <- missRanger(cpx_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+cpx_elems1 <- sapply(cpx_elems, replace_na, 0)
+
+# cpx_elems1 <- missRanger(cpx_elems, pmm.k = 3, num.trees = 100, verbose = 2)
 
 cpx <- as_tibble(cbind(cpx_labels,cpx_elems1)) %>%
   mutate(GROUP = 'PYROXENE') %>%
@@ -143,10 +215,78 @@ cpx <- as_tibble(cbind(cpx_labels,cpx_elems1)) %>%
 
 remove(cpx_elems,cpx_elems1,cpx_labels)
 
+cpx['SOMA'] <- rowSums(cpx[6:27])
+
+cpx <- cpx %>%
+  filter(SOMA > 99,
+         SOMA < 101) %>%
+  select(-SOMA)
+
 cpx1 <- cpx %>%
   filter(MINERAL != 'CLINOPYROXENE') %>%
   filter(!is.na(MINERAL)) %>%
   mutate(AS = 0)
+
+cpx1$MINERAL <- recode(.x = cpx1$MINERAL,
+                           ACMITE = 'AEGIRINE',
+                           ALABANDITE = 'ALABANDITE/BROWNEITE/RAMBERGITE',
+                           ALSTONITE = 'ALSTONITE/BARYTOCALCITE/PARALSTONITE',
+                           ANALCYLITE = 'ANALCYLITE (SENSU LATO)',
+                           ANNITE = 'BIOTITE (SENSU LATO)',
+                           APATITE = 'APATITE (SENSU LATO)',
+                           BARYTOCALCITE = 'ALSTONITE/BARYTOCALCITE/PARALSTONITE',
+                           BIOTITE = 'BIOTITE (SENSU LATO)',
+                           BREUNNERITE = 'MAGNESITE',
+                           CEBAITE = 'CEBAITE-(Ce)',
+                           CLINOENSTATITE = 'ENSTATITE/CLINOENSTATITE',
+                           CORDYLITE = 'CORDYLITE (SENSU LATO)',
+                           `CR-DIOPSIDE` = 'DIOPSIDE',
+                           CUBANITE = 'CUBANITE/ISOCUBANITE',
+                           ENSTATITE = 'ENSTATITE/CLINOENSTATITE',
+                           FASSAITE = 'AUGITE',
+                           `FE-CHROMITE` = 'CHROMITE',
+                           `FE-DIOPSIDE` = 'DIOPSIDE',
+                           FERROAUGITE = 'AUGITE',
+                           FERROHEDENBERGITE = 'HEDENBERGITE',
+                           FERROPIGEONITE = 'PIGEONITE',
+                           FERROSILITE = 'FERROSILITE/CLINOFERROSILITE',
+                           `FE-TI-TSCHERMAKITE` = 'FERRO-TSCHERMAKITE',
+                           `FE-TSCHERMAKITE` = 'FERRO-TSCHERMAKITE',
+                           GUANGLINITE = 'ISOMERTIEITE/MERTIEITE-I',
+                           HASTINGSITE = 'HASTINGSITE',
+                           HUANGHOITE = 'HUANGHOITE-(Ce)',
+                           ISOCUBANITE = 'CUBANITE/ISOCUBANITE',
+                           KALIOPHILITE = 'KALSILITE/KALIOPHILITE/PANUNZITE/TRIKALSILITE',
+                           KALSILITE = 'KALSILITE/KALIOPHILITE/PANUNZITE/TRIKALSILITE',
+                           KATOPHORITE = 'KATOPHORITE',
+                           KUKHARENKOITE = 'KUKHARENKOITE (SENSU LATO)',
+                           LEPIDOLITE = 'LEPIDOLITE (SENSU LATO)',
+                           MAGNESIOKATOPHORITE = 'MAGNESIOKATAPHORITE',
+                           MAGNESIOSIDERITE = 'SIDERITE',
+                           MCKELVEYITE = 'MCKELVEYITE-(Y)',
+                           MELANITE = 'ANDRADITE',
+                           MICROCLINE = 'K-FELDSPAR',
+                           NYEREREITE = 'NATROFAIRCHILDITE/NYEREREITE/ZEMKORITE',
+                           ORTHOCLASE = 'K-FELDSPAR',
+                           OXYKAERSUTITE = 'KAERSUTITE',
+                           `PHENGITE-MUSCOVITE` = 'MUSCOVITE',
+                           PHLOGOPITE = 'BIOTITE (SENSU LATO)',
+                           PLEONASTE = 'SPINEL',
+                           QAQARSSUKITE = 'QAQARSSUKITE-(Ce)',
+                           SALITE = 'DIOPSIDE',
+                           SANIDINE = 'K-FELDSPAR',
+                           SIDEROPHYLLITE = 'BIOTITE (SENSU LATO)',
+                           `TITAN-MAGNESIO-HASTINGSITE` = 'MAGNESIOHASTINGSITE',
+                           `TITANO-MAGNETITE` = 'MAGNETITE',
+                           ZINNWALDITE = 'ZINNWALDITE (SENSU LATO)',
+                           `(AL)KALIFELDSPAR` = 'K-FELDSPAR',
+                           HORNBLENDE = 'HORNBLENDE (SENSU LATO)',
+                           `FERRI-TSCHERMAKITE` = 'HORNBLENDE (SENSU LATO)',
+                           `FERRI-TSCHERMAKITIC HORNBLENDE` = 'HORNBLENDE',
+                           `MAGNESIO-HORNBLENDE` = 'MAGNESIO-HORNBLENDE',
+                           `MAGNESIO-HASTINGSITE` = 'MAGNESIOHASTINGSITE',
+                           TSCHERMAKITE = 'HORNBLENDE (SENSU LATO)') 
+
 
 cpx_blind <- cpx %>%
   filter(MINERAL == 'CLINOPYROXENE') %>%
@@ -175,7 +315,9 @@ names(px_blind_elems) <- elems_names
 px_blind_elems <- sapply(px_blind_elems,as.numeric)
 px_blind_elems <- as_tibble(px_blind_elems)
 
-px_blind_elems1 <- missRanger(px_blind_elems, pmm.k = 3, num.trees = 100, verbose = 2)
+
+px_blind_elems1 <- sapply(px_blind_elems, replace_na, 0)
+# px_blind_elems1 <- missRanger(px_blind_elems, pmm.k = 3, num.trees = 100, verbose = 2)
 
 px_blind <- as_tibble(cbind(px_blind_labels,px_blind_elems1)) %>%
   mutate(GROUP = 'PYROXENE') %>%
@@ -199,7 +341,12 @@ px_blind <- px_blind %>%
 
 remove(px_blind_elems,px_blind_elems1,px_blind_labels)
 
+px_blind['SOMA'] <- rowSums(px_blind[6:27])
 
+px_blind <- px_blind %>%
+  filter(SOMA > 99,
+         SOMA < 101) %>%
+  select(-SOMA)
 
 #####
 # OPX Random Forest
@@ -310,6 +457,96 @@ cpx_rf <- cpx1 %>%
 pyroxene <- opx_rf %>%
   bind_rows(cpx_rf)
 
+pyroxene$MINERAL <- recode(.x = pyroxene$MINERAL,
+                                  ACMITE = 'AEGIRINE',
+                                  ALABANDITE = 'ALABANDITE/BROWNEITE/RAMBERGITE',
+                                  ALSTONITE = 'ALSTONITE/BARYTOCALCITE/PARALSTONITE',
+                                  ANALCYLITE = 'ANALCYLITE (SENSU LATO)',
+                                  ANNITE = 'BIOTITE (SENSU LATO)',
+                                  APATITE = 'APATITE (SENSU LATO)',
+                                  BARYTOCALCITE = 'ALSTONITE/BARYTOCALCITE/PARALSTONITE',
+                                  BIOTITE = 'BIOTITE (SENSU LATO)',
+                                  BREUNNERITE = 'MAGNESITE',
+                                  CEBAITE = 'CEBAITE-(Ce)',
+                                  CLINOENSTATITE = 'ENSTATITE/CLINOENSTATITE',
+                                  CORDYLITE = 'CORDYLITE (SENSU LATO)',
+                                  `CR-DIOPSIDE` = 'DIOPSIDE',
+                                  CUBANITE = 'CUBANITE/ISOCUBANITE',
+                                  ENSTATITE = 'ENSTATITE/CLINOENSTATITE',
+                                  FASSAITE = 'AUGITE',
+                                  `FE-CHROMITE` = 'CHROMITE',
+                                  `FE-DIOPSIDE` = 'DIOPSIDE',
+                                  FERROAUGITE = 'AUGITE',
+                                  FERROHEDENBERGITE = 'HEDENBERGITE',
+                                  FERROPIGEONITE = 'PIGEONITE',
+                                  FERROSILITE = 'FERROSILITE/CLINOFERROSILITE',
+                                  `FE-TI-TSCHERMAKITE` = 'FERRO-TSCHERMAKITE',
+                                  `FE-TSCHERMAKITE` = 'FERRO-TSCHERMAKITE',
+                                  GUANGLINITE = 'ISOMERTIEITE/MERTIEITE-I',
+                                  HASTINGSITE = 'HASTINGSITE',
+                                  HUANGHOITE = 'HUANGHOITE-(Ce)',
+                                  ISOCUBANITE = 'CUBANITE/ISOCUBANITE',
+                                  KALIOPHILITE = 'KALSILITE/KALIOPHILITE/PANUNZITE/TRIKALSILITE',
+                                  KALSILITE = 'KALSILITE/KALIOPHILITE/PANUNZITE/TRIKALSILITE',
+                                  KATOPHORITE = 'KATOPHORITE',
+                                  KUKHARENKOITE = 'KUKHARENKOITE (SENSU LATO)',
+                                  LEPIDOLITE = 'LEPIDOLITE (SENSU LATO)',
+                                  MAGNESIOKATOPHORITE = 'MAGNESIOKATAPHORITE',
+                                  MAGNESIOSIDERITE = 'SIDERITE',
+                                  MCKELVEYITE = 'MCKELVEYITE-(Y)',
+                                  MELANITE = 'ANDRADITE',
+                                  MICROCLINE = 'K-FELDSPAR',
+                                  NYEREREITE = 'NATROFAIRCHILDITE/NYEREREITE/ZEMKORITE',
+                                  ORTHOCLASE = 'K-FELDSPAR',
+                                  OXYKAERSUTITE = 'KAERSUTITE',
+                                  `PHENGITE-MUSCOVITE` = 'MUSCOVITE',
+                                  PHLOGOPITE = 'BIOTITE (SENSU LATO)',
+                                  PLEONASTE = 'SPINEL',
+                                  QAQARSSUKITE = 'QAQARSSUKITE-(Ce)',
+                                  SALITE = 'DIOPSIDE',
+                                  SANIDINE = 'K-FELDSPAR',
+                                  SIDEROPHYLLITE = 'BIOTITE (SENSU LATO)',
+                                  `TITAN-MAGNESIO-HASTINGSITE` = 'MAGNESIOHASTINGSITE',
+                                  `TITANO-MAGNETITE` = 'MAGNETITE',
+                                  ZINNWALDITE = 'ZINNWALDITE (SENSU LATO)',
+                                  `(AL)KALIFELDSPAR` = 'K-FELDSPAR',
+                                  HORNBLENDE = 'HORNBLENDE (SENSU LATO)',
+                                  `FERRI-TSCHERMAKITE` = 'HORNBLENDE (SENSU LATO)',
+                                  `FERRI-TSCHERMAKITIC HORNBLENDE` = 'HORNBLENDE',
+                                  `MAGNESIO-HORNBLENDE` = 'MAGNESIO-HORNBLENDE',
+                                  `MAGNESIO-HASTINGSITE` = 'MAGNESIOHASTINGSITE',
+                                  TSCHERMAKITE = 'HORNBLENDE (SENSU LATO)') 
+                                     
+pyroxene <- pyroxene %>%
+  filter(MINERAL != 'FLUORO-CARBONATE',
+         MINERAL != 'GLAUCONITE',
+         MINERAL != 'HEXATESTIBIOPANICKELITE',
+         MINERAL != 'HYDROGARNET',
+         MINERAL != 'HYDROMICA',
+         MINERAL != 'HYDROMUSCOVITE',
+         MINERAL != 'HYPERSTHENE',
+         MINERAL != 'IDDINGSITE',
+         MINERAL != 'PALAGONITE',
+         MINERAL != 'PHENGITE',
+         MINERAL != 'PSEUDOLEUCITE',
+         MINERAL != 'SERICITE',
+         MINERAL != 'SMECTITE',
+         MINERAL != 'SPURRITE',
+         MINERAL != 'NATRIUMFELDSPAR',
+         MINERAL != 'PERTHITE',
+         MINERAL != 'HYDROGARNET',
+         MINERAL != 'ILMENITE-HEMATITE',
+         MINERAL != 'HEMOILMENITE',
+         MINERAL != 'MAGNETITE/CHROMITE',
+         MINERAL != 'THORITE',
+         MINERAL != 'MERENSKYITE',
+         MINERAL != 'MAUCHERITE',
+         MINERAL != 'AL-SPINEL',
+         MINERAL != 'CHROME-SPINEL',
+         MINERAL != 'FERRICNYB<d6>ITE')
+
+
+
 write.csv(pyroxene, 'data_input/pyroxene.csv')
 
 # input <- pyroxene %>% # manipulating the minerals database and associate the answer with input object
@@ -360,9 +597,7 @@ pyroxene_rf <- pyroxene %>%
 
 # Saving the final model ----
 
-export <- pyroxene %>%
-  group_by(MINERAL) %>%
-  sample_n(30, replace = T)
+export <- pyroxene 
 
 write.csv(export, 'data_input/pyroxene_model.csv')
 

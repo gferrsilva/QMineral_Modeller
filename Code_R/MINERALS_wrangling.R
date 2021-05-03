@@ -73,7 +73,7 @@ col.fillrate <- function(df, sort = F) { # Apresenta a proporção de dados preenc
 
 # Amphiboles -----
 
-df1 <- read_csv('data_raw/AMPHIBOLES.csv',n_max = 38639,na = 'NA') # importar o arquivo amphiboles.csv para um arquivo temporário df1
+df1 <- read_csv('data_raw/GEOROC/AMPHIBOLES.csv',n_max = 38639,na = 'NA') # importar o arquivo amphiboles.csv para um arquivo temporário df1
 
 amph <- df1 %>%
   filter(!is.na(`SIO2(WT%)`)) # filtra todos os dados que não tenham valores na columa de SiO2
@@ -94,7 +94,7 @@ remove(df1,amph) # descarta variáveis
 
 # Apatites -----
 
-df1 <- read_csv('data_raw/APATITES.csv',n_max = 12696)
+df1 <- read_csv('data_raw/GEOROC/APATITES.csv',n_max = 12696)
 
 apat <- df1 %>%
   # select(1:89) %>%
@@ -121,7 +121,7 @@ remove(df1,apat)
 
 # Carbonates -----
 
-df1 <- read_csv('data_raw/CARBONATES.csv',n_max = 9189)
+df1 <- read_csv('data_raw/GEOROC/CARBONATES.csv',n_max = 9189)
 
 carb <- df1 %>%
   # select(1:89) %>%
@@ -150,7 +150,7 @@ remove(df1,carb)
 
 # Clay Minerals -----
 
-df1 <- read_csv('data_raw/CLAY_MINERALS.csv',n_max = 753)
+df1 <- read_csv('data_raw/GEOROC/CLAY_MINERALS.csv',n_max = 753)
 
 clay <- df1 %>%
   # select(1:89) %>%
@@ -178,7 +178,7 @@ remove(df1, clay)
 
 # Feldspars -----
 
-df1 <- read_csv('data_raw/FELDSPARS.csv',n_max = 174107)
+df1 <- read_csv('data_raw/GEOROC/FELDSPARS.csv',n_max = 174107)
 
 felds <- df1 %>%
   # select(1:89) %>%
@@ -205,7 +205,7 @@ remove(df1,felds)
 
 # Feldspathoid -----
 
-df1 <- read_csv('data_raw/FELDSPATHOIDES.csv',n_max = 4332)
+df1 <- read_csv('data_raw/GEOROC/FELDSPATHOIDES.csv',n_max = 4332)
 
 foid <- df1 %>%
   # select(1:89) %>% 
@@ -229,7 +229,7 @@ remove(df1,foid)
 
 # Garnets -----
 
-df1 <- read_csv('data_raw/GARNETS.csv',n_max = 42340)
+df1 <- read_csv('data_raw/GEOROC/GARNETS.csv',n_max = 42340)
 
 grt <- df1 %>%
   # select(1:89) %>%
@@ -256,7 +256,7 @@ remove(df1,grt)
 
 # Ilmenite -----
 
-df1 <- read_csv('data_raw/ILMENITES.csv',n_max = 14894)
+df1 <- read_csv('data_raw/GEOROC/ILMENITES.csv',n_max = 14894)
 
 ilm <- df1 %>%
   # select(1:89) %>%
@@ -280,7 +280,7 @@ remove(df1,ilm)
 
 # Mica -----
 
-df1 <- read_csv('data_raw/MICA.csv',n_max = 35035)
+df1 <- read_csv('data_raw/GEOROC/MICA.csv',n_max = 35035)
 
 mica <- df1 %>%
   # select(1:89) %>%
@@ -307,7 +307,7 @@ remove(df1,mica)
 
 # OLIVINES -----
 
-df1 <- read_csv('data_raw/OLIVINES.csv',n_max = 185404)
+df1 <- read_csv('data_raw/GEOROC/OLIVINES.csv',n_max = 185404)
 
 oliv <- df1 %>%
   # select(1:89) %>% 
@@ -328,7 +328,7 @@ remove(df1,oliv)
 
 # PEROVSKITE -----
 
-df1 <- read_csv('data_raw/PEROVSKITES.csv',n_max = 11022)
+df1 <- read_csv('data_raw/GEOROC/PEROVSKITES.csv',n_max = 11022)
 
 perov <- df1 %>%
   # select(1:89) %>% 
@@ -352,7 +352,7 @@ remove(df1,perov)
 
 # Pyroxenes -----
 
-df1 <- read_csv('data_raw/PYROXENES.csv',n_max = 15006)
+df1 <- read_csv('data_raw/GEOROC/PYROXENES.csv',n_max = 15006)
 
 px <- df1 %>%
   # select(1:89) %>%
@@ -379,7 +379,7 @@ remove(df1,px)
 
 # Quartz -----
 
-df1 <- read_csv('data_raw/QUARTZ.csv',n_max = 5304)
+df1 <- read_csv('data_raw/GEOROC/QUARTZ.csv',n_max = 5304)
 
 qtz <- df1 %>%
   # select(1:89) %>%
@@ -406,7 +406,7 @@ remove(df1,qtz)
 
 # Spinels -----
 
-df1 <- read_csv('data_raw/SPINELS.csv',n_max = 64421)
+df1 <- read_csv('data_raw/GEOROC/SPINELS.csv',n_max = 64421)
 
 spin <- df1 %>%
   # select(1:89) %>%
@@ -428,7 +428,7 @@ remove(df1,spin)
 
 # Sulfides -----
 
-df1 <- read_csv('data_raw/SULFIDES.csv',n_max = 7004)
+df1 <- read_csv('data_raw/GEOROC/SULFIDES.csv',n_max = 7004)
 
 sulf <- df1 %>%
   # select(1:89) #%>%
@@ -472,7 +472,7 @@ remove(df1,sulf)
 
 # Titanite -----
 
-df1 <- read_csv('data_raw/TITANITES.csv',n_max = 5469)
+df1 <- read_csv('data_raw/GEOROC/TITANITES.csv',n_max = 5469)
 
 titan <- df1 %>%
   # select(1:89) %>%
@@ -500,7 +500,7 @@ remove(df1,titan)
 
 # Zircon -----
 
-df1 <- read_csv('data_raw/ZIRCONS.csv',n_max = 265824)
+df1 <- read_csv('data_raw/GEOROC/ZIRCONS.csv',n_max = 265824)
 
 zirc <- df1 %>%
   # select(1:89) %>%

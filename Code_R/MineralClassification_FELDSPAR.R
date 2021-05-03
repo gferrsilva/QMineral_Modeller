@@ -17,8 +17,8 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
-set.seed(123) # defining the 'random state' of the pseudo-random generator
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
+set.seed(0) # defining the 'random state' of the pseudo-random generator
 
 #####
 #Import Packages
@@ -39,7 +39,7 @@ library(factoextra) # Deal with PCA and PCA datavis
 # PREPRARING DATA 
 #####
 
-minerals <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
+minerals <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
   select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
@@ -74,6 +74,12 @@ felds <- felds %>%
          GROUP = factor(GROUP),
          ROCK = factor(ROCK),
          SAMPLE = factor(SAMPLE))
+
+felds['SOMA'] <- rowSums(felds[6:27])
+
+felds <- felds %>%
+  filter(SOMA >= 99,
+         SOMA <= 101)
 
 input <- felds %>% # manipulating the minerals database and associate the answer with input object
   group_by(MINERAL) %>% # grouping the instances by the mineral 'GROUP' class
@@ -129,12 +135,73 @@ blind <- blind %>%
 feldspar <- felds %>%
   bind_rows(blind)
 
-# export <- feldspar %>%
-#   group_by(MINERAL) %>%
-#   sample_n(30, replace = T)
+
+
+# Filtering remaining outliers ----
+
+feldspar['SOMA'] <- rowSums(feldspar[6:27])
+
+feldspar <- feldspar %>%
+  filter(SOMA >= 99,
+         SOMA <= 101)
+
+df1 <- feldspar %>%
+  filter(MINERAL != 'ANORTHITE')
+
+anort <- feldspar %>%
+  filter(MINERAL == 'ANORTHITE',
+         NA2O <= 2.5,
+         SIO2 <= 48.5)
+
+feldspar <- df1 %>%
+  bind_rows(anort)
+
+df1 <- feldspar %>%
+  filter(MINERAL != 'ALBITE')
+
+alb <- feldspar %>%
+  filter(MINERAL == 'ALBITE',
+         NA2O > 10,
+         K2O < 0.6)
+
+feldspar <- df1 %>%
+  bind_rows(alb)
+
+df1 <- feldspar %>%
+  filter(MINERAL != 'K-FELDSPAR')
+
+kf <- feldspar %>%
+  filter(MINERAL == 'K-FELDSPAR',
+         NA2O < 6,
+         CAO < 3,
+         AL2O3 < 23)
+
+feldspar <- df1 %>%
+  bind_rows(kf)
+
+df1 <- feldspar %>%
+  filter(MINERAL != 'OLIGOCLASE')
+
+olig <- feldspar %>%
+  filter(MINERAL == 'OLIGOCLASE',
+         NA2O > 6)
+
+feldspar <- df1 %>%
+  bind_rows(olig)
+
+
+
+# Writing output file
+set.seed(42)
+export <- feldspar %>%
+  group_by(MINERAL) %>%
+  sample_n(50, replace = FALSE) %>%
+  distinct(.keep_all = TRUE)
 
 write.csv(feldspar, 'data_input/feldspar.csv')
 
+
+# DATAVIS
 pca <- prcomp(feldspar[6:27], center = T)
 
 fviz_pca_var(pca,
@@ -260,7 +327,7 @@ min <- as_tibble(cbind(y_test, test_data, pred)) # creates a database with true_
                        )
 ) +
     geom_tile(aes(alpha = prop)) +
-    geom_text(aes(label = round(prop, 1)), size = 3) +
+    geom_text(aes(label = round(prop, 2)), size = 3) +
     scale_fill_manual(values =
                         c(good = "green",
                           bad = "red")

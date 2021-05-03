@@ -17,7 +17,7 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
 set.seed(0) # defining the 'random state' of the pseudo-random generator
 
 #####
@@ -39,7 +39,7 @@ library(factoextra) # Deal with PCA and PCA datavis
 # PREPRARING DATA 
 #####
 
-minerals <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
+minerals <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
   select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
@@ -122,9 +122,10 @@ blind <- blind %>%
 garnet <- grt %>%
   bind_rows(blind)
 
-# export <- garnet %>%
-#   group_by(MINERAL) %>%
-#   sample_n(30, replace = T)
+export <- garnet %>%
+  group_by(MINERAL) %>%
+  sample_n(50, replace = T) %>%
+  distinct(.keep_all = TRUE)
 
 write.csv(garnet, 'data_input/garnet.csv')
 

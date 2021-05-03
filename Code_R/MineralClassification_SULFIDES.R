@@ -17,8 +17,8 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
-set.seed(123) # defining the 'random state' of the pseudo-random generator
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
+set.seed(0) # defining the 'random state' of the pseudo-random generator
 
 #####
 #Import Packages
@@ -39,7 +39,7 @@ library(factoextra) # Deal with PCA and PCA datavis
 # PREPRARING DATA 
 #####
 
-minerals <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
+minerals <- read_csv('data_input/minerals_posDBScan.csv') %>% # Read file and associate to an object
   select(1,47,19,14,3,25:46) %>% # select and reorder the columns
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
@@ -123,8 +123,8 @@ print(sulfide_rf_over) # Print on the console the summary of the model
 
 pred <- as_tibble(predict(sulfide_rf_over, test_data)) # predict the classes of the test set
 
-confusionMatrix(pred_1$value, factor(y_test$MINERAL)) # confusion matrix printed out on the console
-(accuracy_m1 = mean(y_test == pred_1)) # associate the accuracy to an object
+confusionMatrix(pred$value, factor(y_test$MINERAL)) # confusion matrix printed out on the console
+(accuracy_m1 = mean(y_test == pred)) # associate the accuracy to an object
 
 
 #### Blind
@@ -139,9 +139,11 @@ blind <- blind %>%
 sulfide <- sulf %>%
   bind_rows(blind)
 
+set.seed(40)
 export <- sulfide %>%
   group_by(MINERAL) %>%
-  sample_n(30, replace = T)
+  sample_n(50, replace = T) %>%
+  distinct(.keep_all = TRUE)
 
 write.csv(export, 'data_input/sulfide_model.csv')
 
