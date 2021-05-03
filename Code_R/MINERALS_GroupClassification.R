@@ -17,7 +17,7 @@
 #####
 # Setting up the enviroment
 #####
-setwd("C:/Users/GUILHERMEFERREIRA-PC/Documents/GitHub/MinChem_Modeller") # defining the work direction
+setwd("~/GitHub/MinChem_Modeller") # defining the work direction
 set.seed(123) # defining the 'random state' of the pseudo-random generator
 
 #####
