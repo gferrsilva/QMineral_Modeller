@@ -89,7 +89,7 @@ The calculation formula for **Amphiboles** will be made by a multivariate regres
 ## Status
 The current fluxogram of processing is shown below.
 
-![jpeg](figures/Fluxogram.jpg)
+![jpeg](Fluxogram.jpg)
 
 This model is in active development and subject to significant code changes
 to:
