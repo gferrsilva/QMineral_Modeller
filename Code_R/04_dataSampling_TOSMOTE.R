@@ -25,13 +25,13 @@
 
 setwd("~/GitHub/MinChem_Modeller") # Ajustando o work direction
 
-set.seed(123) # Ajustando o 'Random State' da m·quina para reproduzir os cÛdigos
+set.seed(123) # Ajustando o 'Random State' da m√°quina para reproduzir os c√≥digos
 
 #####
 #Import Packages
 #####
 
-library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipulaÁ„o e visualizaÁ„o de dados. Equivalente ao pandas, matplotlib, seaborn, etc
+library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipula√ß√£o e visualiza√ß√£o de dados. Equivalente ao pandas, matplotlib, seaborn, etc
 library(dbscan) # outlier detection
 library(factoextra) # Cluster viz
 library(smotefamily)
@@ -46,7 +46,7 @@ pyroxene <- read_csv('data_input/pyroxene.csv') %>%
 
 sel <- names(pyroxene)
 
-min <- read_csv('data_input/minerals_posDBScan.csv',na = 'NA') %>% # importar o arquivo amphiboles.csv para um arquivo tempor·rio df1
+min <- read_csv('data_input/minerals_posDBScan.csv',na = 'NA') %>% # importar o arquivo amphiboles.csv para um arquivo tempor√°rio df1
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
   mutate(AS = AS_ppm, AS_ppm = NULL, # Rename columns
