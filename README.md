@@ -87,9 +87,6 @@ Then, the formula printed out in the output is the product of several calculatio
 The calculation formula for **Amphiboles** will be made by a multivariate regression for each one of the Crystallographic Sites, still in development, and will later be made available in this repository.
 
 ## Status
-The current fluxogram of processing is shown below.
-
-![jpeg](Fluxogram.jpg)
 
 This model is in active development and subject to significant code changes
 to:
@@ -123,7 +120,7 @@ All python codes are available in the [Code_Python](./Code_Python) folder.
 * [Marcos Vinícius Ferreira](http://lattes.cnpq.br/0664633989688055), (E-mail: marcos.ferreira@cprm.gov.br)
 * [Iago Sousa Lima Costa](http://lattes.cnpq.br/9427131869731616), (E-mail: iago.costa@cprm.gov.br)
 * [Renato Bernardes Borges](http://lattes.cnpq.br/6396868621473599), (E-mail: renato.bernardes@unb.br)
-* [Carlos Eduardo Miranda Mota](http://lattes.cnpq.br/9373929014144622), (E-mail: renato.bernardes@unb.br)
+* [Carlos Eduardo Miranda Mota](http://lattes.cnpq.br/9373929014144622), (E-mail: carlos.mota@cprm.gov.br)
 
 ## Copyright and License
 
