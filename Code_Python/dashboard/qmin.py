@@ -101,7 +101,7 @@ def saveModel(model_name):
 
 
 def load_model():
-    modelsaved = './model_py/allmodels.pkl'
+    modelsaved = './model_py/allmodels6.pkl'
     with open(modelsaved, "rb") as f:
         model = pickle.load(f)
 
@@ -336,7 +336,10 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
         df = pd.read_csv(filename, sep=',')
     elif ftype == 'xls' or ftype == 'xlsx':
        # df = pd.read_excel(filename, skipfooter=skipfooter, skiprows=skiprow)
-        df = pd.read_excel(filename,  skiprows=3, skipfooter=6)
+        df = pd.read_excel(filename)
+        #df = pd.read_excel(filename,  skiprows=3, skipfooter=6)
+        df = df.dropna()
+        #print(df)
     else:
         print('Error in read input')
         raise InputError("Input file not supported!!!")
@@ -356,42 +359,83 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
     # df_w['CERTAINTY GROUP'] = df_qc['CERTAINTY GROUP']
     df_w['GROUP QC'] = df_qc['GROUP QC']
     groups = df_w['PREDICTED GROUP'].unique()
+    #print(groups)
+    print(df_w)
 
     # Predict Mineral
     df_partial = []
 
     for group in groups:
+        print('Predicting Mineral for group:', group)
+        print(groups)
         df = df_w[df_w['PREDICTED GROUP'] == group]
-        # Check if values is separated with , instead of .
-        # if separator_diferent:
-        #     df = df.stack().str.replace(',', '.').unstack()
+
         df = organize(df)
-        predictions = model[group].predict(df)
+
+        one_mineral = ["APATITE", "ILMENITE", "PEROVSKITE",
+                       "QUARTZ", "TITANITE", "ZIRCON","CHLORITE"]
+
+        if group in one_mineral:
+           # predictions = model[group].predict(df)
+           # print(predictions)
+            df = df_w[df_w['PREDICTED GROUP'] == group]
+            df['PREDICTED MINERAL'] = group
+            df['MINERAL QC'] = "ONLY MINERAL"
+            df['2nd PREDICT MINERAL'] = "NONE"
+          #  print(df)
+        else:
+            predictions = model[group].predict(df)
+
+            df_qc = quality_entropy(model[group], df, 'mineral')
+         #   print(df_qc)
+            # predictions = model[group].predict(df)
+            df = df_w[df_w['PREDICTED GROUP'] == group]
+            # df['PREDICTED GROUP'] = group
+            # print(df)
+            df['PREDICTED MINERAL'] = predictions
+
+            #print(df['PREDICTED MINERAL'])
+            # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+            df['MINERAL QC'] = df_qc['MINERAL QC']
+            df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
+
+       # df = df.astype('float64')
+       #  try:
+       #      predictions = model[group].predict(df)
+       #
+       #      df_qc = quality_entropy(model[group], df, 'mineral')
+       #      print(df_qc)
+       #      # predictions = model[group].predict(df)
+       #      df = df_w[df_w['PREDICTED GROUP'] == group]
+       #      # df['PREDICTED GROUP'] = group
+       #      # print(df)
+       #      df['PREDICTED MINERAL'] = predictions
+       #
+       #      #print(df['PREDICTED MINERAL'])
+       #      # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
+       #      df['MINERAL QC'] = df_qc['MINERAL QC']
+       #      df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
+       #  # except ZeroDivisionError:
+       #  #     pass
+       #  except:
+       #      continue
+
+
         # print(group+'\n\n')
-        df_qc = quality_entropy(model[group], df, 'mineral')
-
-        # predictions = model[group].predict(df)
-        df = df_w[df_w['PREDICTED GROUP'] == group]
-        # df['PREDICTED GROUP'] = group
-        df['PREDICTED MINERAL'] = predictions
-        # df['CERTAINTY MINERAL'] = df_qc['CERTAINTY MINERAL']
-        df['MINERAL QC'] = df_qc['MINERAL QC']
-        df['2nd PREDICT MINERAL'] = df_qc['2nd PREDICT MINERAL']
-
         df_partial.append(df)
-
+    # print(df_partial)
     df_all = pd.concat(df_partial, axis=0, ignore_index=True)
+    print(df_all)
     cols = df_all.columns.tolist()
     cols = cols[-5:] + cols[:-5]
     df_all = df_all[cols]
-
     formulas, dic_formulas = get_formula(df_all)
     df_all.insert(5, 'FORMULA', formulas['Formula'])
 
     # groups_df = formulas['PREDICTED GROUP'].unique()
     # for group in groups_df:
     #     df_partial = formulas[formulas['PREDICTED GROUP'] == group]
-       # append_df_to_excel('formula_calculator_output.xlsx', df_partial, sheet_name=group + '_formula')
+    #     append_df_to_excel('formula_calculator_output.xlsx', df_partial, sheet_name=group + '_formula')
 
     return df_all.round(4), dic_formulas
 

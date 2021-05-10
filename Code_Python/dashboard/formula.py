@@ -873,9 +873,11 @@ def get_formula(df):
 
     # groups_df = df['GROUP'].unique()
     groups_df = df['PREDICTED GROUP'].unique()
+    print("ALL  GROUPS, ", groups_df)
     dfs = []
     dict = {}
     for group in groups_df:
+        print('Calculating Formula for ', group )
         df_partial = df[df['PREDICTED GROUP'] == group]
         # df_partial = df[df['GROUP'] == group]
         df_formula = get_function(group, df_partial)
