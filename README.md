@@ -113,7 +113,7 @@ Project Developed on R and Python3 languages.<p>
 The data wrangling, first missing value imputaion, convertion elements to oxides, and balancing
 of mineral instances was done in R. The code is available in the [Code_R](./Code_R) folder.
 
-The final models used in this work were developed on Python3 language, and are available in the [model_py](.Code_Python/dashboard/model_py/) folder.
+The final models used in this work were developed on Python3 language, and are available in the [model_py](./Code_Python/dashboard/model_py/) folder.
 All python codes are available in the [Code_Python](./Code_Python) folder.
 
 ## Contributors
