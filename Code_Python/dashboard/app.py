@@ -651,13 +651,11 @@ def sendEmail(text, name = '', from_email=''):
     # Create a text/plain message
 
     msg['Subject'] = "USER COMUNICATION from QMIN"
-    msg['From'] = "postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org"
+    msg['From'] = "qmin.mineral@gmail.com"
     msg['To'] = "qmin.mineral@gmail.com"
 
-    s = smtplib.SMTP('smtp.mailgun.org', 587)
-
-    s.login('postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org',
-        'acbc4e8bdfa843cb4c66d3e2eddd579b-f7d0b107-2a58389a')
+    s = smtplib.SMTP_SSL('smtp.gmail.com')
+    s.login('qmin.mineral@gmail.com', 'iqlwncjdlwltfljo')
     s.send_message(msg)
     s.quit()
 
