@@ -31,6 +31,13 @@ def upload_card():
     return html.Div([
         html.Div([
             html.Div(html.A('Template Data', href='assets/template.xls')),
+            html.Div(children=[
+                html.H4('Video Tutorial of QMin'),
+                html.Iframe(
+                    src="https://www.youtube.com/embed/ege7MC3NQfM",
+                    title="YouTube video player",
+
+                )], className='item-a'),
             html.H4("Upload Files",
                     style={'text-align': 'center'}),
             html.B(),
@@ -97,7 +104,8 @@ def upload_card():
             children=[]
         ),
         html.Div(id='download-name'),
-        html.Div(id='remove')
+        html.Div(id='remove'),
+
     ], className='item-a')
 
 
@@ -162,7 +170,10 @@ app.layout = html.Div(
                                                                    html.Div(id='textarea-state-example-output',
                                                                             style={'whiteSpace': 'pre-line'})
                                                                    ])], className='item-a'),
-                                            informations.about_card()]),
+                                            informations.about_card(),
+
+
+                                            ]),
 
 
                          # Define the left element
