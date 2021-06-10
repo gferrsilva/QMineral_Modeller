@@ -7,8 +7,7 @@ presented perform mineral classification, missing value imputation by multivaria
 regression and mineral formula prediction by several Random Forest classification 
 and regression nested models.
 
-The models have been developed by researchers of the Directory of Geology and Mineral
-Resources, of the [Geological Survey of Brazil](https://www.cprm.gov.br/en/) (DGM/CPRM), with the assistance of
+The models have been developed by researchers of the [Geological Survey of Brazil](https://www.cprm.gov.br/en/) (SGB/CPRM), with the assistance of
 the technical manager of the EPMA laboratory of the [Institute of Geosciences/University of Brasília](http://www.igd.unb.br/) (IG/UnB).
 
 ## Important Notes
@@ -23,7 +22,7 @@ should be undertaken to see average behavior.
 dependent on the quality of the entry data. Consider the best practice to input
 data with the sum of elements concentration between 98-102%
 
-:warning: At the current state, Qmin is able to predict among 17 groups and 100 different minerals.
+:warning: At the current state, Qmin is able to predict among 19 groups and 102 different minerals.
 Any other mineral not listed bellow will not perform as desired:
 
 * AMPHIBOLES (13 minerals): ACTINOLITE, ARFVEDSONITE, CUMMINGTONITE, EDENITE,
@@ -36,8 +35,11 @@ PARGASITE, RICHTERITE, RIEBECKITE, TREMOLITE.
 DOLOMITE, GREGORYITE, KUKHARENKOITE (SENSU LATO), KUTNAHORITE, MAGNESITE,
 NATROFAIRCHILDITE/NYEREREITE/ZEMKORITE, SHORTITE, SIDERITE
 
+* CHLORITE: CHLORITE (SENSU LATO) :warning: STILL UNSTABLE!
 
 * CLAY-MINERALS (5 minerals): BEIDELLITE, CORRENSITE, ILLITE, MONTMORILLONITE, SAPONITE
+
+* EPIDOTE: EPIDOTE (SENSU LATO) :warning: STILL UNSTABLE!
 
 * FELDSPARS (8 minerals): ALBITE, ANDESINE, ANORTHITE, ANORTHOCLASE, BYTOWNITE, K-FELDSPAR,
 LABRADORITE, OLIGOCLASE
@@ -111,7 +113,7 @@ Project Developed on R and Python3 languages.<p>
 The data wrangling, first missing value imputaion, convertion elements to oxides, and balancing
 of mineral instances was done in R. The code is available in the [Code_R](./Code_R) folder.
 
-The final models used in this work were developed on Python3 language, and are available in the [model_py](./model_py) folder.
+The final models used in this work were developed on Python3 language, and are available in the [model_py](./Code_Python/dashboard/model_py/) folder.
 All python codes are available in the [Code_Python](./Code_Python) folder.
 
 ## Contributors
