@@ -226,7 +226,7 @@ app.layout = html.Div(
 def write_excel(df, dic_formula):
     import uuid
     import pandas as pd
-    from formula import append_df_to_excel
+   # from formula import append_df_to_excel
 
     filename = f"{uuid.uuid1()}.xlsx"
     relative_filename = os.path.join(
@@ -237,15 +237,16 @@ def write_excel(df, dic_formula):
         os.remove(relative_filename)
 
     absolute_filename = os.path.join(os.getcwd(), relative_filename)
-    writer = pd.ExcelWriter(absolute_filename)
-    df.to_excel(writer, 'QMIN')
+    writer = pd.ExcelWriter(absolute_filename, engine='xlsxwriter')
+    df.to_excel(writer, sheet_name = 'QMIN')
+
+    for key in dic_formula.keys():
+        if len(dic_formula[key]) > 0:
+            #append_df_to_excel(absolute_filename, dic_formula[key], sheet_name=key + '_formula')
+            dic_formula[key].to_excel(writer, sheet_name = key + '_formula')
+
     writer.save()
     writer.close()
-
-    #####ERROR EM ESCREVER OUTRAS ABAS
-    # for key in dic_formula.keys():
-    #     if len(dic_formula[key]) > 0:
-    #         append_df_to_excel(absolute_filename, dic_formula[key], sheet_name=key + '_formula')
 
     return relative_filename
 
