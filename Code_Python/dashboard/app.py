@@ -30,6 +30,7 @@ def upload_card():
     """
     return html.Div([
         html.Div([
+            html.Div(html.A('Template Data', href='assets/template.xls')),
             html.H4("Upload Files",
                     style={'text-align': 'center'}),
             html.B(),
@@ -119,6 +120,13 @@ app.layout = html.Div(
                              style={'font-size': '45px',
                                     'float': 'left'}),
                      html.A([
+                         html.Img(src="assets/cprm_logo.png",
+                                  height='70',
+                                  width='152',
+                                  style={'float': 'right'})
+                     ], href='https://www.cprm.gov.br'),
+
+                     html.A([
                          html.Img(src="assets/GitHub-Mark-Light-64px.png",
                                   style={'float': 'right'})
                      ],
@@ -153,7 +161,7 @@ app.layout = html.Div(
                                                                                n_clicks=0),
                                                                    html.Div(id='textarea-state-example-output',
                                                                             style={'whiteSpace': 'pre-line'})
-                                                                   ])]),
+                                                                   ])], className='item-a'),
                                             informations.about_card()]),
 
 
@@ -662,14 +670,15 @@ def sendDataEmail(teste, file_data):
     from email.mime.application import MIMEApplication
     from email.mime.multipart import MIMEMultipart
 
-    if teste[0] == 'true':
-        From = "postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org"
+    if teste == 'true':
+     #   From = "postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org"
+        From = 'qmin.mineral@gmail.com'
         To = "qmin.mineral@gmail.com"
         # Create a text/plain message
         msg = MIMEMultipart()
 
         msg['Subject'] = "Data from QMIN"
-        msg['From'] = "postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org"
+        msg['From'] = "qmin.mineral@gmail.com"
         msg['To'] = "qmin.mineral@gmail.com"
 
         filename = file_data
@@ -679,10 +688,11 @@ def sendDataEmail(teste, file_data):
         att.add_header('Content-Disposition', 'attachment', filename=filename)
         msg.attach(att)
 
-        s = smtplib.SMTP('smtp.mailgun.org', 587)
+        s = smtplib.SMTP_SSL('smtp.gmail.com')
 
-        s.login('postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org',
-            'acbc4e8bdfa843cb4c66d3e2eddd579b-f7d0b107-2a58389a')
+        # s.login('postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org',
+        #     'acbc4e8bdfa843cb4c66d3e2eddd579b-f7d0b107-2a58389a')
+        s.login('qmin.mineral@gmail.com','iqlwncjdlwltfljo')
         s.sendmail(From, To, msg.as_string())
         s.quit()
 

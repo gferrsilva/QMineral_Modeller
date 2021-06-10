@@ -133,9 +133,6 @@ def about_card():
                     html.Summary('ZIRCON ',style={'font-weight':'bold','letter-spacing':'2.1px','font-size':'16px','padding-left':'12px'}),                 
                     html.P('''Zircon''')
                     ]),
-                                                            
-
-
               ],className = 'item-a')
 
                            
@@ -189,10 +186,10 @@ def status_area():
                                dcc.Markdown('''
                                             * Conceptualization
                                             * Data curation
-                                            * R Programing
+                                            * R Programming
                                             ''',style={'text-align': 'center'})
                                
-                              ],className='three columns'),
+                              ],className='two columns'),
                     
                     html.Div([
                               
@@ -211,11 +208,11 @@ def status_area():
                                dcc.Markdown('''*Geological Survey of Brazil*''',style={'text-align': 'center'}),
                                dcc.Markdown('''
                                             * Machine Learning developer
-                                            * Python Programing
+                                            * Python Programming
                                             * Dash design
                                             ''',style={'text-align': 'center'})
                                
-                              ],className='three columns'),
+                              ],className='two columns'),
               
                                         
                     html.Div([
@@ -235,15 +232,14 @@ def status_area():
                                dcc.Markdown('''*Geological Survey of Brazil*''',style={'text-align': 'center'}),
                                dcc.Markdown('''
                                             * Machine Learning developer
-                                            * Python Programing
+                                            * Python Programming
                                             * Dash design
                                             ''',style={'text-align': 'center'})
-                              ],className='three columns'),
-                    
-                    
-                    
-                    
-                   html.Div([
+                              ],className='two columns'),
+
+
+
+                    html.Div([
                               
                                html.A([
                                    html.Img(src="assets/contributors/Renato.png",style={
@@ -254,7 +250,7 @@ def status_area():
                                        'margin-botton': '100px'},
                                         height = '140', width = '140')
                                    
-                                       ],href='http://buscatextual.cnpq.br/buscatextual/visualizacv.do?id=K4360736A0&idiomaExibicao=2'),
+                                       ],href='http://lattes.cnpq.br/6396868621473599'),
                                dcc.Markdown('''**Renato Bernardes**''',style={'text-align': 'center','font-size':'16px','margin-top': '10px'}),
                                dcc.Markdown('''Geologist''',style={'text-align': 'center'}),
                                dcc.Markdown('''*University of Brasilia*''',style={'text-align': 'center'}),
@@ -263,17 +259,32 @@ def status_area():
                                             * QA/QC control
                                             ''',style={'text-align': 'center'})
                                
-                              ],className='three columns'),
+                              ],className='two columns'),
+                    html.Div([
+
+                        html.A([
+                            html.Img(src="assets/contributors/Carlos_Mota.png", style={
+                                'float': 'center',
+                                'display': 'block',
+                                'margin-left': 'auto',
+                                'margin-right': 'auto',
+                                'margin-botton': '100px'},
+                                     height='140', width='140')
+
+                        ],
+                            href='http://lattes.cnpq.br/9373929014144622'),
+                        dcc.Markdown('''**Carlos Mota**''',
+                                     style={'text-align': 'center', 'font-size': '16px', 'margin-top': '10px'}),
+                        dcc.Markdown('''Geologist''', style={'text-align': 'center'}),
+                        dcc.Markdown('''*Geological Survey of Brazil*''', style={'text-align': 'center'}),
+                        dcc.Markdown('''
+                                  * Python Programming 
+                                  * DevOps Engineering
+                                  ''', style={'text-align': 'center'})
+                    ], className='two columns')
                                              
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        ],className='row',)
+
+                        ], className='row',)
                             
 
 
