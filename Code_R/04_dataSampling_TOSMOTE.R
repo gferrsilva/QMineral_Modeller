@@ -30,12 +30,18 @@ set.seed(123) # Ajustando o 'Random State' da maquina para reproduzir os codigos
 #####
 #Import Packages
 #####
-
-library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipulação e visualização de dados. Equivalente ao pandas, matplotlib, seaborn, etc
-library(dbscan) # outlier detection
-library(factoextra) # Cluster viz
-library(smotefamily)
-library(data.table)
+if(!require(tidyverse)){ # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if(!require(factoextra)){ # PCA vis
+  install.packages("factoextra")
+  library(factoextra)
+}
+if(!require(smotefamily)){ # Data Balance
+  install.packages("smotefamily")
+  library(smotefamily)
+}
 
 #####
 # DATA WRANGLING 

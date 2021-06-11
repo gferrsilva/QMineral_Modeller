@@ -23,14 +23,33 @@ set.seed(123) # defining the 'random state' of the pseudo-random generator
 
 
 #####
-#Import Packages
+# [Instal and] Import Packages
 #####
-library(Cairo) # Export figures
-library(tidyverse) # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
-library(ggthemes) # Predefined themes
-library(caret) # Machine Learning Toolkit
-library(randomForest) # Random Forest library
-library(factoextra)
+
+if(!require(Cairo)){ # Export figures
+  install.packages("Cairo")
+  library(Cairo)
+}
+if(!require(tidyverse)){ # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if(!require(ggthemes)){ # Predefined themes
+  install.packages("ggthemes")
+  library(ggthemes)
+}
+if(!require(caret)){ # Machine Learning Toolkit
+  install.packages("caret")
+  library(caret)
+}
+if(!require(randomForest)){ # Random Forest library
+  install.packages("randomForest")
+  library(randomForest)
+}
+if(!require(factoextra)){ # PCA vis
+  install.packages("factoextra")
+  library(factoextra)
+}
 
 #####
 # Built-in Functions

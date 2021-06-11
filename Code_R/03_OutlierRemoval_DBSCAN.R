@@ -31,10 +31,18 @@ tic <- Sys.time() # time counter
 #####
 #Import Packages
 #####
-
-library(tidyverse) # data wrangling
-library(dbscan) # outlier detection
-library(factoextra) # Cluster viz
+if(!require(tidyverse)){ # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if(!require(factoextra)){ # PCA vis
+  install.packages("factoextra")
+  library(factoextra)
+}
+if(!require(dbscan)){ # outlier detection
+  install.packages("dbscan")
+  library(dbscan)
+}
 
 #####
 # DATA WRANGLING 
