@@ -23,16 +23,16 @@
 # Setting up the enviroment
 #####
 
-setwd("~/GitHub/MinChem_Modeller") # Ajustando o work direction
+setwd("~/GitHub/MinChem_Modeller") # work direction
+url <- 'https://www.dropbox.com/s/qdjny1wstq33jpd/minerals.csv?dl=1' # data path
+set.seed(123) # Random State
 
-set.seed(123) # Ajustando o 'Random State' da máquina para reproduzir os códigos
-
-tic <- Sys.time()
+tic <- Sys.time() # time counter
 #####
 #Import Packages
 #####
 
-library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipulação e visualização de dados. Equivalente ao pandas, matplotlib, seaborn, etc
+library(tidyverse) # data wrangling
 library(dbscan) # outlier detection
 library(factoextra) # Cluster viz
 
@@ -40,7 +40,13 @@ library(factoextra) # Cluster viz
 # DATA WRANGLING 
 #####
 
-min <- read_csv('data_input/minerals.csv',na = 'NA') # importar o arquivo amphiboles.csv para um arquivo temporário df1
+min <- read_csv(url,na = 'NA') %>% # read file
+  mutate(id = X1, X1 = NULL) %>% # Rename Column
+  mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting column values
+                         ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
+  mutate(AS = AS_ppm, AS_ppm = NULL, # Rename columns
+  ) %>%
+  select(24,1:23,25) # Reorder Columns
 
 # Fixing the mineral names acoording to IMA's recomendation
 
@@ -140,27 +146,27 @@ amph <- min %>%
   filter(GROUP == 'AMPHIBOLES')
 
 
-dbscan::kNNdistplot(amph %>%
-                      select(25:38), k = 5)
-# abline(h = 5, lty = 2)
-# 
-# amph.db <- dbscan::dbscan(amph %>%
-#                             select(25:38),eps = 5,minPts = 5)
+dbscan::kNNdistplot(amph %>% # Distance plot
+                      select(4:25), k = 5)
+abline(h = 5, lty = 2)
 
-# vizualização
-# fviz_cluster(object = amph.db,
-#              data =  amph %>%
-#                select(25:38),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+amph.db <- dbscan::dbscan(amph %>%
+                            select(4:25),eps = 5,minPts = 5)
+
+# Visualization
+fviz_cluster(object = amph.db,
+             data =  amph %>%
+               select(25:38),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 amph <- amph %>%
   bind_cols(amph.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(amph$MINERAL, amph$outlier_db)
+table(amph$MINERAL, amph$outlier_db)
 
 amph <- amph %>%
   filter(outlier_db != 'outlier')
@@ -173,27 +179,27 @@ apat <- min %>%
   filter(GROUP == 'APATITE')
 
 
-# dbscan::kNNdistplot(apat %>%
-#                       select(25:39), k = 5)
-# abline(h = 5, lty = 2)
+dbscan::kNNdistplot(apat %>%
+                      select(4:25), k = 5)
+abline(h = 5, lty = 2)
 
 apat.db <- dbscan::dbscan(apat %>%
-                            select(25:39),eps = 5,minPts = 5)
+                            select(4:25),eps = 5,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = apat.db,
-#              data =  apat %>%
-#                select(25:39),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = apat.db,
+             data =  apat %>%
+               select(25:39),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 apat <- apat %>%
   bind_cols(apat.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(apat$MINERAL, apat$outlier_db)
+table(apat$MINERAL, apat$outlier_db)
 
 apat <- apat %>%
   filter(outlier_db != 'outlier')
@@ -206,27 +212,27 @@ carb <- min %>%
   filter(GROUP == 'CARBONATE')
 
 
-# dbscan::kNNdistplot(carb %>%
-#                       select(25:35,37:39), k = 5)
-# abline(h = 10, lty = 2)
+dbscan::kNNdistplot(carb %>%
+                      select(4:25, k = 5))
+abline(h = 10, lty = 2)
 
 carb.db <- dbscan::dbscan(carb %>%
-                            select(25:35,37:39),eps = 10,minPts = 5)
+                            select(4:25),eps = 10,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = carb.db,
-#              data =  carb %>%
-#                select(25:35,37:39),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = carb.db,
+             data =  carb %>%
+               select(25:35,37:39),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 carb <- carb %>%
   bind_cols(carb.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(carb$MINERAL, carb$outlier_db)
+table(carb$MINERAL, carb$outlier_db)
 
 carb <- carb %>%
   filter(outlier_db != 'outlier')
@@ -239,27 +245,27 @@ clay <- min %>%
   filter(GROUP == 'CLAY')
 
 
-# dbscan::kNNdistplot(clay %>%
-#                       select(25:36), k = 5)
-# abline(h = 15, lty = 2)
+dbscan::kNNdistplot(clay %>%
+                      select(4:25), k = 5)
+abline(h = 15, lty = 2)
 
 clay.db <- dbscan::dbscan(clay %>%
-                            select(25:36),eps = 10,minPts = 5)
+                            select(4:25),eps = 10,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = clay.db,
-#              data =  clay %>%
-#                select(25:36),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = clay.db,
+             data =  clay %>%
+               select(25:36),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 clay <- clay %>%
   bind_cols(clay.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(clay$MINERAL, clay$outlier_db)
+table(clay$MINERAL, clay$outlier_db)
 
 clay <- clay %>%
   filter(outlier_db != 'outlier')
@@ -272,34 +278,32 @@ feld <- min %>%
   filter(GROUP == 'FELDSPAR')
 
 
-# dbscan::kNNdistplot(feld %>%
-#                       select(25:35), k = 10)
-# abline(h = 3, lty = 2)
+dbscan::kNNdistplot(feld %>%
+                      select(4:25), k = 10)
+abline(h = 3, lty = 2)
 
 feld.db <- dbscan::dbscan(feld %>%
-                            select(25:35),eps = 3,minPts = 10)
+                            select(4:25),eps = 3,minPts = 10)
 
-# vizualização
-# fviz_cluster(object = feld.db,
-#              data =  feld %>%
-#                select(25:35),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = feld.db,
+             data =  feld %>%
+               select(25:35),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 feld <- feld %>%
   bind_cols(feld.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(feld$MINERAL, feld$outlier_db)
+table(feld$MINERAL, feld$outlier_db)
 
 feld <- feld %>%
   filter(outlier_db != 'outlier')
 
 remove(feld.db)
-
-
 
 # Remove outlier from Feldspathoid ----
 
@@ -307,27 +311,27 @@ foid <- min %>%
   filter(GROUP == 'FELDSPATHOID')
 
 
-# dbscan::kNNdistplot(foid %>%
-#                       select(25:36), k = 5)
-# abline(h = 5, lty = 2)
+dbscan::kNNdistplot(foid %>%
+                      select(4:25), k = 5)
+abline(h = 5, lty = 2)
 
 foid.db <- dbscan::dbscan(foid %>%
-                            select(25:36),eps = 5,minPts = 5)
+                            select(4:25),eps = 5,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = foid.db,
-#              data =  foid %>%
-#                select(25:36),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = foid.db,
+             data =  foid %>%
+               select(25:36),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 foid <- foid %>%
   bind_cols(foid.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(foid$MINERAL, foid$outlier_db)
+table(foid$MINERAL, foid$outlier_db)
 
 foid <- foid %>%
   filter(outlier_db != 'outlier')
@@ -339,27 +343,27 @@ remove(foid.db)
 gart <- min %>%
   filter(GROUP == 'GARNET')
 
-# dbscan::kNNdistplot(gart %>%
-#                       select(25:37), k = 5)
-# abline(h = 3, lty = 2)
+dbscan::kNNdistplot(gart %>%
+                      select(4:25), k = 5)
+abline(h = 3, lty = 2)
 
 gart.db <- dbscan::dbscan(gart %>%
-                            select(25:37),eps = 3,minPts = 5)
+                            select(4:25),eps = 3,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = gart.db,
-#              data =  gart %>%
-#                select(25:37),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = gart.db,
+             data =  gart %>%
+               select(25:37),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 gart <- gart %>%
   bind_cols(gart.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(gart$MINERAL, gart$outlier_db)
+table(gart$MINERAL, gart$outlier_db)
 
 gart <- gart %>%
   filter(outlier_db != 'outlier')
@@ -373,27 +377,27 @@ ilm <- min %>%
   filter(GROUP == 'ILMENITE')
 
 
-# dbscan::kNNdistplot(ilm %>%
-#                       select(25:34), k = 5)
-# abline(h = 4, lty = 2)
+dbscan::kNNdistplot(ilm %>%
+                      select(4:25), k = 5)
+abline(h = 4, lty = 2)
 
 ilm.db <- dbscan::dbscan(ilm %>%
-                            select(25:34),eps = 4,minPts = 5)
+                            select(4:25),eps = 4,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = ilm.db,
-#              data =  ilm %>%
-#                select(25:34),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = ilm.db,
+             data =  ilm %>%
+               select(25:34),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 ilm <- ilm %>%
   bind_cols(ilm.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(ilm$MINERAL, ilm$outlier_db)
+table(ilm$MINERAL, ilm$outlier_db)
 
 ilm <- ilm %>%
   filter(outlier_db != 'outlier')
@@ -406,27 +410,27 @@ mica <- min %>%
   filter(GROUP == 'MICA')
 
 
-# dbscan::kNNdistplot(mica %>%
-#                       select(25:39), k = 5)
-# abline(h = 5, lty = 2)
+dbscan::kNNdistplot(mica %>%
+                      select(4:25), k = 5)
+abline(h = 5, lty = 2)
 
 mica.db <- dbscan::dbscan(mica %>%
-                           select(25:39),eps = 5,minPts = 5)
+                           select(4:25),eps = 5,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = mica.db,
-#              data =  mica %>%
-#                select(25:39),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = mica.db,
+             data =  mica %>%
+               select(25:39),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 mica <- mica %>%
   bind_cols(mica.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
-# table(mica$MINERAL, mica$outlier_db)
+table(mica$MINERAL, mica$outlier_db)
 
 mica <- mica %>%
   filter(outlier_db != 'outlier')
@@ -439,24 +443,24 @@ oliv <- min %>%
   filter(GROUP == 'OLIVINE')
 
 
-# dbscan::kNNdistplot(oliv %>%
-#                       select(25:36), k = 5)
-# abline(h = 2, lty = 2)
+dbscan::kNNdistplot(oliv %>%
+                      select(4:25), k = 5)
+abline(h = 2, lty = 2)
 
 oliv.db <- dbscan::dbscan(oliv %>%
-                            select(25:36),eps = 2,minPts = 5)
+                            select(4:25),eps = 2,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = oliv.db,
-#              data =  oliv %>%
-#                select(25:36),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = oliv.db,
+             data =  oliv %>%
+               select(25:36),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 oliv <- oliv %>%
   bind_cols(oliv.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
 # table(oliv$MINERAL, oliv$outlier_db)
@@ -471,24 +475,24 @@ pero <- min %>%
   filter(GROUP == 'PEROVSKITE')
 
 
-# dbscan::kNNdistplot(pero %>%
-#                       select(25:35), k = 5)
-# abline(h = 3, lty = 2)
+dbscan::kNNdistplot(pero %>%
+                      select(4:25), k = 5)
+abline(h = 3, lty = 2)
 
 pero.db <- dbscan::dbscan(pero %>%
-                            select(25:35),eps = 3,minPts = 5)
+                            select(4:25),eps = 3,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = pero.db,
-#              data =  pero %>%
-#                select(25:35),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = pero.db,
+             data =  pero %>%
+               select(25:35),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 pero <- pero %>%
   bind_cols(pero.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
 # table(pero$MINERAL, pero$outlier_db)
@@ -503,24 +507,24 @@ px <- min %>%
   filter(GROUP == 'PYROXENE')
 
 
-# dbscan::kNNdistplot(px %>%
-#                       select(25:35), k = 5)
-# abline(h = 3, lty = 2)
+dbscan::kNNdistplot(px %>%
+                      select(4:25), k = 5)
+abline(h = 3, lty = 2)
 
 px.db <- dbscan::dbscan(px %>%
-                            select(25:35),eps = 3,minPts = 5)
+                            select(4:25),eps = 3,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = px.db,
-#              data =  px %>%
-#                select(25:35),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = px.db,
+             data =  px %>%
+               select(25:35),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 px <- px %>%
   bind_cols(px.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
 # table(px$MINERAL, px$outlier_db)
@@ -536,24 +540,24 @@ qtz <- min %>%
   filter(GROUP == 'QUARTZ')
 
 
-# dbscan::kNNdistplot(qtz %>%
-#                       select(25:34), k = 5)
-# abline(h = 2, lty = 2)
+dbscan::kNNdistplot(qtz %>%
+                      select(4:25), k = 5)
+abline(h = 2, lty = 2)
 
 qtz.db <- dbscan::dbscan(qtz %>%
-                          select(25:34),eps = 2,minPts = 5)
+                          select(4:25),eps = 2,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = qtz.db,
-#              data =  qtz %>%
-#                select(25:34),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = qtz.db,
+             data =  qtz %>%
+               select(25:34),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 qtz <- qtz %>%
   bind_cols(qtz.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
 # table(qtz$MINERAL, qtz$outlier_db)
@@ -569,24 +573,24 @@ spn <- min %>%
   filter(GROUP == 'SPINEL')
 
 
-# dbscan::kNNdistplot(spn %>%
-#                       select(25:34), k = 5)
-# abline(h = 5, lty = 2)
+dbscan::kNNdistplot(spn %>%
+                      select(4:25), k = 5)
+abline(h = 5, lty = 2)
 
 spn.db <- dbscan::dbscan(spn %>%
-                           select(25:34),eps = 5,minPts = 5)
+                           select(4:25),eps = 5,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = spn.db,
-#              data =  spn %>%
-#                select(25:34),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = spn.db,
+             data =  spn %>%
+               select(25:34),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 spn <- spn %>%
   bind_cols(spn.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
 # table(spn$MINERAL, spn$outlier_db)
@@ -602,25 +606,25 @@ sulf <- min %>%
   filter(GROUP == 'SULFIDE')
 
 
-# dbscan::kNNdistplot(sulf %>%
-#                       select(29,30,39:45), k = 5)
-# 
-# abline(h = 3000, lty = 2)
+dbscan::kNNdistplot(sulf %>%
+                      select(4:25), k = 5)
+
+abline(h = 3000, lty = 2)
 
 sulf.db <- dbscan::dbscan(sulf %>%
-                           select(29,30,39:45),eps = 3000,minPts = 5)
+                           select(4:25),eps = 3000,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = sulf.db,
-#              data =  sulf %>%
-#                select(29,30,39:45),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = sulf.db,
+             data =  sulf %>%
+               select(29,30,39:45),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 sulf <- sulf %>%
   bind_cols(sulf.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
 # table(sulf$MINERAL, sulf$outlier_db)
@@ -636,25 +640,25 @@ titn <- min %>%
   filter(GROUP == 'TITANITE')
 
 
-# dbscan::kNNdistplot(titn %>%
-#                       select(25:42), k = 5)
-# 
-# abline(h = 8, lty = 2)
+dbscan::kNNdistplot(titn %>%
+                      select(4:25), k = 5)
+
+abline(h = 8, lty = 2)
 
 titn.db <- dbscan::dbscan(titn %>%
-                            select(25:39),eps = 8,minPts = 5)
+                            select(4:25),eps = 8,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = titn.db,
-#              data =  titn %>%
-#                select(25:39),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = titn.db,
+             data =  titn %>%
+               select(25:39),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 titn <- titn %>%
   bind_cols(titn.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
 # table(titn$MINERAL, titn$outlier_db)
@@ -670,25 +674,25 @@ zirc <- min %>%
   filter(GROUP == 'ZIRCON')
 
 
-# dbscan::kNNdistplot(zirc %>%
-#                       select(25:26,46), k = 5)
-# 
-# abline(h = 1, lty = 2)
+dbscan::kNNdistplot(zirc %>%
+                      select(4:25), k = 5)
+
+abline(h = 1, lty = 2)
 
 zirc.db <- dbscan::dbscan(zirc %>%
-                            select(25:26,46),eps = 1,minPts = 5)
+                            select(4:25),eps = 1,minPts = 5)
 
-# vizualização
-# fviz_cluster(object = zirc.db,
-#              data =  zirc %>%
-#                select(25:26,46),
-#              geom = 'point',
-#              stand = TRUE,
-#              show.clust.cent = FALSE,)
+# Visualization
+fviz_cluster(object = zirc.db,
+             data =  zirc %>%
+               select(25:26,46),
+             geom = 'point',
+             stand = TRUE,
+             show.clust.cent = FALSE,)
 
 zirc <- zirc %>%
   bind_cols(zirc.db$cluster) %>%
-  rename(outlier_db = '...48') %>%
+  rename(outlier_db = '...26') %>%
   mutate(outlier_db = ifelse(outlier_db == 0,'outlier','regular data'))
 
 # table(zirc$MINERAL, zirc$outlier_db)
