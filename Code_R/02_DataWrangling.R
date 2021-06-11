@@ -41,8 +41,15 @@ elems_names <- c('SIO2','TIO2','AL2O3','CR2O3','FEOT','CAO',
 #####
 #Import Packages
 #####
-library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipulação e visualização de dados. Equivalente ao pandas, matplotlib, seaborn, etc
-library(missRanger) # Biblioteca de Missing Values Imputation by Randon Forest Regression
+
+if(!require(tidyverse)){ # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if(!require(missRanger)){ # # Biblioteca de Missing Values Imputation by Randon Forest Regression
+  install.packages("missRanger")
+  library(missRanger)
+}
 
 #####
 # Built-in Functions

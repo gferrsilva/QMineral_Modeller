@@ -24,18 +24,24 @@
 #####
 
 setwd("~/GitHub/MinChem_Modeller") # Ajustando o work direction
-
-set.seed(123) # Ajustando o 'Random State' da máquina para reproduzir os códigos
+url <- 'https://www.dropbox.com/s/tpts55k1imhvt30/minerals_posDBScan.csv?dl=1'
+set.seed(123) # Ajustando o 'Random State' da maquina para reproduzir os codigos
 
 #####
 #Import Packages
 #####
-
-library(tidyverse) # Conjunto de bibliotecas em R que facilitam a manipulação e visualização de dados. Equivalente ao pandas, matplotlib, seaborn, etc
-library(dbscan) # outlier detection
-library(factoextra) # Cluster viz
-library(smotefamily)
-library(data.table)
+if(!require(tidyverse)){ # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if(!require(factoextra)){ # PCA vis
+  install.packages("factoextra")
+  library(factoextra)
+}
+if(!require(smotefamily)){ # Data Balance
+  install.packages("smotefamily")
+  library(smotefamily)
+}
 
 #####
 # DATA WRANGLING 
@@ -46,17 +52,20 @@ pyroxene <- read_csv('data_input/pyroxene.csv') %>%
 
 sel <- names(pyroxene)
 
-min <- read_csv('data_input/minerals_posDBScan.csv',na = 'NA') %>% # importar o arquivo amphiboles.csv para um arquivo temporário df1
-  mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
-                         ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
-  mutate(AS = AS_ppm, AS_ppm = NULL, # Rename columns
-         ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
-         SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
+sel <- sel[c(-1,-2,-5)]
+
+min <- read_csv(url,na = 'NA') %>% # importar o arquivo amphiboles.csv para um arquivo temporário df1
+  # mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
+  #                        ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
+  # mutate(AS = AS_ppm, AS_ppm = NULL, # Rename columns
+  #        ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
+  #        SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
   select(all_of(sel))
   
 
 min <- min %>%
-  bind_rows(pyroxene)
+  bind_rows(pyroxene) %>%
+  select(-ROCK, -SAMPLE,-X1)
 
 remove(pyroxene, sel)
 
@@ -83,7 +92,7 @@ toSMOTE <- min %>%
          MINERAL != 'CLAY MINERAL') %>%
   data.table()
 
-
+table(toSMOTE$MINERAL)
 
 toSMOTE[MINERAL == 'STILPNOMELANE', GROUP := 'STILPNOMELANE']
 

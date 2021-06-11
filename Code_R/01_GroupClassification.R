@@ -1,9 +1,9 @@
 #####
 # Mineral Group Classification by Random Forest
 # 
-# version: 1.0 (2020/05/20)
+# version: 2.0 (2021/06/10)
 #
-# Last modifications:
+# Last modifications: Fix the data reading ('minerals.csv' now read from url)
 #
 # -----
 # Amphiboles, Apatites, Carbonates, Clay Minerals, Feldspars, Feldspathoides,
@@ -11,24 +11,45 @@
 # Titanite, Zircon
 # -----
 # Guilherme Ferreira, (guilherme.ferreira@cprm.gov.br)
-# May, 2020
+# May, 2021
 #####
 
 #####
 # Setting up the enviroment
 #####
 setwd("~/GitHub/MinChem_Modeller") # defining the work direction
+url <- 'https://www.dropbox.com/s/qdjny1wstq33jpd/minerals.csv?dl=1'
 set.seed(123) # defining the 'random state' of the pseudo-random generator
 
+
 #####
-#Import Packages
+# [Instal and] Import Packages
 #####
-library(Cairo) # Export figures
-library(tidyverse) # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
-library(ggthemes) # Predefined themes
-library(caret) # Machine Learning Toolkit
-library(randomForest) # Random Forest library
-library(factoextra)
+
+if(!require(Cairo)){ # Export figures
+  install.packages("Cairo")
+  library(Cairo)
+}
+if(!require(tidyverse)){ # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
+  install.packages("tidyverse")
+  library(tidyverse)
+}
+if(!require(ggthemes)){ # Predefined themes
+  install.packages("ggthemes")
+  library(ggthemes)
+}
+if(!require(caret)){ # Machine Learning Toolkit
+  install.packages("caret")
+  library(caret)
+}
+if(!require(randomForest)){ # Random Forest library
+  install.packages("randomForest")
+  library(randomForest)
+}
+if(!require(factoextra)){ # PCA vis
+  install.packages("factoextra")
+  library(factoextra)
+}
 
 #####
 # Built-in Functions
@@ -38,25 +59,22 @@ library(factoextra)
 # PREPRARING DATA 
 #####
 
-minerals <- read_csv('data_input/minerals.csv') %>% # Read file and associate to an object
-  select(1,47,19,14,3,25:46) %>% # select and reorder the columns
+
+minerals <- read_csv(file = url) %>% # Read file and associate to an object
   mutate(id = X1, X1 = NULL) %>% # Rename Column
   mutate(AS_ppm = ifelse(AS_ppm > 100, AS_ppm/10000, # Adjusting values of column
                          ifelse(AS_ppm > 50, AS_ppm/10, AS_ppm))) %>%
   mutate(AS = AS_ppm, AS_ppm = NULL, # Rename columns
-         ROCK = `ROCK NAME`, `ROCK NAME` = NULL,
-         SAMPLE = `SAMPLE NAME`, `SAMPLE NAME` = NULL) %>%
-  select(24,27, 1:2,26, 3:23,25) # Reorder Columns
+         ) %>%
+  select(24,1:23,25) # Reorder Columns
 
 
 minerals <- minerals %>%
   mutate(id = factor(id), # Defining the following variables as categorical (factors in R)
          GROUP = factor(GROUP),
-         MINERAL = factor(MINERAL),
-         ROCK = factor(ROCK),
-         SAMPLE = factor(SAMPLE))
+         MINERAL = factor(MINERAL))
 
-pca <- prcomp(minerals[6:21],center = T,scale. = T,) # PCA with rescaling and centering
+pca <- prcomp(minerals[4:25],center = T,scale. = F) # PCA with rescaling and centering
 
 biplot <- fviz_pca_var(pca,
              col.var = "contrib", # Color by contributions to the PC
@@ -81,15 +99,15 @@ input <- minerals %>% # manipulating the minerals database and associate the ans
 
 ## Train-test split
 index <- createDataPartition(input$GROUP, p = 0.7, list = FALSE) # Train-test split using an index
-train_data <- input[as.vector(index), c(3,6:27)] # Selecting the train_data (GROUP + PCA)
-test_data  <- input[-index, 6:27]  # Selecting the test_data (PCA)
-y_test <- as_tibble(input[-index,3])  # Selecting the test_classes (GROUP)
-y_pca <- as_tibble(input[-index,28:43])
+train_data <- input[as.vector(index), c(2,4:25)] # Selecting the train_data (GROUP + PCA)
+test_data  <- input[-index, 4:25]  # Selecting the test_data (PCA)
+y_test <- as_tibble(input[-index,2])  # Selecting the test_classes (GROUP)
+y_pca <- as_tibble(input[-index,26:47])
 ## Random Forest Setting up
 
 ctrl <- trainControl(method = "repeatedcv",classProbs = T, # Setting up the RF hyperparameters
-                     number = 2,   # Number of folds on cross validation
-                     repeats = 2, # Number of repeats on every fold
+                     number = 3,   # Number of folds on cross validation
+                     repeats = 3, # Number of repeats on every fold
                      verboseIter = T, # Output the result of every iteration on the console
                      sampling = "up") # upsampling instances with unbalanced classes
 

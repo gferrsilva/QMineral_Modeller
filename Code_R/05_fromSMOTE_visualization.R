@@ -1,4 +1,3 @@
-  
 #####
 # Visualizing instances from SMOTE
 # 
@@ -19,8 +18,11 @@
 # Setting up the enviroment
 #####
 setwd('~/GitHub/MinChem_Modeller/data_train')
-library(tidyverse)
 
+if(!require(tidyverse)){ # Collection of libraries: dplyr, ggplot2, purrr, tidyr. Data wrangling and visualizing
+  install.packages("tidyverse")
+  library(tidyverse)
+}
 #####
 # Reading
 #####
