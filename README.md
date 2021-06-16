@@ -8,7 +8,11 @@ regression and mineral formula prediction by several Random Forest classificatio
 and regression nested models.
 
 The models have been developed by researchers of the [Geological Survey of Brazil](https://www.cprm.gov.br/en/) (SGB/CPRM), with the assistance of
-the technical manager of the EPMA laboratory of the [Institute of Geosciences/University of Brasília](http://www.igd.unb.br/) (IG/UnB).
+the technical manager of the EPMA laboratory of the [Institute of Geosciences/University of Brasília](http://www.igd.unb.br/) (IG/UnB). 
+
+## Documentation
+
+Aditional information about building process is available at the internet in the [preprint file](https://www.researchsquare.com/article/rs-629516/v1) (original manuscript still not certified by a peer review).
 
 ## Important Notes
 
