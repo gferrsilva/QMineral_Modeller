@@ -35,11 +35,11 @@ PARGASITE, RICHTERITE, RIEBECKITE, TREMOLITE.
 DOLOMITE, GREGORYITE, KUKHARENKOITE (SENSU LATO), KUTNAHORITE, MAGNESITE,
 NATROFAIRCHILDITE/NYEREREITE/ZEMKORITE, SHORTITE, SIDERITE
 
-* CHLORITE: CHLORITE (SENSU LATO) :warning: STILL UNSTABLE!
+* CHLORITE: CHLORITE (SENSU LATO) :warning: STILL UNSTABLE! :warning:
 
 * CLAY-MINERALS (5 minerals): BEIDELLITE, CORRENSITE, ILLITE, MONTMORILLONITE, SAPONITE
 
-* EPIDOTE: EPIDOTE (SENSU LATO) :warning: STILL UNSTABLE!
+* EPIDOTE: EPIDOTE (SENSU LATO) :warning: STILL UNSTABLE! :warning:
 
 * FELDSPARS (8 minerals): ALBITE, ANDESINE, ANORTHITE, ANORTHOCLASE, BYTOWNITE, K-FELDSPAR,
 LABRADORITE, OLIGOCLASE
@@ -87,7 +87,10 @@ Then, the formula printed out in the output is the product of several calculatio
 
 ### _Mineral Formula Calculation by Probabilistic Approach_
 The calculation formula for **Amphiboles** will be made by a multivariate regression for each one of the Crystallographic Sites, still in development, and will later be made available in this repository.
-
+<p>
+:warning: THE MINERAL FORMULA CALCULATION FOR AMPHIBOLES IS UNSTABLE, AND WE TURN IT DOWN. This is because we have reported underestimation of Fe3+ and Fe2+ in the final formula. :warning:
+<p>
+  
 ## Status
 
 This model is in active development and subject to significant code changes
