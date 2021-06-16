@@ -768,8 +768,9 @@ def amphibole_formula(df):
 
 
 def get_function(group, df_partial):
-    formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL',
-                      'AMPHIBOLES']
+    #formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL',
+    #                  'AMPHIBOLES']
+    formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL']
     #print('getFUNCTIOn', group)
     if group == formulas_ready[0]:
         df = garnet_formula(df_partial)
