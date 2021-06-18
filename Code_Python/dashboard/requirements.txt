@@ -18,3 +18,4 @@ plotly>=2.0.9
 xlrd
 matplotlib
 openpyxl
+XlsxWriter==1.2.1
