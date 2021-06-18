@@ -161,16 +161,16 @@ def _norm_cations_oxygen(df_f, oxides, cation_multiplier):
         df_f[el + '_NormCations'] = cation_multiplier * df_f[el + '_mole'] / df_f['moles_cation']
         if el in ['SI', 'TI']:
             df_f[el + '_NormOxygen'] = df_f[el + '_NormCations'] * 2
-            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(3)
+            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(1)
         elif el in ['AL', 'CR']:
             df_f[el + '_NormOxygen'] = df_f[el + '_NormCations'] * 3 / 2
-            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(3)
+            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(1)
         elif el in ['FE', 'MN', 'MG', 'CA']:
             df_f[el + '_NormOxygen'] = df_f[el + '_NormCations']
-            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(3)
+            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(1)
         elif el in ['K', 'NA', 'ZN']:
             df_f[el + '_NormOxygen'] = df_f[el + '_NormCations'] / 2
-            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(3)
+            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(1)
 
     df_f['NormCations_Total'] = df_f.filter(regex='_NormCations$', axis=1).sum(axis=1)
     df_f['NormOxygen_Total'] = df_f.filter(regex='_NormOxygen$', axis=1).sum(axis=1)
@@ -231,8 +231,8 @@ def garnet_formula(df_grt):
 
     # Round
 
-    df_f['FE2_Atom'] = df_f['FE2_Atom'].round(3)
-    df_f['FE3_Atom'] = df_f['FE3_Atom'].round(3)
+    df_f['FE2_Atom'] = df_f['FE2_Atom'].round(1)
+    df_f['FE3_Atom'] = df_f['FE3_Atom'].round(1)
 
     # Formula Garnet X3y2(TO4)3
     # cubico
@@ -242,7 +242,7 @@ def garnet_formula(df_grt):
     df_f.loc[df_f['FE2_Atom'] > 0, 'Formula'] += 'Fe' + df_f['FE2_Atom'].astype('str')
     df_f.loc[df_f['MG_Atom'] > 0, 'Formula'] += 'Mg' + df_f['MG_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += (df_f['CA_Atom'] + df_f['FE2_Atom'] + df_f['MN_Atom'] + df_f['MG_Atom']).round(3).astype('str')
+    df_f['Formula'] += (df_f['CA_Atom'] + df_f['FE2_Atom'] + df_f['MN_Atom'] + df_f['MG_Atom']).round(1).astype('str')
 
     # octaedrico
     df_f['Formula'] += '('
@@ -251,13 +251,13 @@ def garnet_formula(df_grt):
     df_f.loc[df_f['FE3_Atom'] > 0, 'Formula'] += 'Fe' + df_f['FE3_Atom'].astype('str')
     df_f.loc[df_f['AL_Atom'] > 0, 'Formula'] += 'Al' + df_f['AL_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += (df_f['FE3_Atom'] + df_f['AL_Atom'] + df_f['CR_Atom'] + df_f['TI_Atom']).round(3).astype('str')
+    df_f['Formula'] += (df_f['FE3_Atom'] + df_f['AL_Atom'] + df_f['CR_Atom'] + df_f['TI_Atom']).round(1).astype('str')
 
     # tetraedrico
     df_f['Formula'] += '('
     df_f.loc[df_f['SI_Atom'] > 0, 'Formula'] += 'Si' + df_f['SI_Atom'].astype('str')
-    df_f['Formula'] += 'O' + (df_f['SI_NormOxygen'] / df_f['SI_Atom']).round(3).astype('str') + ')'
-    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom']).round(3).astype('str')
+    df_f['Formula'] += 'O' + (df_f['SI_NormOxygen'] / df_f['SI_Atom']).round(1).astype('str') + ')'
+    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom']).round(1).astype('str')
 
     # print(df_f['Formula'])
     # df_f.to_excel('formula_garnet.xlsx')
@@ -295,15 +295,15 @@ def feldspar_formula(df_fdp):
     df_f.loc[df_f['K_Atom'] > 0, 'Formula'] += 'K' + df_f['K_Atom'].astype('str')
     df_f.loc[df_f['NA_Atom'] > 0, 'Formula'] += 'Na' + df_f['NA_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['K_Atom'] + df_f['NA_Atom'] + df_f['CA_Atom']).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['K_Atom'] + df_f['NA_Atom'] + df_f['CA_Atom']).round(1).astype('str')
 
     # sito T - tetraedrico
     df_f['Formula'] += '('
     df_f.loc[df_f['AL_Atom'] > 0, 'Formula'] += 'Al' + df_f['AL_Atom'].astype('str')
     df_f.loc[df_f['SI_Atom'] > 0, 'Formula'] += 'Si' + df_f['SI_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom'] + df_f['AL_Atom']).round(3).astype('str')
-    df_f['Formula'] += 'O' + df_f['NormOxygen_Total'].round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom'] + df_f['AL_Atom']).round(1).astype('str')
+    df_f['Formula'] += 'O' + df_f['NormOxygen_Total'].round(1).astype('str')
 
     # df_f.to_excel('formula_feldspar.xlsx')
     # df_out = df_f[['Formula', 'albite', 'anorthite', 'orthoclase', 'K_Atom', 'NA_Atom',
@@ -342,20 +342,20 @@ def olivine_formula(df_oli):
     # Formula Olivina M2TO4
     # sitio M - octaedrico
     df_f['Formula'] = '('
-    df_f.loc[df_f['CA_Atom'] > 0, 'Formula'] += 'Ca' + df_f['CA_Atom'].round(3).astype('str')
-    df_f.loc[df_f['MN_Atom'] > 0, 'Formula'] += 'Mn' + df_f['MN_Atom'].round(3).astype('str')
-    df_f.loc[df_f['FE2_Atom'] > 0, 'Formula'] += 'Fe' + df_f['FE2_Atom'].round(3).astype('str')
-    df_f.loc[df_f['MG_Atom'] > 0, 'Formula'] += 'Mg' + df_f['MG_Atom'].round(3).astype('str')
+    df_f.loc[df_f['CA_Atom'] > 0, 'Formula'] += 'Ca' + df_f['CA_Atom'].round(1).astype('str')
+    df_f.loc[df_f['MN_Atom'] > 0, 'Formula'] += 'Mn' + df_f['MN_Atom'].round(1).astype('str')
+    df_f.loc[df_f['FE2_Atom'] > 0, 'Formula'] += 'Fe' + df_f['FE2_Atom'].round(1).astype('str')
+    df_f.loc[df_f['MG_Atom'] > 0, 'Formula'] += 'Mg' + df_f['MG_Atom'].round(1).astype('str')
     df_f['Formula'] += ')'
     df_f['Formula'] += '\u03A3' + (df_f['FE2_Atom'] + df_f['MG_Atom'] +
-                                   df_f['CA_Atom'] + df_f['MN_Atom']).round(3).astype('str')
+                                   df_f['CA_Atom'] + df_f['MN_Atom']).round(1).astype('str')
 
     # sito T - tetraedrico
     df_f.loc[df_f['SI_Atom'] > 0, 'Formula'] += '(Si' + df_f['SI_Atom'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom']).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['SI_Atom']).round(1).astype('str')
 
-    df_f['Formula'] += 'O' + df_f['NormOxygen_Total'].round(3).astype('str')
+    df_f['Formula'] += 'O' + df_f['NormOxygen_Total'].round(1).astype('str')
     # df_f.to_excel('formula_olivina.xlsx')
     #df_out = df_f[['Formula', 'Forsterite', 'Fayalite', 'Tephroite', 'Ca-Olivine']]
     cols = df_f.columns.tolist()
@@ -441,36 +441,36 @@ def pyroxene_formula(df_px):
 
     # Formula Piroxenio (M1)(M2)(T)2O6
     # M1 - octaedrico
-    # df_f = df_f.round(3)
+    # df_f = df_f.round(1)
     df_f['Formula'] = '('
-    df_f.loc[df_f['M2_Ca'].round(3) > 0, 'Formula'] += 'Ca' + df_f['M2_Ca'].round(3).astype('str')
-    df_f.loc[df_f['M2_Na'].round(3) > 0, 'Formula'] += 'Na' + df_f['M2_Na'].round(3).astype('str')
-    df_f.loc[df_f['M2_Mn'].round(3) > 0, 'Formula'] += 'Mn' + df_f['M2_Mn'].round(3).astype('str')
-    df_f.loc[df_f['M2_Fe2'].round(3) > 0, 'Formula'] += 'Fe' + df_f['M2_Fe2'].round(3).astype('str')
-    df_f.loc[df_f['M2_Mg'].round(3) > 0, 'Formula'] += 'Mg' + df_f['M2_Mg'].round(3).astype('str')
+    df_f.loc[df_f['M2_Ca'].round(1) > 0, 'Formula'] += 'Ca' + df_f['M2_Ca'].round(1).astype('str')
+    df_f.loc[df_f['M2_Na'].round(1) > 0, 'Formula'] += 'Na' + df_f['M2_Na'].round(1).astype('str')
+    df_f.loc[df_f['M2_Mn'].round(1) > 0, 'Formula'] += 'Mn' + df_f['M2_Mn'].round(1).astype('str')
+    df_f.loc[df_f['M2_Fe2'].round(1) > 0, 'Formula'] += 'Fe' + df_f['M2_Fe2'].round(1).astype('str')
+    df_f.loc[df_f['M2_Mg'].round(1) > 0, 'Formula'] += 'Mg' + df_f['M2_Mg'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['M2_Ca'].round(3) + df_f['M2_Na'].round(3) +
-                                   df_f['M2_Mn'].round(3) + df_f['M2_Fe2'].round(3) +
-                                   df_f['M2_Mg'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['M2_Ca'].round(1) + df_f['M2_Na'].round(1) +
+                                   df_f['M2_Mn'].round(1) + df_f['M2_Fe2'].round(1) +
+                                   df_f['M2_Mg'].round(1)).round(1).astype('str')
     # M2 octaedrico
     df_f['Formula'] += '('
-    df_f.loc[df_f['M1_Ti'].round(3) > 0, 'Formula'] += 'Ti' + df_f['M1_Ti'].round(3).astype('str')
-    df_f.loc[df_f['M1_Fe3'].round(3) > 0, 'Formula'] += 'Fe' + df_f['M1_Fe3'].round(3).astype('str')
-    df_f.loc[df_f['M1_Al'].round(3) > 0, 'Formula'] += 'Al' + df_f['M1_Al'].round(3).astype('str')
-    df_f.loc[df_f['M1_Fe2'].round(3) > 0, 'Formula'] += 'Fe' + df_f['M1_Fe2'].round(3).astype('str')
-    df_f.loc[df_f['M1_Mg'].round(3) > 0, 'Formula'] += 'Mg' + df_f['M1_Mg'].round(3).astype('str')
+    df_f.loc[df_f['M1_Ti'].round(1) > 0, 'Formula'] += 'Ti' + df_f['M1_Ti'].round(1).astype('str')
+    df_f.loc[df_f['M1_Fe3'].round(1) > 0, 'Formula'] += 'Fe' + df_f['M1_Fe3'].round(1).astype('str')
+    df_f.loc[df_f['M1_Al'].round(1) > 0, 'Formula'] += 'Al' + df_f['M1_Al'].round(1).astype('str')
+    df_f.loc[df_f['M1_Fe2'].round(1) > 0, 'Formula'] += 'Fe' + df_f['M1_Fe2'].round(1).astype('str')
+    df_f.loc[df_f['M1_Mg'].round(1) > 0, 'Formula'] += 'Mg' + df_f['M1_Mg'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['M1_Fe3'].round(3) + df_f['M1_Fe2'].round(3) + df_f['M1_Al'].round(3) +
-                                   df_f['M1_Ti'].round(3) + df_f['M1_Mg'].round(3) + df_f['M1_Ti'].round(3)).round(
+    df_f['Formula'] += '\u03A3' + (df_f['M1_Fe3'].round(1) + df_f['M1_Fe2'].round(1) + df_f['M1_Al'].round(1) +
+                                   df_f['M1_Ti'].round(1) + df_f['M1_Mg'].round(1) + df_f['M1_Ti'].round(1)).round(
         1).astype('str')
 
     # sitio T - tetraedrico
     df_f['Formula'] += '('
-    df_f.loc[df_f['T_Al'].round(3) > 0, 'Formula'] += 'Al' + df_f['T_Al'].round(3).astype('str')
-    df_f.loc[df_f['T_Si'].round(3) > 0, 'Formula'] += 'Si' + df_f['T_Si'].round(3).astype('str')
+    df_f.loc[df_f['T_Al'].round(1) > 0, 'Formula'] += 'Al' + df_f['T_Al'].round(1).astype('str')
+    df_f.loc[df_f['T_Si'].round(1) > 0, 'Formula'] += 'Si' + df_f['T_Si'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['T_Si'].round(3) + df_f['T_Al'].round(3)).round(3).astype('str')
-    df_f['Formula'] += 'O' + (df_f['NormOxygen_Total']).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['T_Si'].round(1) + df_f['T_Al'].round(1)).round(1).astype('str')
+    df_f['Formula'] += 'O' + (df_f['NormOxygen_Total']).round(1).astype('str')
 
     # df_f.to_excel('formula_pyroxene.xlsx')
     df_out = df_f[['Formula', "T_Si", "T_Al", 'M1_Ti', 'M1_Al', 'M1_Cr',
@@ -541,43 +541,43 @@ def micas_formula(df_mica):
 
     # Sitio X
     df_f['Formula'] = '('
-    df_f.loc[df_f['X_Ca'].round(3) > 0, 'Formula'] += 'Ca' + df_f['X_Ca'].round(3).astype('str')
-    df_f.loc[df_f['X_K'].round(3) > 0, 'Formula'] += 'K' + df_f['X_K'].round(3).astype('str')
-    df_f.loc[df_f['X_Na'].round(3) > 0, 'Formula'] += 'Na' + df_f['X_Na'].round(3).astype('str')
+    df_f.loc[df_f['X_Ca'].round(1) > 0, 'Formula'] += 'Ca' + df_f['X_Ca'].round(1).astype('str')
+    df_f.loc[df_f['X_K'].round(1) > 0, 'Formula'] += 'K' + df_f['X_K'].round(1).astype('str')
+    df_f.loc[df_f['X_Na'].round(1) > 0, 'Formula'] += 'Na' + df_f['X_Na'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['X_Ca'].round(3) + df_f['X_Na'].round(3) +
-                                   df_f['X_K'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['X_Ca'].round(1) + df_f['X_Na'].round(1) +
+                                   df_f['X_K'].round(1)).round(1).astype('str')
     # sitio Y
     df_f['Formula'] += '('
-    df_f.loc[df_f['Y_Ti'].round(3) > 0, 'Formula'] += 'Ti' + df_f['Y_Ti'].round(3).astype('str')
-    df_f.loc[df_f['Y_Cr'].round(3) > 0, 'Formula'] += 'Cr' + df_f['Y_Cr'].round(3).astype('str')
-    df_f.loc[df_f['Y_Al'].round(3) > 0, 'Formula'] += 'Al' + df_f['Y_Al'].round(3).astype('str')
-    # df_f.loc[df_f['Y_Cu'].round(3) > 0, 'Formula'] += 'Cu' + df_f['Y_Cu'].round(3).astype('str')
-    # df_f.loc[df_f['Y_Ni'].round(3) > 0, 'Formula'] += 'Ni' + df_f['Y_Ni'].round(3).astype('str')
-    df_f.loc[df_f['Y_Mn'].round(3) > 0, 'Formula'] += 'Mn' + df_f['Y_Mn'].round(3).astype('str')
-    df_f.loc[df_f['Y_Fe'].round(3) > 0, 'Formula'] += 'Fe' + df_f['Y_Fe'].round(3).astype('str')
-    df_f.loc[df_f['Y_Mg'].round(3) > 0, 'Formula'] += 'Mg' + df_f['Y_Mg'].round(3).astype('str')
-    df_f.loc[df_f['Y_Li'].round(3) > 0, 'Formula'] += 'Li' + df_f['Y_Li'].round(3).astype('str')
+    df_f.loc[df_f['Y_Ti'].round(1) > 0, 'Formula'] += 'Ti' + df_f['Y_Ti'].round(1).astype('str')
+    df_f.loc[df_f['Y_Cr'].round(1) > 0, 'Formula'] += 'Cr' + df_f['Y_Cr'].round(1).astype('str')
+    df_f.loc[df_f['Y_Al'].round(1) > 0, 'Formula'] += 'Al' + df_f['Y_Al'].round(1).astype('str')
+    # df_f.loc[df_f['Y_Cu'].round(1) > 0, 'Formula'] += 'Cu' + df_f['Y_Cu'].round(1).astype('str')
+    # df_f.loc[df_f['Y_Ni'].round(1) > 0, 'Formula'] += 'Ni' + df_f['Y_Ni'].round(1).astype('str')
+    df_f.loc[df_f['Y_Mn'].round(1) > 0, 'Formula'] += 'Mn' + df_f['Y_Mn'].round(1).astype('str')
+    df_f.loc[df_f['Y_Fe'].round(1) > 0, 'Formula'] += 'Fe' + df_f['Y_Fe'].round(1).astype('str')
+    df_f.loc[df_f['Y_Mg'].round(1) > 0, 'Formula'] += 'Mg' + df_f['Y_Mg'].round(1).astype('str')
+    df_f.loc[df_f['Y_Li'].round(1) > 0, 'Formula'] += 'Li' + df_f['Y_Li'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['Y_Al'].round(3) + df_f['Y_Ti'].round(3) + df_f['Y_Cr'].round(3) +
-                                   df_f['Y_Fe'].round(3) + df_f['Y_Mn'].round(3) + df_f['Y_Mg'].round(3) +
-                                   df_f['Y_Li'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['Y_Al'].round(1) + df_f['Y_Ti'].round(1) + df_f['Y_Cr'].round(1) +
+                                   df_f['Y_Fe'].round(1) + df_f['Y_Mn'].round(1) + df_f['Y_Mg'].round(1) +
+                                   df_f['Y_Li'].round(1)).round(1).astype('str')
     # Sitio Z
     df_f['Formula'] += '('
-    df_f.loc[df_f['Z_Al'].round(3) > 0, 'Formula'] += 'Al' + df_f['Z_Al'].round(3).astype('str')
-    df_f.loc[df_f['Z_Si'].round(3) > 0, 'Formula'] += 'Si' + df_f['Z_Si'].round(3).astype('str')
+    df_f.loc[df_f['Z_Al'].round(1) > 0, 'Formula'] += 'Al' + df_f['Z_Al'].round(1).astype('str')
+    df_f.loc[df_f['Z_Si'].round(1) > 0, 'Formula'] += 'Si' + df_f['Z_Si'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['Z_Si'].round(3) + df_f['Z_Al'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['Z_Si'].round(1) + df_f['Z_Al'].round(1)).round(1).astype('str')
     # Oxygen
     df_f['Formula'] += 'O' + '20'
     # sitio H
     df_f['Formula'] += '('
-    df_f.loc[df_f['H_Cl'].round(3) > 0, 'Formula'] += 'Cl' + df_f['H_Cl'].round(3).astype('str')
-    df_f.loc[df_f['H_F'].round(3) > 0, 'Formula'] += 'F' + df_f['H_F'].round(3).astype('str')
-    df_f.loc[df_f['H_OH'].round(3) > 0, 'Formula'] += 'OH' + df_f['H_OH'].round(3).astype('str')
+    df_f.loc[df_f['H_Cl'].round(1) > 0, 'Formula'] += 'Cl' + df_f['H_Cl'].round(1).astype('str')
+    df_f.loc[df_f['H_F'].round(1) > 0, 'Formula'] += 'F' + df_f['H_F'].round(1).astype('str')
+    df_f.loc[df_f['H_OH'].round(1) > 0, 'Formula'] += 'OH' + df_f['H_OH'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['H_OH'].round(3) + df_f['H_F'].round(3) +
-                                   df_f['H_Cl'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['H_OH'].round(1) + df_f['H_F'].round(1) +
+                                   df_f['H_Cl'].round(1)).round(1).astype('str')
 
     # df_f.to_excel('formula_mica.xlsx')
     # M2 octaedrico
@@ -607,16 +607,16 @@ def spinel_formula(df_sp):
         df_f[el + '_NormCations'] = 3 * df_f[el + '_mole'] / df_f['moles_cation']
         if el in ['SI', 'TI']:
             df_f[el + '_NormOxygen'] = df_f[el + '_NormCations'] * 2
-            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(3)
+            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(1)
         elif el in ['AL', 'CR']:
             df_f[el + '_NormOxygen'] = df_f[el + '_NormCations'] * 3 / 2
-            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(3)
+            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(1)
         elif el in ['FE', 'MN', 'MG', 'CA']:
             df_f[el + '_NormOxygen'] = df_f[el + '_NormCations']
-            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(3)
+            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(1)
         elif el in ['K', 'NA', 'ZN']:
             df_f[el + '_NormOxygen'] = df_f[el + '_NormCations'] / 2
-            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(3)
+            df_f[el + '_Atom'] = df_f[el + '_NormCations'].round(1)
 
     df_f['NormCations_Total'] = df_f.filter(regex='_NormCations$', axis=1).sum(axis=1)
     df_f['NormOxygen_Total'] = df_f.filter(regex='_NormOxygen$', axis=1).sum(axis=1)
@@ -628,13 +628,13 @@ def spinel_formula(df_sp):
     df_f = _test_Fe(df_f, 8)
 
     df_f['X_Mg'] = df_f['MG_Atom']
-    df_f['X_Fe'] = df_f['FE2_Atom'].round(3)
+    df_f['X_Fe'] = df_f['FE2_Atom'].round(1)
     df_f['X_Zn'] = df_f['ZN_Atom']
     df_f['X_Ti'] = df_f['TI_Atom']
     df_f['X_total'] = df_f.filter(regex='^X_', axis=1).sum(axis=1)
 
     df_f['Y_Al'] = df_f['AL_Atom']
-    df_f['Y_Fe'] = df_f['FE3_Atom'].round(3)
+    df_f['Y_Fe'] = df_f['FE3_Atom'].round(1)
     df_f['Y_Cr'] = df_f['CR_Atom']
     df_f['Y_total'] = df_f.filter(regex='^Y_', axis=1).sum(axis=1)
 
@@ -647,16 +647,16 @@ def spinel_formula(df_sp):
     df_f.loc[df_f['X_Fe'] > 0, 'Formula'] += 'Fe' + df_f['X_Fe'].astype('str')
     df_f.loc[df_f['X_Mg'] > 0, 'Formula'] += 'Mg' + df_f['X_Mg'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['X_total']).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['X_total']).round(1).astype('str')
     # sitio Y
     df_f['Formula'] += '('
     df_f.loc[df_f['Y_Cr'] > 0, 'Formula'] += 'Cr' + df_f['Y_Cr'].astype('str')
     df_f.loc[df_f['Y_Fe'] > 0, 'Formula'] += 'Fe' + df_f['Y_Fe'].astype('str')
     df_f.loc[df_f['Y_Al'] > 0, 'Formula'] += 'Al' + df_f['Y_Al'].astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['Y_total']).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['Y_total']).round(1).astype('str')
     # Oxygen
-    df_f['Formula'] += ' O' + df_f['NormOxygen_Total'].round(3).astype('str')
+    df_f['Formula'] += ' O' + df_f['NormOxygen_Total'].round(1).astype('str')
 
     # df_f.to_excel('formula_spinel.xlsx')
     # print(df_f['Formula'])
@@ -702,63 +702,63 @@ def amphibole_formula(df):
 
     # Sitio A
     df_f['Formula'] = '('
-    df_f.loc[df_f['A.K.REF'].round(3) > 0, 'Formula'] += 'K' + df_f['A.K.REF'].round(3).astype('str')
-    df_f.loc[df_f['A.CA.REF'].round(3) > 0, 'Formula'] += 'Ca' + df_f['A.CA.REF'].round(3).astype('str')
-    df_f.loc[df_f['A.NA.REF'].round(3) > 0, 'Formula'] += 'Na' + df_f['A.NA.REF'].round(3).astype('str')
+    df_f.loc[df_f['A.K.REF'].round(1) > 0, 'Formula'] += 'K' + df_f['A.K.REF'].round(1).astype('str')
+    df_f.loc[df_f['A.CA.REF'].round(1) > 0, 'Formula'] += 'Ca' + df_f['A.CA.REF'].round(1).astype('str')
+    df_f.loc[df_f['A.NA.REF'].round(1) > 0, 'Formula'] += 'Na' + df_f['A.NA.REF'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['A.K.REF'].round(3) + df_f['A.CA.REF'].round(3) +
-                                   df_f['A.NA.REF'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['A.K.REF'].round(1) + df_f['A.CA.REF'].round(1) +
+                                   df_f['A.NA.REF'].round(1)).round(1).astype('str')
     # Sitio B
     df_f['Formula'] += '('
-    df_f.loc[df_f['B.CA.REF'].round(3) > 0, 'Formula'] += 'Ca' + df_f['B.CA.REF'].round(3).astype('str')
-    df_f.loc[df_f['B.MN2.REF'].round(3) > 0, 'Formula'] += 'Mn' + df_f['B.MN2.REF'].round(3).astype('str')
-    df_f.loc[df_f['B.FE2.REF'].round(3) > 0, 'Formula'] += 'Fe' + df_f['B.FE2.REF'].round(3).astype('str')
-    df_f.loc[df_f['B.MG.REF'].round(3) > 0, 'Formula'] += 'Mg' + df_f['B.MG.REF'].round(3).astype('str')
-    df_f.loc[df_f['B.NA .REF'].round(3) > 0, 'Formula'] += 'Na' + df_f['B.NA .REF'].round(3).astype('str')
+    df_f.loc[df_f['B.CA.REF'].round(1) > 0, 'Formula'] += 'Ca' + df_f['B.CA.REF'].round(1).astype('str')
+    df_f.loc[df_f['B.MN2.REF'].round(1) > 0, 'Formula'] += 'Mn' + df_f['B.MN2.REF'].round(1).astype('str')
+    df_f.loc[df_f['B.FE2.REF'].round(1) > 0, 'Formula'] += 'Fe' + df_f['B.FE2.REF'].round(1).astype('str')
+    df_f.loc[df_f['B.MG.REF'].round(1) > 0, 'Formula'] += 'Mg' + df_f['B.MG.REF'].round(1).astype('str')
+    df_f.loc[df_f['B.NA .REF'].round(1) > 0, 'Formula'] += 'Na' + df_f['B.NA .REF'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['B.CA.REF'].round(3) + df_f['B.MN2.REF'].round(3) +
-                                   df_f['B.FE2.REF'].round(3) + df_f['B.MG.REF'].round(3) +
-                                   df_f['B.NA .REF'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['B.CA.REF'].round(1) + df_f['B.MN2.REF'].round(1) +
+                                   df_f['B.FE2.REF'].round(1) + df_f['B.MG.REF'].round(1) +
+                                   df_f['B.NA .REF'].round(1)).round(1).astype('str')
 
     # Sitio C
     df_f['Formula'] += '('
-    df_f.loc[df_f['C.TI.REF'].round(3) > 0, 'Formula'] += 'Ti' + df_f['C.TI.REF'].round(3).astype('str')
-    df_f.loc[df_f['C.CR.REF'].round(3) > 0, 'Formula'] += 'Cr' + df_f['C.CR.REF'].round(3).astype('str')
-    df_f.loc[df_f['C.FE3.REF'].round(3) > 0, 'Formula'] += 'Fe' + df_f['C.FE3.REF'].round(3).astype('str')
-    df_f.loc[df_f['C.AL.REF'].round(3) > 0, 'Formula'] += 'Al' + df_f['C.AL.REF'].round(3).astype('str')
-    df_f.loc[df_f['C.NI.REF'].round(3) > 0, 'Formula'] += 'Ni' + df_f['C.NI.REF'].round(3).astype('str')
-    df_f.loc[df_f['C.ZN.REF'].round(3) > 0, 'Formula'] += 'Zn' + df_f['C.ZN.REF'].round(3).astype('str')
-    df_f.loc[df_f['C.MN2.REF'].round(3) > 0, 'Formula'] += 'Mn' + df_f['C.MN2.REF'].round(3).astype('str')
-    df_f.loc[df_f['C.FE2.REF'].round(3) > 0, 'Formula'] += 'Fe' + df_f['C.FE2.REF'].round(3).astype('str')
-    df_f.loc[df_f['C.MG.REF'].round(3) > 0, 'Formula'] += 'Mg' + df_f['C.MG.REF'].round(3).astype('str')
+    df_f.loc[df_f['C.TI.REF'].round(1) > 0, 'Formula'] += 'Ti' + df_f['C.TI.REF'].round(1).astype('str')
+    df_f.loc[df_f['C.CR.REF'].round(1) > 0, 'Formula'] += 'Cr' + df_f['C.CR.REF'].round(1).astype('str')
+    df_f.loc[df_f['C.FE3.REF'].round(1) > 0, 'Formula'] += 'Fe' + df_f['C.FE3.REF'].round(1).astype('str')
+    df_f.loc[df_f['C.AL.REF'].round(1) > 0, 'Formula'] += 'Al' + df_f['C.AL.REF'].round(1).astype('str')
+    df_f.loc[df_f['C.NI.REF'].round(1) > 0, 'Formula'] += 'Ni' + df_f['C.NI.REF'].round(1).astype('str')
+    df_f.loc[df_f['C.ZN.REF'].round(1) > 0, 'Formula'] += 'Zn' + df_f['C.ZN.REF'].round(1).astype('str')
+    df_f.loc[df_f['C.MN2.REF'].round(1) > 0, 'Formula'] += 'Mn' + df_f['C.MN2.REF'].round(1).astype('str')
+    df_f.loc[df_f['C.FE2.REF'].round(1) > 0, 'Formula'] += 'Fe' + df_f['C.FE2.REF'].round(1).astype('str')
+    df_f.loc[df_f['C.MG.REF'].round(1) > 0, 'Formula'] += 'Mg' + df_f['C.MG.REF'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['C.TI.REF'].round(3) + df_f['C.CR.REF'].round(3) +
-                                   df_f['C.FE3.REF'].round(3) + df_f['C.AL.REF'].round(3) +
-                                   df_f['C.NI.REF'].round(3) + df_f['C.ZN.REF'].round(3) +
-                                   df_f['C.MN2.REF'].round(3) + df_f['C.FE2.REF'].round(3) +
-                                   df_f['C.MG.REF'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['C.TI.REF'].round(1) + df_f['C.CR.REF'].round(1) +
+                                   df_f['C.FE3.REF'].round(1) + df_f['C.AL.REF'].round(1) +
+                                   df_f['C.NI.REF'].round(1) + df_f['C.ZN.REF'].round(1) +
+                                   df_f['C.MN2.REF'].round(1) + df_f['C.FE2.REF'].round(1) +
+                                   df_f['C.MG.REF'].round(1)).round(1).astype('str')
     # Sitio T
     df_f['Formula'] += '('
-    df_f.loc[df_f['T.AL.REF'].round(3) > 0, 'Formula'] += 'Al' + df_f['T.AL.REF'].round(3).astype('str')
-    df_f.loc[df_f['T.SI.REF'].round(3) > 0, 'Formula'] += 'Si' + df_f['T.SI.REF'].round(3).astype('str')
-    df_f.loc[df_f['T.TI.REF'].round(3) > 0, 'Formula'] += 'Ti' + df_f['T.TI.REF'].round(3).astype('str')
+    df_f.loc[df_f['T.AL.REF'].round(1) > 0, 'Formula'] += 'Al' + df_f['T.AL.REF'].round(1).astype('str')
+    df_f.loc[df_f['T.SI.REF'].round(1) > 0, 'Formula'] += 'Si' + df_f['T.SI.REF'].round(1).astype('str')
+    df_f.loc[df_f['T.TI.REF'].round(1) > 0, 'Formula'] += 'Ti' + df_f['T.TI.REF'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['T.AL.REF'].round(3) + df_f['T.SI.REF'].round(3) +
-                                   df_f['T.TI.REF'].round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['T.AL.REF'].round(1) + df_f['T.SI.REF'].round(1) +
+                                   df_f['T.TI.REF'].round(1)).round(1).astype('str')
     # O sum = 22
     df_f['Formula'] += 'O22'
 
     # Sitio W
     df_f['Formula'] += '('
-    df_f['W.O2.REF'] = df_f['W.O.REF'].round(3)
-    df_f.loc[1 - df_f['W.O2.REF'] < 0.9, 'Formula'] += 'O' + df_f['W.O.REF'].round(3).astype('str')
+    df_f['W.O2.REF'] = df_f['W.O.REF'].round(1)
+    df_f.loc[1 - df_f['W.O2.REF'] < 0.9, 'Formula'] += 'O' + df_f['W.O.REF'].round(1).astype('str')
     df_f.pop('W.O2.REF')
-    df_f.loc[df_f['W.CL.REF'].round(3) > 0, 'Formula'] += 'Cl' + df_f['W.CL.REF'].round(3).astype('str')
-    df_f.loc[df_f['W.F.REF'].round(3) > 0, 'Formula'] += 'F' + df_f['W.F.REF'].round(3).astype('str')
-    df_f.loc[df_f['W.OH.REF'].round(3) > 0, 'Formula'] += 'OH' + df_f['W.OH.REF'].round(3).astype('str')
+    df_f.loc[df_f['W.CL.REF'].round(1) > 0, 'Formula'] += 'Cl' + df_f['W.CL.REF'].round(1).astype('str')
+    df_f.loc[df_f['W.F.REF'].round(1) > 0, 'Formula'] += 'F' + df_f['W.F.REF'].round(1).astype('str')
+    df_f.loc[df_f['W.OH.REF'].round(1) > 0, 'Formula'] += 'OH' + df_f['W.OH.REF'].round(1).astype('str')
     df_f['Formula'] += ')'
-    df_f['Formula'] += '\u03A3' + (df_f['W.O.REF'].round(3) + df_f['W.CL.REF'].round(3) +
-                                   df_f['W.F.REF'].round(3) + df_f['W.OH.REF'].round(3).round(3)).round(3).astype('str')
+    df_f['Formula'] += '\u03A3' + (df_f['W.O.REF'].round(1) + df_f['W.CL.REF'].round(1) +
+                                   df_f['W.F.REF'].round(1) + df_f['W.OH.REF'].round(1).round(1)).round(1).astype('str')
 
     cols = df_f.columns.tolist()
     cols = cols[-1:] + cols[:-1]
@@ -768,13 +768,8 @@ def amphibole_formula(df):
 
 
 def get_function(group, df_partial):
-<<<<<<< HEAD
-    # formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL',
-    #                   'AMPHIBOLES']
-=======
     #formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL',
     #                  'AMPHIBOLES']
->>>>>>> c5bb86a1ff6abf3b74b5039eef462fc3e16a5153
     formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL']
     #print('getFUNCTIOn', group)
     if group == formulas_ready[0]:
@@ -830,63 +825,40 @@ def append_df_to_excel(filename, df, sheet_name='Sheet1',
 
     writer = pd.ExcelWriter(filename, engine='openpyxl')
 
-
-    writer.book = load_workbook(filename, 'wb')
-    print(writer)
-
-    # get the last row in the existing Excel sheet
-    # if it was not specified explicitly
-    if startrow is None and sheet_name in writer.book.sheetnames:
-        startrow = writer.book[sheet_name].max_row
-
-    # truncate sheet
-    if truncate_sheet and sheet_name in writer.book.sheetnames:
-        # index of [sheet_name] sheet
-        idx = writer.book.sheetnames.index(sheet_name)
-        # remove [sheet_name]
-        writer.book.remove(writer.book.worksheets[idx])
-        # create an empty sheet [sheet_name] using old index
-        writer.book.create_sheet(sheet_name, idx)
-
-    # copy existing sheets
-    writer.sheets = {ws.title: ws for ws in writer.book.worksheets}
-
     # Python 2.x: define [FileNotFoundError] exception if it doesn't exist
     try:
         FileNotFoundError
     except NameError:
         FileNotFoundError = IOError
 
-    # try:
-    #     # try to open an existing workbook
-    #     writer.book = load_workbook(filename, 'wb')
-    #     print(writer)
-    #
-    #     # get the last row in the existing Excel sheet
-    #     # if it was not specified explicitly
-    #     if startrow is None and sheet_name in writer.book.sheetnames:
-    #         startrow = writer.book[sheet_name].max_row
-    #
-    #     # truncate sheet
-    #     if truncate_sheet and sheet_name in writer.book.sheetnames:
-    #         # index of [sheet_name] sheet
-    #         idx = writer.book.sheetnames.index(sheet_name)
-    #         # remove [sheet_name]
-    #         writer.book.remove(writer.book.worksheets[idx])
-    #         # create an empty sheet [sheet_name] using old index
-    #         writer.book.create_sheet(sheet_name, idx)
-    #
-    #     # copy existing sheets
-    #     writer.sheets = {ws.title: ws for ws in writer.book.worksheets}
-    # except FileNotFoundError:
-    #     # file does not exist yet, we will create it
-    #     pass
+    try:
+        # try to open an existing workbook
+        writer.book = load_workbook(filename)
+
+        # get the last row in the existing Excel sheet
+        # if it was not specified explicitly
+        if startrow is None and sheet_name in writer.book.sheetnames:
+            startrow = writer.book[sheet_name].max_row
+
+        # truncate sheet
+        if truncate_sheet and sheet_name in writer.book.sheetnames:
+            # index of [sheet_name] sheet
+            idx = writer.book.sheetnames.index(sheet_name)
+            # remove [sheet_name]
+            writer.book.remove(writer.book.worksheets[idx])
+            # create an empty sheet [sheet_name] using old index
+            writer.book.create_sheet(sheet_name, idx)
+
+        # copy existing sheets
+        writer.sheets = {ws.title: ws for ws in writer.book.worksheets}
+    except FileNotFoundError:
+        # file does not exist yet, we will create it
+        pass
 
     if startrow is None:
         startrow = 0
 
     # write out the new sheet
-    #print(df)
     df.to_excel(writer, sheet_name, startrow=startrow, **to_excel_kwargs)
 
     # save the workbook
