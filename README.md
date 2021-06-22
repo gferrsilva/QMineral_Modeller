@@ -12,7 +12,7 @@ the technical manager of the EPMA laboratory of the [Institute of Geosciences/Un
 
 ## Documentation
 
-Aditional information about building process is available at the internet in the [preprint file](https://www.researchsquare.com/article/rs-629516/v1) (original manuscript still not certified by a peer review).
+Aditional information about the building process is available at the internet in the [preprint file](https://www.researchsquare.com/article/rs-629516/v1) (original manuscript still not certified by a peer review).
 
 ## Important Notes
 
@@ -27,7 +27,7 @@ dependent on the quality of the entry data. Consider the best practice to input
 data with the sum of elements concentration between 98-102%
 
 :warning: At the current state, Qmin is able to predict among 19 groups and 102 different minerals.
-Any other mineral not listed bellow will not perform as desired:
+Any other mineral not listed below will not perform as desired:
 
 * AMPHIBOLES (13 minerals): ACTINOLITE, ARFVEDSONITE, CUMMINGTONITE, EDENITE,
 HASTINGSITE, HORNBLENDE (SENSU LATO), KAERSUTITE, KATOPHORITE, MAGNESIOHASTINGSITE,
@@ -117,10 +117,10 @@ and was used for the model's test and calibration. Those are available in the fo
 
 Project Developed on R and Python3 languages.<p>
 
-The data wrangling, first missing value imputaion, convertion elements to oxides, and balancing
+The data wrangling, first missing value imputaion, conversion elements to oxides, and balancing
 of mineral instances was done in R. The code is available in the [Code_R](./Code_R) folder.
 
-The final models used in this work were developed on Python3 language, and are available in the [model_py](./Code_Python/dashboard/model_py/) folder.
+The final models used in this work were developed in the Python3 language, and are available in the [model_py](./Code_Python/dashboard/model_py/) folder.
 All python codes are available in the [Code_Python](./Code_Python) folder.
 
 ## Contributors
