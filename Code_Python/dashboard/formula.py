@@ -768,7 +768,7 @@ def amphibole_formula(df):
 
 
 def get_function(group, df_partial):
-    #formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL',
+    # formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL',
     #                  'AMPHIBOLES']
     formulas_ready = ['GARNET', 'FELDSPAR', 'OLIVINE', 'PYROXENE', 'MICA', 'SPINEL']
     #print('getFUNCTIOn', group)
@@ -784,8 +784,8 @@ def get_function(group, df_partial):
         df = micas_formula(df_partial)
     elif group == formulas_ready[5]:
         df = spinel_formula(df_partial)
-    elif group == formulas_ready[6]:
-        df = amphibole_formula(df_partial)
+    # elif group == formulas_ready[6]:
+    #     df = amphibole_formula(df_partial)
     else:
         print(group, 'Not implemented Formula Calulator')
         df = pd.DataFrame(columns=['Formula'])
