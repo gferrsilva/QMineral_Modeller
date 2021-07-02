@@ -206,7 +206,7 @@ def test_cprm_datasets_web(filename):
     df_w['MINERAL QC'] = df_qc2['MINERAL QC']
     df_w['2nd PREDICT MINERAL'] = df_qc2['2nd PREDICT MINERAL']
 
-    # df_w.to_excel(filename[:-4] + '_classify.xls')
+   # df_w.to_excel(filename[:-4] + '_classify.xls')
     return df_w.round(4)
 
 
@@ -338,8 +338,10 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
        # df = pd.read_excel(filename, skipfooter=skipfooter, skiprows=skiprow)
         df = pd.read_excel(filename)
         #df = pd.read_excel(filename,  skiprows=3, skipfooter=6)
+
         df = df.dropna()
         #print(df)
+
     else:
         print('Error in read input')
         raise InputError("Input file not supported!!!")
@@ -373,7 +375,8 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
         df = organize(df)
 
         one_mineral = ["APATITE", "ILMENITE", "PEROVSKITE",
-                       "QUARTZ", "TITANITE", "ZIRCON","CHLORITE"]
+                       "QUARTZ", "TITANITE", "ZIRCON","CHLORITE",
+                       "EPIDOTE"]
 
         if group in one_mineral:
            # predictions = model[group].predict(df)
