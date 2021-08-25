@@ -13,8 +13,12 @@ def get_data_df(df):
     if ftype == 'csv':
         #df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
         df = pd.read_csv(filename)
-    elif ftype == 'xls' or ftype == 'xlsx':
-        df = pd.read_excel(filename, skipfooter=6, skiprows=3, )
+    elif ftype == 'xls' and ftype == 'xlsx':
+        df = pd.read_excel(filename, skipfooter=6, skiprows=3, engine="openpyxl")
+        try:
+            df = pd.read_excel(filename, skipfooter=6, skiprows=3)
+        except Exception:
+            df = pd.read_excel(filename, skipfooter=6, skiprows=3, engine="openpyxl")
     else:
          raise InputError("Input file not suported!!!")
     return df
