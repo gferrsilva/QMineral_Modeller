@@ -19,15 +19,15 @@ def encode_image(image_file):
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 #To run Localhost
-#app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True)
 
 #to run on Server
-app = dash.Dash(
-    __name__,
-    url_base_pathname='/qmin/',
-    external_stylesheets=external_stylesheets,
-    prevent_initial_callbacks=True
-)
+# app = dash.Dash(
+#     __name__,
+#     url_base_pathname='/qmin/',
+#     external_stylesheets=external_stylesheets,
+#     prevent_initial_callbacks=True
+# )
 
 server = app.server
 app.title = 'Qmin'
@@ -484,7 +484,7 @@ def show_download_button(list_of_contents, teste='true', csep=',',
         #     print('Error: Button filename Download')
         #     return ''
         test = 'true'
-        sendDataEmail(test, filename)
+       # sendDataEmail(test, filename)
         return filename
 
     else:
