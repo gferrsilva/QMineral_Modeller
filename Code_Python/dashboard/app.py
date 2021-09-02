@@ -18,7 +18,16 @@ def encode_image(image_file):
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True)
+#To run Localhost
+#app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True)
+
+#to run on Server
+app = dash.Dash(
+    __name__,
+    url_base_pathname='/qmin/',
+    external_stylesheets=external_stylesheets,
+    prevent_initial_callbacks=True
+)
 
 server = app.server
 app.title = 'Qmin'
@@ -31,13 +40,7 @@ def upload_card():
     return html.Div([
         html.Div([
             html.Div(html.A('Template Data', href='assets/template.xls')),
-            html.Div(children=[
-                html.H4('Video Tutorial of QMin'),
-                html.Iframe(
-                    src="https://www.youtube.com/embed/ege7MC3NQfM",
-                    title="YouTube video player",
 
-                )], className='item-a'),
             html.H4("Upload Files",
                     style={'text-align': 'center'}),
             html.B(),
@@ -149,6 +152,13 @@ app.layout = html.Div(
                          # Define the right element
                          html.Div(className='four columns div-user-controls',
                                   children=[upload_card(),
+                                            html.Div(children=[
+                                                html.H4('Video Tutorial of QMin'),
+                                                html.Iframe(
+                                                    src="https://www.youtube.com/embed/ege7MC3NQfM",
+                                                    title="YouTube video player",
+
+                                                )], className='item-a'),
                                             html.Div([
                                                 html.Div(children=[html.H4("Contact"),
                                                                    html.P("Name:"),
@@ -493,7 +503,11 @@ def update_biplot_dropdown(tab, nameform, content):
 
     relative_filename = nameform
 
-    df = pd.read_excel(relative_filename)
+    try:
+        df = pd.read_excel(relative_filename)
+    except Exception:
+        df = pd.read_excel(relative_filename, engine="openpyxl")
+
 
     features = df.columns.to_list()
     clean_features = []
@@ -545,7 +559,12 @@ def update_biplot(tabs, dp1, dp2, dp3, nameform, contents):
 
         relative_filename = nameform
 
-        df = pd.read_excel(relative_filename)
+        args = {}
+        if relative_filename.lower().endswith("xlsx"):
+            args["engine"] = "openpyxl"
+
+        df = pd.read_excel(relative_filename, **args)
+
 
         fig = px.scatter(df, x=df[dp1], y=df[dp2], color=df[dp3],
                          hover_data=['PREDICTED GROUP', 'PREDICTED MINERAL'])
@@ -568,7 +587,10 @@ def update_dropdown(tab, nameform, content):
 
     relative_filename = nameform
 
-    df = pd.read_excel(relative_filename)
+    try:
+        df = pd.read_excel(relative_filename)
+    except Exception:
+        df = pd.read_excel(relative_filename, engine="openpyxl")
 
     features = df.columns.to_list()
     clean_features = []
@@ -622,7 +644,10 @@ def update_graphic(tab, nameform, contents):
         if contents is not None:
 
             relative_filename = nameform
-            df = pd.read_excel(relative_filename)
+            try:
+                df = pd.read_excel(relative_filename)
+            except Exception:
+                df = pd.read_excel(relative_filename, engine="openpyxl")
             fig = px.sunburst(df, path=['PREDICTED GROUP', 'PREDICTED MINERAL'])
 
             return html.Div([
@@ -665,10 +690,16 @@ def sendEmail(text, name = '', from_email=''):
     msg['From'] = "qmin.mineral@gmail.com"
     msg['To'] = "qmin.mineral@gmail.com"
 
-    s = smtplib.SMTP_SSL('smtp.gmail.com')
-    s.login('qmin.mineral@gmail.com', 'iqlwncjdlwltfljo')
-    s.send_message(msg)
-    s.quit()
+
+    try:
+        s = smtplib.SMTP_SSL('smtp.gmail.com')
+        # s.login('postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org',
+        #     'acbc4e8bdfa843cb4c66d3e2eddd579b-f7d0b107-2a58389a')
+        s.login('qmin.mineral@gmail.com', 'iqlwncjdlwltfljo')
+        s.sendmail(From, To, msg.as_string())
+        s.quit()
+    except:
+        print("Erro desconhecido [app.py:730]: ({}) {}".format(e.__class__.__name__, e))
 
     return None
 
@@ -726,7 +757,14 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
 
         relative_filename = nameform
 
-        df = pd.read_excel(relative_filename)
+        args = {}
+        if relative_filename.lower().endswith("xlsx"):
+            args["engine"] = "openpyxl"
+
+        try:
+            df = pd.read_excel(relative_filename)
+        except Exception:
+            df = pd.read_excel(relative_filename, engine="openpyxl")
 
         if 'Total' in df.columns:
             fig = px.scatter_ternary(df,

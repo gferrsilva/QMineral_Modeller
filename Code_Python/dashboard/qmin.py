@@ -335,9 +335,10 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
         # df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
         df = pd.read_csv(filename, sep=',')
     elif ftype == 'xls' or ftype == 'xlsx':
-       # df = pd.read_excel(filename, skipfooter=skipfooter, skiprows=skiprow)
-        df = pd.read_excel(filename)
-        #df = pd.read_excel(filename,  skiprows=3, skipfooter=6)
+        try:
+            df = pd.read_excel(filename)
+        except Exception:
+            df = pd.read_excel(filename, engine="openpyxl")
 
         df = df.dropna()
         #print(df)
@@ -449,7 +450,10 @@ def load_data_ms(filename, separator_diferent=False):
     if filename[-3:] == 'csv':
         df = pd.read_csv(filename)
     elif filename[-3:] == 'xls' or filename[-4:] == 'xlsx':
-        df = pd.read_excel(filename,  skiprows=3, )
+        try:
+            df = pd.read_excel(filename)
+        except Exception:
+            df = pd.read_excel(filename, engine="openpyxl")
     else:
         raise InputError("Input file not suported!!!")
     df_w = df
