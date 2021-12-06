@@ -12,7 +12,9 @@ the technical manager of the EPMA laboratory of the [Institute of Geosciences/Un
 
 ## Documentation
 
-Aditional information about the building process is available at the internet in the [preprint file](https://www.researchsquare.com/article/rs-629516/v1) (original manuscript still not certified by a peer review).
+Additional information about the building process is available on the internet in the [preprint file](https://www.researchsquare.com/article/rs-629516/v1) (original manuscript still not certified by a peer review), or in the [published version of our work](https://www.sciencedirect.com/science/article/pii/S0098300421002351?via%3Dihub), available at the journal Computers and Geosciences.
+
+You can also watch the [presentation (only in Portuguese)](https://www.youtube.com/watch?v=MkC9UHxOzWQ) for the release of the Beta version of the application.
 
 ## Important Notes
 
