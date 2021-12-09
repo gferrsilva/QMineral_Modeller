@@ -1,3 +1,5 @@
+Preprint: [![DOI:10.21203/rs.3.rs-629516/v1](https://img.shields.io/badge/DOI-10.21203%2Frs.3.rs--629516%2Fv1-%2300D0AF)](https://doi.org/10.21203/rs.3.rs-629516/v1) Published: [![DOI:10.1016/j.cageo.2021.104949](https://img.shields.io/badge/DOI-10.1016%2Fj.cageo.2021.104949-%23B31B1B)](https://doi.org/10.1016/j.cageo.2021.104949)
+
 ![jpeg](figures/QMIN_Logo_new.jpg)
 
 ## Introduction
