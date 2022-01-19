@@ -335,14 +335,10 @@ def load_data_ms_web(filename, separator_diferent=',', ftype='csv',
         # df = pd.read_csv(filename, skipfooter=6, skiprows=3, )
         df = pd.read_csv(filename, sep=',')
     elif ftype == 'xls' or ftype == 'xlsx':
-        # df = pd.read_excel(filename, skipfooter=skipfooter, skiprows=skiprow)
-
         try:
             df = pd.read_excel(filename)
         except Exception:
             df = pd.read_excel(filename, engine="openpyxl")
-
-        #df = pd.read_excel(filename,  skiprows=3, skipfooter=6)
 
         df = df.dropna()
         #print(df)

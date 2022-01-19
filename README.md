@@ -1,3 +1,5 @@
+Preprint: [![DOI:10.21203/rs.3.rs-629516/v1](https://img.shields.io/badge/DOI-10.21203%2Frs.3.rs--629516%2Fv1-%2300D0AF)](https://doi.org/10.21203/rs.3.rs-629516/v1) Published: [![DOI:10.1016/j.cageo.2021.104949](https://img.shields.io/badge/DOI-10.1016%2Fj.cageo.2021.104949-%23B31B1B)](https://doi.org/10.1016/j.cageo.2021.104949)
+
 ![jpeg](figures/QMIN_Logo_new.jpg)
 
 ## Introduction
@@ -12,7 +14,9 @@ the technical manager of the EPMA laboratory of the [Institute of Geosciences/Un
 
 ## Documentation
 
-Aditional information about the building process is available at the internet in the [preprint file](https://www.researchsquare.com/article/rs-629516/v1) (original manuscript still not certified by a peer review).
+Additional information about the building process is available on the internet in the [preprint file](https://www.researchsquare.com/article/rs-629516/v1) (original manuscript still not certified by a peer review), or in the [published version of our work](https://www.sciencedirect.com/science/article/pii/S0098300421002351?via%3Dihub), available at the journal Computers and Geosciences.
+
+You can also watch the [presentation (only in Portuguese)](https://www.youtube.com/watch?v=MkC9UHxOzWQ) for the release of the Beta version of the application.
 
 ## Important Notes
 
