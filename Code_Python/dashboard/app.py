@@ -11,6 +11,13 @@ from web_app import about, table, plot, informations
 import plotly.express as px
 
 
+# Isolar o app flask do Dash, para uso com plugins de Flask
+from flask import Flask
+
+_app = Flask(__name__)
+_app.config.from_object('config')
+
+
 def encode_image(image_file):
     encoded = base64.b64encode(open(image_file, 'rb').read())
     return 'data:image/jpg;base64,{}'.format(encoded.decode())
@@ -22,12 +29,10 @@ app = dash.Dash(
     __name__,
     url_base_pathname='/qmin/',
     external_stylesheets=external_stylesheets,
-    prevent_initial_callbacks=True
+    prevent_initial_callbacks=True,
+    server=_app
 )
-#To run Localhost
-#app = dash.Dash(__name__, external_stylesheets=external_stylesheets, prevent_initial_callbacks=True)
 
-server = app.server
 app.title = 'Qmin'
 
 
@@ -781,7 +786,7 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
         return None
 
 
-@app.server.route('/downloads/<path:path>')
+@_app.route('/downloads/<path:path>')
 def serve_static(path):
     import flask
     root_dir = os.getcwd()
@@ -791,5 +796,5 @@ def serve_static(path):
 
 
 if __name__ == '__main__':
-    app.server.run(port=8000, host='127.0.0.1', debug=True)
+    _app.run(host=_app.config['HOST'], port=_app.config['PORT'], debug=_app.config['DEBUG'])
     #app.run_server(debug=True)
