@@ -15,9 +15,9 @@ def get_data_df(df):
         df = pd.read_csv(filename)
     elif ftype == 'xls' or ftype == 'xlsx':
         try:
-            df = pd.read_excel(filename, skipfooter=6, skiprows=3)
+            df = pd.read_excel(filename)
         except Exception:
-            df = pd.read_excel(filename, skipfooter=6, skiprows=3, engine="openpyxl")
+            df = pd.read_excel(filename, engine="openpyxl")
     else:
          raise InputError("Input file not suported!!!")
     return df
