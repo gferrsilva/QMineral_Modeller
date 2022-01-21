@@ -2,6 +2,7 @@ import base64
 import io
 import os
 import pandas as pd
+from uuid import uuid4
 import dash
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
@@ -10,30 +11,31 @@ import dash_table
 from web_app import about, table, plot, informations
 import plotly.express as px
 
-
-# Isolar o app flask do Dash, para uso com plugins de Flask
-from flask import Flask
-
-_app = Flask(__name__)
-_app.config.from_object('config')
+from flask import send_from_directory, url_for
+from flask_mail import Message
 
 
 def encode_image(image_file):
     encoded = base64.b64encode(open(image_file, 'rb').read())
-    return 'data:image/jpg;base64,{}'.format(encoded.decode())
-
+    return 'data:image/jpg;base64,{}'.format(encoded.decode())    
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(
     __name__,
-    url_base_pathname='/qmin/',
     external_stylesheets=external_stylesheets,
-    prevent_initial_callbacks=True,
-    server=_app
+    prevent_initial_callbacks=True,   
 )
 
 app.title = 'Qmin'
+
+# Flask config
+server = app.server
+server.config.from_object('config')
+
+# Flask mail
+from flask_mail import Mail
+mail = Mail(server)
 
 
 def upload_card():
@@ -42,7 +44,7 @@ def upload_card():
     """
     return html.Div([
         html.Div([
-            html.Div(html.A('Template Data', href='assets/template.xls')),
+            html.Div(html.A('Template Data', href='/assets/template.xls')),
 
             html.H4("Upload Files",
                     style={'text-align': 'center'}),
@@ -124,7 +126,7 @@ app.layout = html.Div(
                  children=[
                      html.A(id="dashbio-logo",
                             className='one columns',
-                            children=[html.Img(src='assets/Qmin_logo.png',
+                            children=[html.Img(src='/assets/Qmin_logo.png',
                                                height='60',
                                                width='70',
                                                style={'top': '10',
@@ -134,14 +136,14 @@ app.layout = html.Div(
                              style={'font-size': '45px',
                                     'float': 'left'}),
                      html.A([
-                         html.Img(src="assets/cprm_logo.png",
+                         html.Img(src="/assets/cprm_logo.png",
                                   height='70',
                                   width='152',
                                   style={'float': 'right'})
                      ], href='https://www.cprm.gov.br'),
 
                      html.A([
-                         html.Img(src="assets/GitHub-Mark-Light-64px.png",
+                         html.Img(src="/assets/GitHub-Mark-Light-64px.png",
                                   style={'float': 'right'})
                      ],
                          href='https://github.com/gferrsilva/QMineral_Modeller')
@@ -214,17 +216,14 @@ app.layout = html.Div(
                                                           html.Div(
                                                               id="download-area",
                                                               className="block",
-                                                              children=[html.Form(
-                                                                  action='',
-                                                                  method="get",
-                                                                  id='form-download',
-                                                                  children=[
-                                                                      html.Button(
-                                                                          className="button",
-                                                                          type="submit",
-                                                                          children=["download"]
-                                                                      )
-                                                                  ])
+                                                              children=[
+                                                                  html.A(
+                                                                      id="button-download",
+                                                                      children=["Download"],
+                                                                      className="button",
+                                                                      href="#",
+                                                                      title="Download data from QMIN"
+                                                                  )
                                                               ])
                                                       ]),
 
@@ -256,31 +255,33 @@ app.layout = html.Div(
 
 
 def write_excel(df, dic_formula):
-    import uuid
-    import pandas as pd
-   # from formula import append_df_to_excel
+    """[summary]
 
-    filename = f"{uuid.uuid1()}.xlsx"
-    relative_filename = os.path.join(
-        'downloads',
-        filename
+    :param df: [description]
+    :type df: [type]
+    :param dic_formula: [description]
+    :type dic_formula: [type]
+    """
+    filename = os.path.join(
+        server.config.get('QMIN_DOWNLOAD_DIR'),
+        f"{uuid4()}.xlsx"
     )
-    if os.path.exists(relative_filename):
-        os.remove(relative_filename)
 
-    absolute_filename = os.path.join(os.getcwd(), relative_filename)
-    writer = pd.ExcelWriter(absolute_filename, engine='xlsxwriter')
-    df.to_excel(writer, sheet_name = 'QMIN')
+    # Com UUID4, isso nunca vai acontecer
+    if os.path.exists(filename):
+        os.remove(filename)
+    
+    with pd.ExcelWriter(filename, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='QMIN')
 
-    for key in dic_formula.keys():
-        if len(dic_formula[key]) > 0:
-            #append_df_to_excel(absolute_filename, dic_formula[key], sheet_name=key + '_formula')
-            dic_formula[key].to_excel(writer, sheet_name = key + '_formula')
+        for key in dic_formula.keys():
+            if len(dic_formula[key]) > 0:
+                #append_df_to_excel(absolute_filename, dic_formula[key], sheet_name=key + '_formula')
+                dic_formula[key].to_excel(writer, sheet_name = key + '_formula')
 
-    writer.save()
-    writer.close()
+        writer.save()
 
-    return relative_filename
+    return filename
 
 
 def parse_contents(contents, filename, date, write=False, sep=',',
@@ -313,63 +314,72 @@ def parse_contents(contents, filename, date, write=False, sep=',',
     except Exception as e:
         print(e)
         return html.Div([
-            html.H5('There was an error processing this file.')
+            html.H5('There was an error processing this file:'),
+            html.P(str(e))
         ])
 
-    return html.Div([
-        html.H5('File loaded: ' + filename),
-        # html.H4('Last modification in file: '+str(datetime.datetime.fromtimestamp(date))),
+    return [
+        html.Div([
+            html.H5('File loaded: ' + filename),
+            # html.H4('Last modification in file: '+str(datetime.datetime.fromtimestamp(date))),
 
-        dash_table.DataTable(
-            id='table',
-            style_table={
-                'maxHeight': '500px',
-                'overflowY': 'auto',
-                'overflowX': 'scroll',
-                'minWidth': '100%'
-            },
-
-            data=df.to_dict('records'),
-            columns=[{'name': i, 'id': i} for i in df.columns],
-            fixed_columns={'headers': True, 'data': 2},
-            filter_action="native",
-            sort_action="native",
-            sort_mode='multi',
-            style_data_conditional=[
-                {
-                    'if': {'row_index': 'odd'},
-                    'backgroundColor': 'rgb(248, 248, 248)'
+            dash_table.DataTable(
+                id='table',
+                style_table={
+                    'maxHeight': '500px',
+                    'overflowY': 'auto',
+                    'overflowX': 'scroll',
+                    'minWidth': '100%'
                 },
+
+                data=df.to_dict('records'),
+                columns=[{'name': i, 'id': i} for i in df.columns],
+                fixed_columns={'headers': True, 'data': 2},
+                filter_action="native",
+                sort_action="native",
+                sort_mode='multi',
+                style_data_conditional=[
+                    {
+                        'if': {'row_index': 'odd'},
+                        'backgroundColor': 'rgb(248, 248, 248)'
+                    },
+                    {
+                        'if': {'column_id': 'PREDICTED GROUP'},
+                        'backgroundColor': '#4C5EA1',
+                        'color': 'white'
+                    },
+                    {
+                        'if': {'column_id': 'QC GROUP'},
+                        'backgroundColor': '#4C5EA1',
+                        'color': 'white'
+                    }
+
+                ],
+
+                style_header=
                 {
-                    'if': {'column_id': 'PREDICTED GROUP'},
-                    'backgroundColor': '#4C5EA1',
+                    'backgroundColor': '#262B3D',
+                    'fontWeight': 'bold',
                     'color': 'white'
                 },
+                style_cell=
                 {
-                    'if': {'column_id': 'QC GROUP'},
-                    'backgroundColor': '#4C5EA1',
-                    'color': 'white'
+                    'overflow': 'hidden',
+                    'textAlign': 'center',
+                    'textOverflow': 'ellipsis',
+                    'width': 'auto'
                 }
+            ),
 
-            ],
-
-            style_header=
-            {
-                'backgroundColor': '#262B3D',
-                'fontWeight': 'bold',
-                'color': 'white'
-            },
-            style_cell=
-            {
-                'overflow': 'hidden',
-                'textAlign': 'center',
-                'textOverflow': 'ellipsis',
-                'width': 'auto'
-            }
-        ),
-
-        html.Hr(),
-    ]), filename_output
+            html.Hr(),
+        ]), 
+        dcc.Input(
+            id="qmin_output_file",
+            type="hidden",
+            name="__generated__",
+            value=os.path.basename(filename_output)
+        )
+    ]
 
 
 def build_download_button(uri):
@@ -451,7 +461,7 @@ def update_output(list_of_contents, csep=',',  list_of_names='',
                                                                'padding': '320px'})])
 
 @app.callback(
-    Output("form-download", "action"),
+    Output("button-download", "href"),
     [Input('upload-data', 'contents'),
      Input('checkDataProcedings', 'value')],
     [State('columns-separator', 'value'),
@@ -477,26 +487,30 @@ def show_download_button(list_of_contents, teste='true', csep=',',
         results = [
             parse_contents(c, n, d, sep=csep, headerskip=hs,
                            footerkip=fs) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
+            zip(list_of_contents, list_of_names, list_of_dates)
+        ]
         # results = [
         #     parse_contents(c, n, d, sep=csep) for c, n, d in
         #     zip(list_of_contents, list_of_names, list_of_dates)]
-        # try:
-        filename = results[0][1]
-        # except:
-        #     print('Error: Button filename Download')
-        #     return ''
-        test = 'true'
-       # sendDataEmail(test, filename)
-        return filename
+        try:
+            filename = results[0][1].value
 
-    else:
-        return None
+            if server.config.get("MAIL_ENABLED"):
+                sendDataEmail(
+                    os.path.join(server.config['QMIN_DOWNLOAD_DIR'], filename)
+                )
+            
+            return url_for('serve_static', path=filename)
+
+        except Exception as e:            
+            print("Erro desconhecido [app.show_download_button]: ({}) {}".format(e.__class__.__name__, e))
+
+    return
 
 
 @app.callback(Output('biplot_dropdown', 'children'),
             [Input('graphic_tab', 'value'),
-             Input('form-download', 'action')],
+             Input('qmin_output_file', 'value')],
             [State('upload-data', 'contents')])
 def update_biplot_dropdown(tab, nameform, content):
     import numpy as np
@@ -504,7 +518,7 @@ def update_biplot_dropdown(tab, nameform, content):
     if content == None:
         return
 
-    relative_filename = nameform
+    relative_filename = os.path.join(server.config['QMIN_DOWNLOAD_DIR'], nameform)
 
     try:
         df = pd.read_excel(relative_filename)
@@ -550,7 +564,7 @@ def update_biplot_dropdown(tab, nameform, content):
                Input('bdropdown1', 'value'),
                Input('bdropdown2', 'value'),
                Input('bdropdown3', 'value'),
-               Input('form-download', 'action')],
+               Input('qmin_output_file', 'value')],
               [State('upload-data', 'contents')])
 def update_biplot(tabs, dp1, dp2, dp3, nameform, contents):
     import plotly.express as px
@@ -559,7 +573,7 @@ def update_biplot(tabs, dp1, dp2, dp3, nameform, contents):
         if contents == None:
             return
 
-        relative_filename = nameform
+        relative_filename = os.path.join(server.config['QMIN_DOWNLOAD_DIR'], nameform)
 
         args = {}
         if relative_filename.lower().endswith("xlsx"):
@@ -578,7 +592,7 @@ def update_biplot(tabs, dp1, dp2, dp3, nameform, contents):
 
 @app.callback(Output('triplot-dropdown', 'children'),
             [Input('graphic_tab', 'value'),
-             Input('form-download', 'action')],
+             Input('qmin_output_file', 'value')],
             [State('upload-data', 'contents')])
 def update_dropdown(tab, nameform, content):
     import numpy as np
@@ -586,7 +600,7 @@ def update_dropdown(tab, nameform, content):
     if content == None:
         return
 
-    relative_filename = nameform
+    relative_filename = os.path.join(server.config['QMIN_DOWNLOAD_DIR'], nameform)
 
     try:
         df = pd.read_excel(relative_filename)
@@ -635,7 +649,7 @@ def update_dropdown(tab, nameform, content):
 
 @app.callback(Output('General_graphic', 'children'),
               [Input('graphic_tab', 'value'),
-               Input('form-download', 'action')],
+               Input('qmin_output_file', 'value')],
               [State('upload-data', 'contents')])
 def update_graphic(tab, nameform, contents):
     # Callback for the first donut graphic in the graphic table
@@ -644,7 +658,7 @@ def update_graphic(tab, nameform, contents):
 
         if contents is not None:
 
-            relative_filename = nameform
+            relative_filename = os.path.join(server.config['QMIN_DOWNLOAD_DIR'], nameform)
             try:
                 df = pd.read_excel(relative_filename)
             except Exception:
@@ -677,68 +691,95 @@ def update_output(n_clicks, value, name, endemail):
         return 'E-mail send!:'
 
 
-def sendEmail(text, name = '', from_email=''):
+def _send_mail(recipients, subject, message, attachments=None):
+    """
+    This function uses Flask Mail to send email messages
 
-    import smtplib
-    from email.mime.text import MIMEText
+    :param recipients: One or many e-mails for destination
+    :type recipients: str, list/tuple of strings
 
-    text = name + '\n\n' + from_email + '\n\n' + text
-    msg = MIMEText(text)
+    :param subject: E-mail subject
+    :type subject: str
+    
+    :param message: E-mail body message
+    :type message: [type]
+    
+    :param attachments: file attachments, defaults to None
+    :type attachments: list of files, optional
+    """
+    if type(recipients) is str:
+        recipients = [recipients]
 
-    # Create a text/plain message
+    # Adicionar ele mesmo como destinatário
+    sender = server.config.get('MAIL_DEFAULT_SENDER')
 
-    msg['Subject'] = "USER COMUNICATION from QMIN"
-    msg['From'] = "qmin.mineral@gmail.com"
-    msg['To'] = "qmin.mineral@gmail.com"
-
+    if sender not in recipients: 
+        recipients.append(sender)
 
     try:
-        s = smtplib.SMTP_SSL('smtp.gmail.com')
-        # s.login('postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org',
-        #     'acbc4e8bdfa843cb4c66d3e2eddd579b-f7d0b107-2a58389a')
-        s.login('qmin.mineral@gmail.com', 'iqlwncjdlwltfljo')
-        s.sendmail(From, To, msg.as_string())
-        s.quit()
-    except:
-        print("Erro desconhecido [app.py:730]: ({}) {}".format(e.__class__.__name__, e))
+        # Criar mensagem
+        msg = Message(        
+            subject, 
+            body=message,
+            recipients=recipients
+        )
 
-    return None
+        if attachments:
+            if type(attachments) is str:
+                attachments = [attachments]
+
+            for attachment in attachments:
+                with server.open_resource(attachment) as fp:
+                    msg.attach(
+                        os.path.basename(attachment), 
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                        fp.read()
+                    )
+        
+        mail.send(msg)
+
+    except Exception as e:
+        print("Erro desconhecido [app.py:739]: ({}) {}".format(e.__class__.__name__, e))
 
 
-def sendDataEmail(teste, file_data):
+def sendEmail(text, name='', from_email=''):
+    """
+    [summary]
 
-    import smtplib
-    from email.mime.application import MIMEApplication
-    from email.mime.multipart import MIMEMultipart
+    :param text: [description]
+    :type text: [type]
+    :param name: [description], defaults to ''
+    :type name: str, optional
+    :param from_email: [description], defaults to ''
+    :type from_email: str, optional
+    :return: [description]
+    :rtype: [type]
+    """
+    message = name + '\n\n' + from_email + '\n\n' + text
 
-    if teste == 'true':
-     #   From = "postmaster@sandboxab11a79dd2474185afd6e9c69a4ac7ea.mailgun.org"
-        From = 'qmin.mineral@gmail.com'
-        To = "qmin.mineral@gmail.com"
-        # Create a text/plain message
-        msg = MIMEMultipart()
+    return _send_mail(
+        from_email, 
+        "USER COMUNICATION from QMIN", 
+        message
+    )
 
-        msg['Subject'] = "Data from QMIN"
-        msg['From'] = "qmin.mineral@gmail.com"
-        msg['To'] = "qmin.mineral@gmail.com"
 
-        filename = file_data
-        fp = open(filename, 'rb')
-        att = MIMEApplication(fp.read(), _subtype="xls")
-        fp.close()
-        att.add_header('Content-Disposition', 'attachment', filename=filename)
-        msg.attach(att)
+def sendDataEmail(file_data):
+    """
+    [summary]
 
-        try:
-            s = smtplib.SMTP_SSL('smtp.gmail.com')
-            s.login('qmin.mineral@gmail.com','iqlwncjdlwltfljo')
-            s.sendmail(From, To, msg.as_string())
-            s.quit()
-
-        except Exception as e:
-            print("Erro desconhecido [app.py:730]: ({}) {}".format(e.__class__.__name__, e))
-
-    return None
+    :param file_data: [description]
+    :type file_data: [type]
+    :return: [description]
+    :rtype: [type]
+    """
+    return _send_mail(
+        # server.config.get('MAIL_DEFAULT_SENDER'), 
+        'carlos.mota@cprm.gov.br',
+        "Data from QMIN", 
+        "File Attachment",
+        attachments=[file_data]
+    )
 
 
 @app.callback(Output('triplot-graphic', 'children'),
@@ -747,7 +788,7 @@ def sendDataEmail(teste, file_data):
                 Input('dropdown2', 'value'),
                 Input('dropdown3', 'value'),
                 Input('dropdown4', 'value')],
-              [State('form-download', 'action'),
+              [State('qmin_output_file', 'value'),
                State('upload-data', 'contents')])
 def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
     import plotly.express as px
@@ -757,7 +798,7 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
         if contents == None:
             return
 
-        relative_filename = nameform
+        relative_filename = os.path.join(server.config['QMIN_DOWNLOAD_DIR'], nameform)
 
         args = {}
         if relative_filename.lower().endswith("xlsx"):
@@ -786,15 +827,21 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
         return None
 
 
-@_app.route('/downloads/<path:path>')
+@server.route('/downloads/<path:path>')
 def serve_static(path):
-    import flask
-    root_dir = os.getcwd()
-    return flask.send_from_directory(
-        os.path.join(root_dir, 'downloads'), path
+    """
+    [summary]
+
+    :param path: [description]
+    :type path: [type]
+    :return: [description]
+    :rtype: [type]
+    """
+    return send_from_directory(
+        server.config.get('QMIN_DOWNLOAD_DIR'), 
+        path
     )
 
 
 if __name__ == '__main__':
-    _app.run(host=_app.config['HOST'], port=_app.config['PORT'], debug=_app.config['DEBUG'])
-    #app.run_server(debug=True)
+    app.run_server(debug=server.config['DEBUG'])

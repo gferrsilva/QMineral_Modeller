@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from qmin import load_model
 from qmin import load_regression_model
+from config import QMIN_OXIDE_TO_ELEMENT_FILE
 
 class MolWeight:
 
@@ -24,7 +25,7 @@ class MolWeight:
 
 def organize(df):
     model = load_model()
-    table_reference = './assets/OXIDE_TO_ELEMENT.csv'
+    table_reference = QMIN_OXIDE_TO_ELEMENT_FILE
     df_references = pd.read_csv(table_reference, sep=';')
 
     dic = {}

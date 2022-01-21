@@ -7,6 +7,9 @@ import itertools
 import pickle
 import matplotlib.pyplot as plt
 
+# Teste
+from config import QMIN_MODEL_FILE, QMIN_REGRESSION_MODEL_FILE, QMIN_OXIDE_TO_ELEMENT_FILE
+
 
 class Error(Exception):
     """Base class for exceptions in this module."""
@@ -101,14 +104,14 @@ def saveModel(model_name):
 
 
 def load_model():
-    modelsaved = './model_py/allmodels6.pkl'
+    modelsaved = QMIN_MODEL_FILE
     with open(modelsaved, "rb") as f:
         model = pickle.load(f)
 
     return model
 
 def load_regression_model():
-    modelsaved = './model_py/regression_anfibolio.pkl'
+    modelsaved = QMIN_REGRESSION_MODEL_FILE
     with open(modelsaved, "rb") as f:
         model = pickle.load(f)
 
@@ -212,7 +215,7 @@ def test_cprm_datasets_web(filename):
 
 def organize(df):
     model = load_model()
-    table_reference = './assets/OXIDE_TO_ELEMENT.csv'
+    table_reference = QMIN_OXIDE_TO_ELEMENT_FILE
     df_references = pd.read_csv(table_reference, sep=';')
 
     dic = {}
