@@ -170,7 +170,7 @@ def status_area():
                     html.Div([
                               
                                html.A([
-                                   html.Img(src="assets/contributors/Guilherme.png",style={
+                                   html.Img(src="/assets/contributors/Guilherme.png",style={
                                        'float':'center',
                                        'display': 'block',
                                        'margin-left': 'auto',
@@ -194,7 +194,7 @@ def status_area():
                     html.Div([
                               
                                html.A([
-                                   html.Img(src="assets/contributors/Marcos.png",style={
+                                   html.Img(src="/assets/contributors/Marcos.png",style={
                                        'float':'center',
                                        'display': 'block',
                                        'margin-left': 'auto',
@@ -218,7 +218,7 @@ def status_area():
                     html.Div([
                               
                                html.A([
-                                   html.Img(src="assets/contributors/Iago.png",style={
+                                   html.Img(src="/assets/contributors/Iago.png",style={
                                        'float':'center',
                                        'display': 'block',
                                        'margin-left': 'auto',
@@ -242,7 +242,7 @@ def status_area():
                     html.Div([
                               
                                html.A([
-                                   html.Img(src="assets/contributors/Renato.png",style={
+                                   html.Img(src="/assets/contributors/Renato.png",style={
                                        'float':'center',
                                        'display': 'block',
                                        'margin-left': 'auto',
@@ -263,7 +263,7 @@ def status_area():
                     html.Div([
 
                         html.A([
-                            html.Img(src="assets/contributors/Carlos_Mota.png", style={
+                            html.Img(src="/assets/contributors/Carlos_Mota.png", style={
                                 'float': 'center',
                                 'display': 'block',
                                 'margin-left': 'auto',
