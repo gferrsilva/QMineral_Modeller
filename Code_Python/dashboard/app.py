@@ -743,7 +743,7 @@ def _send_mail(recipients, subject, message, attachments=None):
         mail.send(msg)
 
     except Exception as e:
-        print("Erro desconhecido [app.py:739]: ({}) {}".format(e.__class__.__name__, e))
+        print("Erro desconhecido [app._send_mail]: ({}) {}".format(e.__class__.__name__, e))
 
 
 def sendEmail(text, name='', from_email=''):
@@ -778,8 +778,7 @@ def sendDataEmail(file_data):
     :rtype: [type]
     """
     return _send_mail(
-        # server.config.get('MAIL_DEFAULT_SENDER'), 
-        'carlos.mota@cprm.gov.br',
+        server.config.get('MAIL_DEFAULT_SENDER'), 
         "Data from QMIN", 
         "File Attachment",
         attachments=[file_data]
