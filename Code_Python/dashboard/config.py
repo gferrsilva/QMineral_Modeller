@@ -1,6 +1,6 @@
 from os import path, environ
 
-DEBUG=True
+DEBUG=environ.get('DEBUG', False)
 
 # Mail
 # https://pythonhosted.org/Flask-Mail/
@@ -13,8 +13,9 @@ MAIL_DEBUG=DEBUG
 MAIL_USERNAME=environ.get('MAIL_USERNAME', 'qmin.mineral@gmail.com')
 MAIL_DEFAULT_SENDER=environ.get('MAIL_DEFAULT_SENDER', 'qmin.mineral@gmail.com')
 
-with open(environ.get('MAIL_PASSWORD_FILE'), 'r') as f:
-    MAIL_PASSWORD=f.read()
+if MAIL_ENABLED:
+    with open(environ.get('MAIL_PASSWORD_FILE'), 'r') as f:
+        MAIL_PASSWORD=f.read()
 
 # QMIN Settings
 QMIN_MODEL_FILE=environ.get(

@@ -1,6 +1,7 @@
 import base64
 import io
 import os
+import warnings
 import pandas as pd
 from uuid import uuid4
 import dash
@@ -495,10 +496,9 @@ def show_download_button(list_of_contents, teste='true', csep=',',
         try:
             filename = results[0][1].value
 
-            if server.config.get("MAIL_ENABLED"):
-                sendDataEmail(
-                    os.path.join(server.config['QMIN_DOWNLOAD_DIR'], filename)
-                )
+            sendDataEmail(
+                os.path.join(server.config['QMIN_DOWNLOAD_DIR'], filename)
+            )
             
             return url_for('serve_static', path=filename)
 
@@ -715,6 +715,10 @@ def _send_mail(recipients, subject, message, attachments=None):
 
     if sender not in recipients: 
         recipients.append(sender)
+    
+    if not server.config.get("MAIL_ENABLED"):
+        warnings.warn("[Warning] E-mail desabilitado. Ver variável de ambiente/flask config MAIL_ENABLED")
+        return
 
     try:
         # Criar mensagem
