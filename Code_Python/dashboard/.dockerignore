@@ -1,0 +1,7 @@
+venv/
+Jupyter tests/
+__pycache__
+Dockerfile
+Procfile
+runtime.txt
+run_docker.sh
