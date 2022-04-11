@@ -18,6 +18,8 @@ if MAIL_ENABLED:
         MAIL_PASSWORD=f.read()
 
 # QMIN Settings
+QMIN_BASE_URL=environ.get('QMIN_BASE_URL', '/')
+
 QMIN_MODEL_FILE=environ.get(
     'QMIN_MODEL_FILE',
     path.join(path.dirname(__file__), 'model_py/allmodels6.pkl')

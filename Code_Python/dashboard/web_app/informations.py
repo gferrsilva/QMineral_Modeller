@@ -1,6 +1,8 @@
 import dash_html_components as html
 import dash_core_components as dcc
 
+from main import app
+
 def about_card():
     """
     :return: A Div containing dashboard title & descriptions.
@@ -170,7 +172,7 @@ def status_area():
                     html.Div([
                               
                                html.A([
-                                   html.Img(src="/assets/contributors/Guilherme.png",style={
+                                   html.Img(src=app.get_asset_url("contributors/Guilherme.png"), style={
                                        'float':'center',
                                        'display': 'block',
                                        'margin-left': 'auto',
@@ -194,7 +196,7 @@ def status_area():
                     html.Div([
                               
                                html.A([
-                                   html.Img(src="/assets/contributors/Marcos.png",style={
+                                   html.Img(src=app.get_asset_url("contributors/Marcos.png"), style={
                                        'float':'center',
                                        'display': 'block',
                                        'margin-left': 'auto',
@@ -218,7 +220,7 @@ def status_area():
                     html.Div([
                               
                                html.A([
-                                   html.Img(src="/assets/contributors/Iago.png",style={
+                                   html.Img(src=app.get_asset_url("contributors/Iago.png"), style={
                                        'float':'center',
                                        'display': 'block',
                                        'margin-left': 'auto',
@@ -242,7 +244,7 @@ def status_area():
                     html.Div([
                               
                                html.A([
-                                   html.Img(src="/assets/contributors/Renato.png",style={
+                                   html.Img(src=app.get_asset_url("contributors/Renato.png"), style={
                                        'float':'center',
                                        'display': 'block',
                                        'margin-left': 'auto',
@@ -263,7 +265,7 @@ def status_area():
                     html.Div([
 
                         html.A([
-                            html.Img(src="/assets/contributors/Carlos_Mota.png", style={
+                            html.Img(src=app.get_asset_url("contributors/Carlos_Mota.png"), style={
                                 'float': 'center',
                                 'display': 'block',
                                 'margin-left': 'auto',

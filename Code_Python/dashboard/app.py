@@ -4,7 +4,6 @@ import os
 import warnings
 import pandas as pd
 from uuid import uuid4
-import dash
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
@@ -15,29 +14,13 @@ import plotly.express as px
 from flask import send_from_directory, url_for
 from flask_mail import Message
 
+from main import app, server, mail
+
 
 def encode_image(image_file):
     encoded = base64.b64encode(open(image_file, 'rb').read())
-    return 'data:image/jpg;base64,{}'.format(encoded.decode())    
-
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
-app = dash.Dash(
-    __name__,
-    external_stylesheets=external_stylesheets,
-    prevent_initial_callbacks=True,   
-)
-
-app.title = 'Qmin'
-
-# Flask config
-server = app.server
-server.config.from_object('config')
-
-# Flask mail
-from flask_mail import Mail
-mail = Mail(server)
-
+    return 'data:image/jpg;base64,{}'.format(encoded.decode())
+    
 
 def upload_card():
     """
@@ -45,7 +28,7 @@ def upload_card():
     """
     return html.Div([
         html.Div([
-            html.Div(html.A('Template Data', href='/assets/template.xls')),
+            html.Div(html.A('Template Data', href=app.get_asset_url('template.xls'))),
 
             html.H4("Upload Files",
                     style={'text-align': 'center'}),
@@ -127,7 +110,7 @@ app.layout = html.Div(
                  children=[
                      html.A(id="dashbio-logo",
                             className='one columns',
-                            children=[html.Img(src='/assets/Qmin_logo.png',
+                            children=[html.Img(src=app.get_asset_url('Qmin_logo.png'),
                                                height='60',
                                                width='70',
                                                style={'top': '10',
@@ -137,14 +120,14 @@ app.layout = html.Div(
                              style={'font-size': '45px',
                                     'float': 'left'}),
                      html.A([
-                         html.Img(src="/assets/cprm_logo.png",
+                         html.Img(src=app.get_asset_url("cprm_logo.png"),
                                   height='70',
                                   width='152',
                                   style={'float': 'right'})
                      ], href='https://www.cprm.gov.br'),
 
                      html.A([
-                         html.Img(src="/assets/GitHub-Mark-Light-64px.png",
+                         html.Img(src=app.get_asset_url("GitHub-Mark-Light-64px.png"),
                                   style={'float': 'right'})
                      ],
                          href='https://github.com/gferrsilva/QMineral_Modeller')
@@ -830,7 +813,7 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
         return None
 
 
-@server.route('/downloads/<path:path>')
+@server.route(server.config['QMIN_BASE_URL'] + 'downloads/<path:path>')
 def serve_static(path):
     """
     [summary]
