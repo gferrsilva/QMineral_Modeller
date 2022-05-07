@@ -659,7 +659,7 @@ def update_output(n_clicks, value, name, endemail):
         if situation == 'Success':
             return 'E-mail send!:'
         else:
-            return 'Failed to send E-mail!:\nPlease e-mail directly to qmin.mineral@gmail.com'
+            return 'Failed to send E-mail!:\nPlease an e-mail directly to qmin.mineral@gmail.com'
 
 def _send_mail(recipients, subject, message, attachments=None):
     """
