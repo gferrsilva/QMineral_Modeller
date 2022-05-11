@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
+from qmin import QMinMailException
 from web_app import about, table, plot, informations
 import plotly.express as px
 
@@ -654,12 +655,13 @@ def update_graphic(tab, nameform, contents):
      State('endEmail', 'value')])
 def update_output(n_clicks, value, name, endemail):
     if n_clicks > 0:
+        try:
+            sendEmail(value, name, endemail)
+            return 'E-mail sent!'
 
-        situation = sendEmail(value, name, endemail)
-        if situation == 'Success':
-            return 'E-mail send!:'
-        else:
-            return 'Failed to send E-mail!:\nPlease an e-mail directly to qmin.mineral@gmail.com'
+        except QMinMailException as e:
+            return f"Error: {e} -> Please send an e-mail directly to qmin.mineral@gmail.com"
+
 
 def _send_mail(recipients, subject, message, attachments=None):
     """
@@ -688,7 +690,7 @@ def _send_mail(recipients, subject, message, attachments=None):
 
     if not server.config.get("MAIL_ENABLED"):
         warnings.warn("[Warning] E-mail desabilitado. Ver variável de ambiente/flask config MAIL_ENABLED")
-        return
+        raise QMinMailException("Not able to send mails", "MAIL_DISABLED")
 
     try:
         # Criar mensagem
@@ -711,12 +713,9 @@ def _send_mail(recipients, subject, message, attachments=None):
                     )
 
         mail.send(msg)
-        return 'Success'
 
-    except Exception as e:
-        return 'Failed'
-        #return 'Failed to send E-mail!:\nPlease send a mensage directly to qmin.mineral@gmail.com'
-       # print("Unknown ERROR [app._send_mail]: ({}) {}".format(e.__class__.__name__, e))
+    except Exception as e:  
+        raise QMinMailException("[app._send_mail]: ({}) {}".format(e.__class__.__name__, e))
 
 
 def sendEmail(text, name='', from_email=''):
