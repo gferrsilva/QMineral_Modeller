@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
+from qmin import QMinMailException
 from web_app import about, table, plot, informations
 import plotly.express as px
 
@@ -20,7 +21,7 @@ from main import app, server, mail
 def encode_image(image_file):
     encoded = base64.b64encode(open(image_file, 'rb').read())
     return 'data:image/jpg;base64,{}'.format(encoded.decode())
-    
+
 
 def upload_card():
     """
@@ -120,7 +121,7 @@ app.layout = html.Div(
                              style={'font-size': '45px',
                                     'float': 'left'}),
                      html.A([
-                         html.Img(src=app.get_asset_url("cprm_logo.png"),
+                         html.Img(src=app.get_asset_url("logosgb_vertical_original.png"),
                                   height='70',
                                   width='152',
                                   style={'float': 'right'})
@@ -171,9 +172,7 @@ app.layout = html.Div(
                                                                    ])], className='item-a'),
                                             informations.about_card(),
 
-
                                             ]),
-
 
                          # Define the left element
                          html.Div(id='right_container',
@@ -254,14 +253,14 @@ def write_excel(df, dic_formula):
     # Com UUID4, isso nunca vai acontecer
     if os.path.exists(filename):
         os.remove(filename)
-    
+
     with pd.ExcelWriter(filename, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name='QMIN')
 
         for key in dic_formula.keys():
             if len(dic_formula[key]) > 0:
-                #append_df_to_excel(absolute_filename, dic_formula[key], sheet_name=key + '_formula')
-                dic_formula[key].to_excel(writer, sheet_name = key + '_formula')
+                # append_df_to_excel(absolute_filename, dic_formula[key], sheet_name=key + '_formula')
+                dic_formula[key].to_excel(writer, sheet_name=key + '_formula')
 
         writer.save()
 
@@ -271,7 +270,7 @@ def write_excel(df, dic_formula):
 def parse_contents(contents, filename, date, write=False, sep=',',
                    decimalsep='.', headerskip=0, footerkip=0):
     import qmin
-    sep = ','
+
     content_type, content_string = contents.split(sep)
     decoded = base64.b64decode(content_string)
     df = None
@@ -280,12 +279,11 @@ def parse_contents(contents, filename, date, write=False, sep=',',
             # Assume that the user uploaded a CSV file is CPRM style (evandro)
             df, dic_formulas = qmin.load_data_ms_web(io.StringIO(decoded.decode('ISO-8859-1')),
                                                      separator_diferent=sep, ftype='csv')
-            # filename_output = write_excel(df)
 
         elif 'xls' in filename or 'xlsx' in filename:
             # Assume that the user uploaded an excel file
             # This excel is format of Microssonda!!!!
-           # sep = ','
+
             content_type, content_string = contents.split(sep)
             decoded = base64.b64decode(content_string)
 
@@ -356,7 +354,7 @@ def parse_contents(contents, filename, date, write=False, sep=',',
             ),
 
             html.Hr(),
-        ]), 
+        ]),
         dcc.Input(
             id="qmin_output_file",
             type="hidden",
@@ -414,14 +412,13 @@ def makeAxis(title, tickangle):
                State('header-skip', 'value'),
                State('footer-skip', 'value')
                ])
-def update_output(list_of_contents, csep=',',  list_of_names='',
+def update_output(list_of_contents, csep=',', list_of_names='',
                   list_of_dates='', hs=2, fs=9):
-
-    if csep == None:
+    if csep is None:
         csep = ','
-    if hs == None:
+    if hs is None:
         hs = 0
-    if fs == None:
+    if fs is None:
         fs = 0
 
     print('separator', csep, type(csep))
@@ -431,13 +428,10 @@ def update_output(list_of_contents, csep=',',  list_of_names='',
         results = [
             parse_contents(c, n, d, sep=csep, headerskip=hs,
                            footerkip=fs) for c, n, d in zip(list_of_contents, list_of_names, list_of_dates)]
-        # results = [parse_contents(list_of_contents[0], list_of_names, list_of_dates,
-        #                           sep=csep, decimalsep='.', headerskip=3, footerkip=6)]
-        #print(results, len(results))
+
         if len(results) == 1:
             return results[0]
         children = [results[0][0]]
-
 
         return children
     else:
@@ -456,16 +450,12 @@ def update_output(list_of_contents, csep=',',  list_of_names='',
      ])
 def show_download_button(list_of_contents, teste='true', csep=',',
                          list_of_names='', list_of_dates='', hs=2, fs=9):
-
-    if csep == None:
+    if csep is None:
         csep = ','
-    if hs == None:
+    if hs is None:
         hs = 0
-    if fs == None:
+    if fs is None:
         fs = 0
-
-
-    print('2separator', csep)
 
     if list_of_contents is not None:
         results = [
@@ -473,32 +463,28 @@ def show_download_button(list_of_contents, teste='true', csep=',',
                            footerkip=fs) for c, n, d in
             zip(list_of_contents, list_of_names, list_of_dates)
         ]
-        # results = [
-        #     parse_contents(c, n, d, sep=csep) for c, n, d in
-        #     zip(list_of_contents, list_of_names, list_of_dates)]
         try:
             filename = results[0][1].value
 
             sendDataEmail(
                 os.path.join(server.config['QMIN_DOWNLOAD_DIR'], filename)
             )
-            
+
             return url_for('serve_static', path=filename)
 
-        except Exception as e:            
+        except Exception as e:
             print("Erro desconhecido [app.show_download_button]: ({}) {}".format(e.__class__.__name__, e))
 
     return
 
-
 @app.callback(Output('biplot_dropdown', 'children'),
-            [Input('graphic_tab', 'value'),
-             Input('qmin_output_file', 'value')],
-            [State('upload-data', 'contents')])
+              [Input('graphic_tab', 'value'),
+               Input('qmin_output_file', 'value')],
+              [State('upload-data', 'contents')])
 def update_biplot_dropdown(tab, nameform, content):
     import numpy as np
 
-    if content == None:
+    if content is None:
         return
 
     relative_filename = os.path.join(server.config['QMIN_DOWNLOAD_DIR'], nameform)
@@ -517,18 +503,18 @@ def update_biplot_dropdown(tab, nameform, content):
     if tab == 'graphic-table':
 
         return html.Div([
-        html.Div([
-            dcc.Dropdown(
-                id='bdropdown1',
-                options=[{'label': i, 'value': i} for i in clean_features],
-                value=clean_features[2]
-            )], style={'width': '33%', 'display': 'inline-block'}),
-        html.Div([
-            dcc.Dropdown(
-                id='bdropdown2',
-                options=[{'label': i, 'value': i} for i in clean_features],
-                value=clean_features[3]
-            )], style={'width': '33%', 'display': 'inline-block'}),
+            html.Div([
+                dcc.Dropdown(
+                    id='bdropdown1',
+                    options=[{'label': i, 'value': i} for i in clean_features],
+                    value=clean_features[2]
+                )], style={'width': '33%', 'display': 'inline-block'}),
+            html.Div([
+                dcc.Dropdown(
+                    id='bdropdown2',
+                    options=[{'label': i, 'value': i} for i in clean_features],
+                    value=clean_features[3]
+                )], style={'width': '33%', 'display': 'inline-block'}),
             html.Div([
                 dcc.Dropdown(
                     id='bdropdown3',
@@ -572,15 +558,14 @@ def update_biplot(tabs, dp1, dp2, dp3, nameform, contents):
     return None
 
 
-
 @app.callback(Output('triplot-dropdown', 'children'),
-            [Input('graphic_tab', 'value'),
-             Input('qmin_output_file', 'value')],
-            [State('upload-data', 'contents')])
+              [Input('graphic_tab', 'value'),
+               Input('qmin_output_file', 'value')],
+              [State('upload-data', 'contents')])
 def update_dropdown(tab, nameform, content):
     import numpy as np
 
-    if content == None:
+    if content is None:
         return
 
     relative_filename = os.path.join(server.config['QMIN_DOWNLOAD_DIR'], nameform)
@@ -599,31 +584,31 @@ def update_dropdown(tab, nameform, content):
     if tab == 'graphic-table':
 
         return html.Div([
-        html.Div([
-            dcc.Dropdown(
-                id='dropdown1',
-                options=[{'label': i, 'value': i} for i in clean_features],
-                value=clean_features[2]
-            )], style={'width': '24%', 'display': 'inline-block'}),
-        html.Div([
-            dcc.Dropdown(
-                id='dropdown2',
-                options=[{'label': i, 'value': i} for i in clean_features],
-                value=clean_features[3]
-            )], style={'width': '24%', 'display': 'inline-block'}),
-        html.Div([
-            dcc.Dropdown(
-                id='dropdown3',
-                options=[{'label': i, 'value': i} for i in clean_features],
-                value=clean_features[4]
-            )], style={'width': '24%', 'display': 'inline-block'}),
-        html.Div([
-            dcc.Dropdown(
-                id='dropdown4',
-                options=[{'label': 'PREDICTED MINERAL', 'value': 'PREDICTED MINERAL'},
-                         {'label': 'PREDICTED GROUP', 'value': 'PREDICTED GROUP'}],
-                value='PREDICTED MINERAL'
-            )], style={'width': '24%', 'display': 'inline-block'}),
+            html.Div([
+                dcc.Dropdown(
+                    id='dropdown1',
+                    options=[{'label': i, 'value': i} for i in clean_features],
+                    value=clean_features[2]
+                )], style={'width': '24%', 'display': 'inline-block'}),
+            html.Div([
+                dcc.Dropdown(
+                    id='dropdown2',
+                    options=[{'label': i, 'value': i} for i in clean_features],
+                    value=clean_features[3]
+                )], style={'width': '24%', 'display': 'inline-block'}),
+            html.Div([
+                dcc.Dropdown(
+                    id='dropdown3',
+                    options=[{'label': i, 'value': i} for i in clean_features],
+                    value=clean_features[4]
+                )], style={'width': '24%', 'display': 'inline-block'}),
+            html.Div([
+                dcc.Dropdown(
+                    id='dropdown4',
+                    options=[{'label': 'PREDICTED MINERAL', 'value': 'PREDICTED MINERAL'},
+                             {'label': 'PREDICTED GROUP', 'value': 'PREDICTED GROUP'}],
+                    value='PREDICTED MINERAL'
+                )], style={'width': '24%', 'display': 'inline-block'}),
             html.Div(id='dd-output-container'),
         ], style={'passing': 10})
     else:
@@ -670,8 +655,12 @@ def update_graphic(tab, nameform, contents):
      State('endEmail', 'value')])
 def update_output(n_clicks, value, name, endemail):
     if n_clicks > 0:
-        sendEmail(value, name, endemail)
-        return 'E-mail send!:'
+        try:
+            sendEmail(value, name, endemail)
+            return 'E-mail sent!'
+
+        except QMinMailException as e:
+            return f"Error: {e} -> Please send an e-mail directly to qmin.mineral@gmail.com"
 
 
 def _send_mail(recipients, subject, message, attachments=None):
@@ -696,17 +685,17 @@ def _send_mail(recipients, subject, message, attachments=None):
     # Adicionar ele mesmo como destinatário
     sender = server.config.get('MAIL_DEFAULT_SENDER')
 
-    if sender not in recipients: 
+    if sender not in recipients:
         recipients.append(sender)
-    
+
     if not server.config.get("MAIL_ENABLED"):
         warnings.warn("[Warning] E-mail desabilitado. Ver variável de ambiente/flask config MAIL_ENABLED")
-        return
+        raise QMinMailException("Not able to send mails", "MAIL_DISABLED")
 
     try:
         # Criar mensagem
-        msg = Message(        
-            subject, 
+        msg = Message(
+            subject,
             body=message,
             recipients=recipients
         )
@@ -718,15 +707,15 @@ def _send_mail(recipients, subject, message, attachments=None):
             for attachment in attachments:
                 with server.open_resource(attachment) as fp:
                     msg.attach(
-                        os.path.basename(attachment), 
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+                        os.path.basename(attachment),
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         fp.read()
                     )
-        
+
         mail.send(msg)
 
-    except Exception as e:
-        print("Erro desconhecido [app._send_mail]: ({}) {}".format(e.__class__.__name__, e))
+    except Exception as e:  
+        raise QMinMailException("[app._send_mail]: ({}) {}".format(e.__class__.__name__, e))
 
 
 def sendEmail(text, name='', from_email=''):
@@ -745,8 +734,8 @@ def sendEmail(text, name='', from_email=''):
     message = name + '\n\n' + from_email + '\n\n' + text
 
     return _send_mail(
-        from_email, 
-        "USER COMUNICATION from QMIN", 
+        from_email,
+        "USER COMUNICATION from QMIN",
         message
     )
 
@@ -761,19 +750,19 @@ def sendDataEmail(file_data):
     :rtype: [type]
     """
     return _send_mail(
-        server.config.get('MAIL_DEFAULT_SENDER'), 
-        "Data from QMIN", 
+        server.config.get('MAIL_DEFAULT_SENDER'),
+        "Data from QMIN",
         "File Attachment",
         attachments=[file_data]
     )
 
 
 @app.callback(Output('triplot-graphic', 'children'),
-               [Input('graphic_tab', 'value'),
-                Input('dropdown1', 'value'),
-                Input('dropdown2', 'value'),
-                Input('dropdown3', 'value'),
-                Input('dropdown4', 'value')],
+              [Input('graphic_tab', 'value'),
+               Input('dropdown1', 'value'),
+               Input('dropdown2', 'value'),
+               Input('dropdown3', 'value'),
+               Input('dropdown4', 'value')],
               [State('qmin_output_file', 'value'),
                State('upload-data', 'contents')])
 def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
@@ -803,12 +792,12 @@ def update_triplot(tabs, dp1, dp2, dp3, dp4, nameform, contents):
                                      size=df['Total'])
         else:
             fig = px.scatter_ternary(df,
-                                 a=df[dp1], b=df[dp2],
-                                 c=df[dp3], size_max=15,
-                                 color=dp4, hover_name=df['PREDICTED MINERAL'])
+                                     a=df[dp1], b=df[dp2],
+                                     c=df[dp3], size_max=15,
+                                     color=dp4, hover_name=df['PREDICTED MINERAL'])
         return html.Div([
-                dcc.Graph(figure=fig)
-            ])
+            dcc.Graph(figure=fig)
+        ])
     else:
         return None
 
@@ -824,7 +813,7 @@ def serve_static(path):
     :rtype: [type]
     """
     return send_from_directory(
-        server.config.get('QMIN_DOWNLOAD_DIR'), 
+        server.config.get('QMIN_DOWNLOAD_DIR'),
         path
     )
 

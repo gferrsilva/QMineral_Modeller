@@ -28,6 +28,23 @@ class InputError(Error):
         self.message = message
 
 
+class QMinMailException(Exception):
+    """
+    QMIN Mail-related exceptions
+    """
+    def __init__(self, message, code=None) -> None:
+        self.code = code,
+        self.message = message
+
+    def __repr__(self) -> str:
+        message = self.message
+
+        if self.code:
+            message = f"[{self.code}] {message}"
+
+        return message
+
+
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
