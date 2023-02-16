@@ -47,6 +47,6 @@ tenacity==8.0.1
 threadpoolctl==3.1.0
 ua-parser==0.10.0
 urllib3==1.26.9
-Werkzeug==2.0.3
+Werkzeug==2.2.3
 xlrd==2.0.1
 XlsxWriter==1.2.1
